@@ -15,8 +15,8 @@
             <li class="active"><a href="index.php">HOME</a></li>
             <li><a href="stats.php">STATS</a></li>
             <li><a href="load.php">LOAD</a></li>
-	    <li><a href="about">ABOUT</a></li>
-            <li><a href="contact">CONTACT</a></li>
+	    <li><a href="about.php">ABOUT</a></li>
+            <li><a href="contact.php">CONTACT</a></li>
             <li><a href="account.php"><?php echo (isset($_SESSION['uid'])?$_SESSION['uid'].'^':'invalid user');?></a></li>
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">OPTIONS <b class="caret"></b></a>
