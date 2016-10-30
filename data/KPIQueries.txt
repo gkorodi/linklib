@@ -1,0 +1,8 @@
+select count(*) from links;|links.total.count
+select count(*) from links where tabs IS NULL;|links.total.tabs.null
+select count(*) from links where status IS NULL;|links.total.status.null
+select count(*),status from links group by status;|links.total.status.all
+select count(*),status from links where status != 200 group by status;|links.total.status.not200
+SELECT COUNT(*),tabs FROM links GROUP BY tabs ORDER BY COUNT(*);
+
+

@@ -1,4 +1,6 @@
-<!DOCTYPE html>
+<?php
+require_once('_includes.php');
+?><!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -8,7 +10,7 @@
     <meta name="author" content="">
     <link rel="shortcut icon" href="assets/ico/favicon.ico">
 
-    <title>SOLID - Bootstrap 3 Theme</title>
+    <title><?php echo APP_TITLE;?></title>
 
     <!-- Bootstrap core CSS -->
     <link href="assets/css/bootstrap.css" rel="stylesheet">
@@ -26,55 +28,25 @@
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-    
+
     <script src="assets/js/modernizr.js"></script>
   </head>
 
   <body>
-
     <!-- Fixed navbar -->
-    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <?php require_once('_menu.php'); ?>
+
+    <!-- *****************************************************************************************************************
+    BLUE WRAP
+    ***************************************************************************************************************** -->
+    <div id="blue">
       <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="index.html">SOLID.</a>
-        </div>
-        <div class="navbar-collapse collapse navbar-right">
-          <ul class="nav navbar-nav">
-            <li><a href="index.html">HOME</a></li>
-            <li class="active"><a href="about.html">ABOUT</a></li>
-            <li><a href="contact.html">CONTACT</a></li>
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">PAGES <b class="caret"></b></a>
-              <ul class="dropdown-menu">
-                <li><a href="blog.html">BLOG</a></li>
-                <li><a href="single-post.html">SINGLE POST</a></li>
-                <li><a href="portfolio.html">PORTFOLIO</a></li>
-                <li><a href="single-project.html">SINGLE PROJECT</a></li>
-              </ul>
-            </li>
-          </ul>
-        </div><!--/.nav-collapse -->
-      </div>
-    </div>
+        <div class="row">
+          <h3>ABOUT.</h3>
+        </div><!-- /row -->
+      </div> <!-- /container -->
+    </div><!-- /blue -->
 
-	<!-- *****************************************************************************************************************
-	 BLUE WRAP
-	 ***************************************************************************************************************** -->
-	<div id="blue">
-	    <div class="container">
-			<div class="row">
-				<h3>About.</h3>
-			</div><!-- /row -->
-	    </div> <!-- /container -->
-	</div><!-- /blue -->
-
-	 
 	<!-- *****************************************************************************************************************
 	 AGENCY ABOUT
 	 ***************************************************************************************************************** -->
@@ -84,7 +56,7 @@
 	 		<div class="col-lg-6">
 	 			<img class="img-responsive" src="assets/img/agency.jpg" alt="">
 	 		</div>
-	 		
+
 	 		<div class="col-lg-6">
 		 		<h4>More About Our Agency.</h4>
 		 		<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. </p>
@@ -102,7 +74,7 @@
 	 <div class="container mtb">
 	 	<div class="row centered">
 		 	<h3 class="mb">MEET OUR TEAM</h3>
-		 	
+
 		 	<div class="col-lg-3 col-md-3 col-sm-3">
 				<div class="he-wrap tpl6">
 				<img src="assets/img/team/team01.jpg" alt="">
@@ -112,7 +84,7 @@
                             <a href="#" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-envelope"></i></a>
                             <a href="#" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-twitter"></i></a>
                     	</div><!-- he bg -->
-					</div><!-- he view -->		
+					</div><!-- he view -->
 				</div><!-- he wrap -->
 				<h4>Mark Webber</h4>
 				<h5 class="ctitle">CEO</h5>
@@ -129,7 +101,7 @@
                             <a href="#" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-envelope"></i></a>
                             <a href="#" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-twitter"></i></a>
                     	</div><!-- he bg -->
-					</div><!-- he view -->		
+					</div><!-- he view -->
 				</div><!-- he wrap -->
 				<h4>Paul Jameson</h4>
 				<h5 class="ctitle">LEAD DESIGNER</h5>
@@ -146,7 +118,7 @@
                             <a href="#" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-envelope"></i></a>
                             <a href="#" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-twitter"></i></a>
                     	</div><!-- he bg -->
-					</div><!-- he view -->		
+					</div><!-- he view -->
 				</div><!-- he wrap -->
 				<h4>Laura Sommers</h4>
 				<h5 class="ctitle">LEAD DEVELOPER</h5>
@@ -163,17 +135,17 @@
                             <a href="#" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-envelope"></i></a>
                             <a href="#" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-twitter"></i></a>
                     	</div><!-- he bg -->
-					</div><!-- he view -->		
+					</div><!-- he view -->
 				</div><!-- he wrap -->
 				<h4>Martin Blunt</h4>
 				<h5 class="ctitle">MARKETING</h5>
 				<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
 				<div class="hline"></div>
-		 	</div><! --/col-lg-3 -->		 	
-		 	
+		 	</div><! --/col-lg-3 -->
+
 	 	</div><! --/row -->
 	 </div><! --/container -->
-	 
+
 	<!-- *****************************************************************************************************************
 	 TESTIMONIALS
 	 ***************************************************************************************************************** -->
@@ -189,7 +161,7 @@
 	 		</div><! --/row -->
 	 	</div><! --/container -->
 	 </div><! --/twrap -->
-	 
+
 	<!-- *****************************************************************************************************************
 	 OUR CLIENTS
 	 ***************************************************************************************************************** -->
@@ -216,39 +188,10 @@
 	<!-- *****************************************************************************************************************
 	 FOOTER
 	 ***************************************************************************************************************** -->
-	 <div id="footerwrap">
-	 	<div class="container">
-		 	<div class="row">
-		 		<div class="col-lg-4">
-		 			<h4>About</h4>
-		 			<div class="hline-w"></div>
-		 			<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.</p>
-		 		</div>
-		 		<div class="col-lg-4">
-		 			<h4>Social Links</h4>
-		 			<div class="hline-w"></div>
-		 			<p>
-		 				<a href="#"><i class="fa fa-dribbble"></i></a>
-		 				<a href="#"><i class="fa fa-facebook"></i></a>
-		 				<a href="#"><i class="fa fa-twitter"></i></a>
-		 				<a href="#"><i class="fa fa-instagram"></i></a>
-		 				<a href="#"><i class="fa fa-tumblr"></i></a>
-		 			</p>
-		 		</div>
-		 		<div class="col-lg-4">
-		 			<h4>Our Bunker</h4>
-		 			<div class="hline-w"></div>
-		 			<p>
-		 				Some Ave, 987,<br/>
-		 				23890, New York,<br/>
-		 				United States.<br/>
-		 			</p>
-		 		</div>
-		 	
-		 	</div><! --/row -->
-	 	</div><! --/container -->
-	 </div><! --/footerwrap -->
-	 
+
+   	<?php require_once('_footer.php'); ?>
+
+
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
