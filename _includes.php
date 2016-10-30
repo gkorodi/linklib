@@ -23,26 +23,31 @@ function debugMessage($msg) {
 function query($sql) {
 	// Examples from: http://www.pontikis.net/blog/how-to-use-php-improved-mysqli-extension-and-why-you-should
 	// and some other from: http://www.pontikis.net/blog/how-to-write-code-for-any-database-with-php-adodb
-
+	$errors = Array();
 	$response['sql'] = $sql;
-
+	
 	$conn = new mysqli(DB_HOST.(DB_PORT!=null?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
-
-	$rs = $conn->query($sql);
-	if($rs === false) {
-	  trigger_error('Wrong SQL: ' . $sql . ' Error: ' . $conn->error, E_USER_ERROR);
+	if ($mysqli->connect_errno) {
+		array_push($errors, "Connect failed: %s\n", $mysqli->connect_error);
 	} else {
-	  $response['rowcount'] = $rs->num_rows;
-	}
+		$rs = $conn->query($sql);
+		if($rs === false) {
+		  trigger_error('Wrong SQL: ' . $sql . ' Error: ' . $conn->error, E_USER_ERROR);
+		} else {
+		  $response['rowcount'] = $rs->num_rows;
+		}
 
-	$response['rows'] = Array();
-	$rs->data_seek(0);
-	while($row = $rs->fetch_row()){
-		array_push($response['rows'], $row);
+		$response['rows'] = Array();
+		$rs->data_seek(0);
+		while($row = $rs->fetch_row()){
+			array_push($response['rows'], $row);
+		}
+		$rs->free();
+		$conn->close();
 	}
-	$rs->free();
-	$conn->close();
-
+	if (count($errors)>0) {
+		$response['messages'] .= implode('<br />', $errors);
+	}
 	return $response;
 }
 

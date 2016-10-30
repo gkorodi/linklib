@@ -33,63 +33,51 @@ require_once('_includes.php');
   </head>
 
   <body>
-
     <!-- Fixed navbar -->
-	<?php require_once('_menu.php'); ?>
+    <?php require_once('_menu.php'); ?>
+    <!-- *****************************************************************************************************************
+    BLUE WRAP
+    ***************************************************************************************************************** -->
+    <div id="blue">
+      <div class="container">
+        <div class="row">
+          <h3>STATS.</h3>
+        </div><!-- /row -->
+      </div> <!-- /container -->
+    </div><!-- /blue -->
 
-	<!-- *****************************************************************************************************************
-	 BLUE WRAP
-	 ***************************************************************************************************************** -->
-	<div id="blue">
-	    <div class="container">
-			<div class="row">
-				<h3>STATS.</h3>
-			</div><!-- /row -->
-	    </div> <!-- /container -->
-	</div><!-- /blue -->
-
-
-	<!-- *****************************************************************************************************************
-	 BLOG CONTENT
-	 ***************************************************************************************************************** -->
-
-	 <div class="container mtb">
-	 	<div class="row">
-
-	 		<! -- BLOG POSTS LIST -->
-	 		<div class="col-lg-8">
-
-			<table class="table">
-				<?php
-				$categories['empty'] = 0;
-				$categories['NULL'] = 0;
-
-				$r = query("SELECT tags FROM links GROUP BY tags");
-				foreach ($r['rows'] AS $row) {
-					if ($row[0]===null) { $categories['NULL']++; continue;}
-					if ($row[0]==='') { $categories['empty']++; continue;}
-					$cats = explode(',', $row[0]);
-					foreach($cats AS $category) {
-						$c = trim($category);
-
-						if (isset($categories[$c])) {
-							$categories[$c]++;
-						} else {
-							$categories[$c] = 1;
-						}
-					}
-				}
-				arsort($categories);
-				$idx = 1;
-				foreach($categories AS $category => $counter) {
-					?><tr><td><?=$category?></td><td><?=$counter?></td></tr><?php
-					if ($idx > 10) { break; }
-					$idx++;
-				}
-				?>
-			</table>
-
-			<h4>Category Combinations</h4>
+    <div class="container mtb">
+      <div class="row">
+        <! -- BLOG POSTS LIST -->
+        <div class="col-lg-8">
+          <table class="table">
+            <?php
+            $categories['empty'] = 0;
+            $categories['NULL'] = 0;
+            $r = query("SELECT tags FROM links GROUP BY tags");
+            foreach ($r['rows'] AS $row) {
+              if ($row[0]===null) { $categories['NULL']++; continue;}
+              if ($row[0]==='') { $categories['empty']++; continue;}
+              $cats = explode(',', $row[0]);
+              foreach($cats AS $category) {
+                $c = trim($category);
+                if (isset($categories[$c])) {
+                  $categories[$c]++;
+                } else {
+                  $categories[$c] = 1;
+                }
+              }
+            }
+            arsort($categories);
+            $idx = 1;
+            foreach($categories AS $category => $counter) {
+              ?><tr><td><?=$category?></td><td><?=$counter?></td></tr><?php
+              if ($idx > 10) { break; }
+              $idx++;
+            }
+            ?>
+          </table>
+          <h4>Category Combinations</h4>
 
 			<table class="table">
 				<?php
@@ -153,7 +141,7 @@ require_once('_includes.php');
 	 </div><! --/container -->
 
 
-<?php require_once('_footer.php'); ?>
+	<?php require_once('_footer.php'); ?>
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
