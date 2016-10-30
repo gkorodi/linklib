@@ -33,6 +33,7 @@ require_once('_includes.php');
 			$link->title = $_POST['title'];
 			$info = $link->getURLInfo();
 			$link->status = $info['http_code'];
+			$link->tags = $_POST['tags'];
 
 			if ($link->update()) {
 

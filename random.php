@@ -1,7 +1,4 @@
 <?php
-session_start();
-if (!isset($_SESSION['uid'])) { header("Location: login.php"); }
-
 require_once('_includes.php');
 ?><!DOCTYPE html>
 <html lang="en">
@@ -31,7 +28,7 @@ require_once('_includes.php');
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-    
+
     <script src="assets/js/modernizr.js"></script>
   </head>
 
@@ -48,25 +45,29 @@ require_once('_includes.php');
 	    </div> <!-- /container -->
 	</div><!-- /blue -->
 
-	 
+
 	 <div class="container mtb">
 	 	<div class="row">
-	 	
+
 	 		<! -- BLOG POSTS LIST -->
 	 		<div class="col-lg-8">
 				<?php
 				$sql = 'SELECT count(*) AS rowcount FROM links WHERE status != 200';
 				$query_response = query($sql);
-				
+
 				?>There are <?echo $query_response['rows'][0][0];?> rows that are not status 200.<?php
 				?>
 				<table class="table">
 				<?php
 
 				$extra_criteria = (isset($_REQUEST['status'])?'AND status='.$_REQUEST['status']:'');
-				$sql='SELECT * FROM links WHERE status != 200 '.$extra_criteria.' ORDER BY title DESC LIMIT 100';
-				$query_response = query($sql);
-				
+
+        if (isset($_REQUEST['notags'])) {
+          $extra_criteria .= ' AND tags IS NULL ';
+        }
+				$sql='SELECT * FROM links WHERE status != 200 '.$extra_criteria.' LIMIT 100';
+        $query_response = query($sql);
+
 				foreach ($query_response['rows'] AS $row) {
 					?>
 					<tr class="stat<?php echo $row[3];?>">
@@ -81,8 +82,8 @@ require_once('_includes.php');
 				?>
 			</table>
 			</div><! --/col-lg-8 -->
-	 		
-	 		
+
+
 	 		<! -- SIDEBAR -->
 	 		<div class="col-lg-4">
 		 		<h4>Search</h4>
@@ -92,25 +93,25 @@ require_once('_includes.php');
 		 				<input type="text" class="form-control" name="q" placeholder="Search something">
 					</form>
 		 			</p>
-		 			
+
 		 		<div class="spacing"></div>
-		 		
+
 		 		<h4>Statuses</h4>
 		 		<div class="hline"></div>
 				<?php
 				$query_response = query('SELECT status, count(*) FROM links WHERE status != 200 GROUP BY status ORDER BY count(*) DESC');
 				foreach($query_response['rows'] AS $row) {
-					?><p><a href="?status=<?php echo $row[0];?>"><i class="fa fa-angle-right"></i> <?php echo $row[0];?></a> 
+					?><p><a href="?status=<?php echo $row[0];?>"><i class="fa fa-angle-right"></i> <?php echo $row[0];?></a>
 						<span class="badge badge-theme pull-right"><?php echo $row[1];?></span></p><?php
 				}
 				?>
 
 		 		<div class="spacing"></div>
-		 		
+
 				<?php require_once('_recent_posts.php');?>
-		            
+
 		 		<div class="spacing"></div>
-		 		
+
 		 		<h4>Popular Tags</h4>
 		 		<div class="hline"></div>
 		 			<p>
@@ -165,11 +166,11 @@ require_once('_includes.php');
 		 				United States.<br/>
 		 			</p>
 		 		</div>
-		 	
+
 		 	</div><! --/row -->
 	 	</div><! --/container -->
 	 </div><! --/footerwrap -->
-	 
+
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->

@@ -1,6 +1,11 @@
 <?php
 session_start();
 
+if (basename($_SERVER['PHP_SELF'])  != 'login.php') {
+	if (!isset($_SESSION['uid'])) { header("Location: login.php"); }
+} else {
+}
+
 define('APP_ROOT','/linklib/');
 define('APP_TITLE','linkLIB');
 define('APP_ADDRESS', '<h4>Our Bunker</h4><div class="hline-w"></div><p>95 prince st<br/>Boston, 02113<br/>USA<br/></p>');
