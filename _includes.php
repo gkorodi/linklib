@@ -1,5 +1,5 @@
 <?php
-define('APP_ROOT','/_linklib/');
+define('APP_ROOT','/linklib/');
 define('APP_TITLE','linkLIB');
 define('APP_ADDRESS', '<h4>Our Bunker</h4><div class="hline-w"></div><p>95 prince st<br/>Boston, 02113<br/>USA<br/></p>');
 define('APP_SOCIAL_LINKS','<h4>Social Links</h4><div class="hline-w"></div><p>'.

@@ -16,6 +16,7 @@ class DBQueryService {
 
 	function DBQueryService() {
 		$this->conn = new mysqli(DB_HOST.(DB_PORT!=null?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
+		echo "Connected to ".DB_NAME." database.".PHP_EOL;
 
 		if (!($this->stmtUpdate = $this->conn->prepare("UPDATE links SET link = ?, title = ?, status = ?, tags = ? WHERE id = ?"))) {
 		    echo date('c')." Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error.PHP_EOL;
@@ -259,6 +260,8 @@ $failed = 0;
 
 //$fileList = glob("/Volumes/My Book/Links/*.webloc");
 $fileList = glob(INPUT_DIR."/*.webloc");
+echo "There are ".count($fileList)." files to process.";
+
 //$filename = $fileList[0];
 foreach($fileList AS $filename) {
 
