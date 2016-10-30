@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 define('APP_ROOT','/linklib/');
 define('APP_TITLE','linkLIB');
 define('APP_ADDRESS', '<h4>Our Bunker</h4><div class="hline-w"></div><p>95 prince st<br/>Boston, 02113<br/>USA<br/></p>');
@@ -25,7 +27,7 @@ function query($sql) {
 	// and some other from: http://www.pontikis.net/blog/how-to-write-code-for-any-database-with-php-adodb
 	$errors = Array();
 	$response['sql'] = $sql;
-	
+
 	$conn = new mysqli(DB_HOST.(DB_PORT!=null?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
 	if ($mysqli->connect_errno) {
 		array_push($errors, "Connect failed: %s\n", $mysqli->connect_error);

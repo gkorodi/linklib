@@ -28,7 +28,7 @@ require_once('_includes.php');
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-    
+
     <script src="assets/js/modernizr.js"></script>
   </head>
 
@@ -45,7 +45,7 @@ require_once('_includes.php');
 					<h3>Show your work with this beautiful theme</h3>
 					<h1>Eyecatching Bootstrap 3 Theme.</h1>
 					<h5>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</h5>
-					<h5>More Lorem Ipsum added here too.</h5>				
+					<h5>More Lorem Ipsum added here too.</h5>
 				</div>
 				<div class="col-lg-8 col-lg-offset-2 himg">
 					<img src="assets/img/browser.png" class="img-responsive">
@@ -77,11 +77,11 @@ require_once('_includes.php');
  					<h4>Quality Theme</h4>
  					<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
  					<p><br/><a href="#" class="btn btn-theme">More Info</a></p>
- 				</div>		 				
+ 				</div>
 	 		</div>
 	 	</div><! --/container -->
 	 </div><! --/service -->
-	 
+
 	<!-- *****************************************************************************************************************
 	 PORTFOLIO SECTION
 	 ***************************************************************************************************************** -->
@@ -99,10 +99,10 @@ require_once('_includes.php');
                                 <a data-rel="prettyPhoto" href="assets/img/portfolio/portfolio_09.jpg" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
                                 <a href="single-project.html" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-link"></i></a>
                         	</div><!-- he bg -->
-						</div><!-- he view -->		
+						</div><!-- he view -->
 					</div><!-- he wrap -->
 				</div><!-- end col-12 -->
-                            
+
                 <div class="portfolio-item web-design">
                     <div class="he-wrap tpl6">
 					<img src="assets/img/portfolio/portfolio_02.jpg" alt="">
@@ -112,10 +112,10 @@ require_once('_includes.php');
                                 <a data-rel="prettyPhoto" href="assets/img/portfolio/portfolio_02.jpg" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
                                 <a href="single-project.html" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-link"></i></a>
                         	</div><!-- he bg -->
-						</div><!-- he view -->		
+						</div><!-- he view -->
 					</div><!-- he wrap -->
 				</div><!-- end col-12 -->
-        
+
                 <div class="portfolio-item graphic-design">
                     <div class="he-wrap tpl6">
 					<img src="assets/img/portfolio/portfolio_03.jpg" alt="">
@@ -125,10 +125,10 @@ require_once('_includes.php');
                                 <a data-rel="prettyPhoto" href="assets/img/portfolio/portfolio_03.jpg" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
                                 <a href="single-project.html" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-link"></i></a>
                         	</div><!-- he bg -->
-						</div><!-- he view -->		
+						</div><!-- he view -->
 					</div><!-- he wrap -->
 				</div><!-- end col-12 -->
-        
+
                 <div class="portfolio-item graphic-design">
                     <div class="he-wrap tpl6">
 					<img src="assets/img/portfolio/portfolio_04.jpg" alt="">
@@ -138,10 +138,10 @@ require_once('_includes.php');
                                 <a data-rel="prettyPhoto" href="assets/img/portfolio/portfolio_04.jpg" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
                                 <a href="single-project.html" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-link"></i></a>
                         	</div><!-- he bg -->
-						</div><!-- he view -->		
+						</div><!-- he view -->
 					</div><!-- he wrap -->
 				</div><!-- end col-12 -->
-                                        
+
                 <div class="portfolio-item books">
                     <div class="he-wrap tpl6">
 					<img src="assets/img/portfolio/portfolio_05.jpg" alt="">
@@ -151,10 +151,10 @@ require_once('_includes.php');
                                 <a data-rel="prettyPhoto" href="assets/img/portfolio/portfolio_05.jpg" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
                                 <a href="single-project.html" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-link"></i></a>
                         	</div><!-- he bg -->
-						</div><!-- he view -->		
+						</div><!-- he view -->
 					</div><!-- he wrap -->
 				</div><!-- end col-12 -->
-                                        
+
                 <div class="portfolio-item graphic-design">
                     <div class="he-wrap tpl6">
 					<img src="assets/img/portfolio/portfolio_06.jpg" alt="">
@@ -164,10 +164,10 @@ require_once('_includes.php');
                                 <a data-rel="prettyPhoto" href="assets/img/portfolio/portfolio_06.jpg" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
                                 <a href="single-project.html" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-link"></i></a>
                         	</div><!-- he bg -->
-						</div><!-- he view -->		
+						</div><!-- he view -->
 					</div><!-- he wrap -->
 				</div><!-- end col-12 -->
-                    
+
                 <div class="portfolio-item books">
                     <div class="he-wrap tpl6">
 					<img src="assets/img/portfolio/portfolio_07.jpg" alt="">
@@ -177,10 +177,10 @@ require_once('_includes.php');
                                 <a data-rel="prettyPhoto" href="assets/img/portfolio/portfolio_07.jpg" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
                                 <a href="single-project.html" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-link"></i></a>
                         	</div><!-- he bg -->
-						</div><!-- he view -->		
+						</div><!-- he view -->
 					</div><!-- he wrap -->
 				</div><!-- end col-12 -->
-                    
+
                 <div class="portfolio-item graphic-design">
                     <div class="he-wrap tpl6">
 					<img src="assets/img/portfolio/portfolio_08.jpg" alt="">
@@ -190,10 +190,10 @@ require_once('_includes.php');
                                 <a data-rel="prettyPhoto" href="assets/img/portfolio/portfolio_08.jpg" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
                                 <a href="single-project.html" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-link"></i></a>
                         	</div><!-- he bg -->
-						</div><!-- he view -->		
+						</div><!-- he view -->
 					</div><!-- he wrap -->
 				</div><!-- end col-12 -->
-                                        
+
                 <div class="portfolio-item web-design">
                     <div class="he-wrap tpl6">
 					<img src="assets/img/portfolio/portfolio_01.jpg" alt="">
@@ -203,10 +203,10 @@ require_once('_includes.php');
                                 <a data-rel="prettyPhoto" href="assets/img/portfolio/portfolio_01.jpg" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
                                 <a href="single-project.html" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-link"></i></a>
                         	</div><!-- he bg -->
-						</div><!-- he view -->		
+						</div><!-- he view -->
 					</div><!-- he wrap -->
 				</div><!-- end col-12 -->
-    
+
 			<div class="portfolio-item books">
                 <div class="he-wrap tpl6">
 					<img src="assets/img/portfolio/portfolio_10.jpg" alt="">
@@ -216,15 +216,15 @@ require_once('_includes.php');
                                 <a data-rel="prettyPhoto" href="assets/img/portfolio/portfolio_10.jpg" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
                                 <a href="single-project.html" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-link"></i></a>
                         	</div><!-- he bg -->
-						</div><!-- he view -->		
+						</div><!-- he view -->
 					</div><!-- he wrap -->
 				</div><!-- end col-12 -->
-                    
+
             </div><!-- portfolio -->
         </div><!-- portfolio container -->
 	 </div><!--/Portfoliowrap -->
-	 
-	 
+
+
 	<!-- *****************************************************************************************************************
 	 MIDDLE CONTENT
 	 ***************************************************************************************************************** -->
@@ -236,7 +236,7 @@ require_once('_includes.php');
 		 		<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. </p>
  				<p><br/><a href="about.html" class="btn btn-theme">More Info</a></p>
 	 		</div>
-	 		
+
 	 		<div class="col-lg-3">
 	 			<h4>Frequently Asked</h4>
 	 			<div class="hline"></div>
@@ -246,7 +246,7 @@ require_once('_includes.php');
 	 			<p><a href="#">Which version of Font Awesome uses?</a></p>
 	 			<p><a href="#">Free support is integrated?</a></p>
 	 		</div>
-	 		
+
 	 		<div class="col-lg-3">
 	 			<h4>Latest Posts</h4>
 	 			<div class="hline"></div>
@@ -256,10 +256,10 @@ require_once('_includes.php');
 	 			<p><a href="single-post.html">You need this theme, buy it now.</a></p>
 	 			<p><a href="single-post.html">This theme is what you need.</a></p>
 	 		</div>
-	 		
+
 	 	</div><! --/row -->
 	 </div><! --/container -->
-	 
+
 	<!-- *****************************************************************************************************************
 	 TESTIMONIALS
 	 ***************************************************************************************************************** -->
@@ -275,7 +275,7 @@ require_once('_includes.php');
 	 		</div><! --/row -->
 	 	</div><! --/container -->
 	 </div><! --/twrap -->
-	 
+
 	<!-- *****************************************************************************************************************
 	 OUR CLIENTS
 	 ***************************************************************************************************************** -->
@@ -300,7 +300,7 @@ require_once('_includes.php');
 	 </div><! --/cwrap -->
 
 	<?php require_once('_footer.php'); ?>
-	
+
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
@@ -321,11 +321,11 @@ require_once('_includes.php');
 	var $container = $('.portfolio'),
 		$items = $container.find('.portfolio-item'),
 		portfolioLayout = 'fitRows';
-		
+
 		if( $container.hasClass('portfolio-centered') ) {
 			portfolioLayout = 'masonry';
 		}
-				
+
 		$container.isotope({
 			filter: '*',
 			animationEngine: 'best-available',
@@ -338,12 +338,12 @@ require_once('_includes.php');
 		masonry: {
 		}
 		}, refreshWaypoints());
-		
+
 		function refreshWaypoints() {
 			setTimeout(function() {
-			}, 1000);   
+			}, 1000);
 		}
-				
+
 		$('nav.portfolio-filter ul a').on('click', function() {
 				var selector = $(this).attr('data-filter');
 				$container.isotope({ filter: selector }, refreshWaypoints());
@@ -351,11 +351,11 @@ require_once('_includes.php');
 				$(this).addClass('active');
 				return false;
 		});
-		
-		function getColumnNumber() { 
-			var winWidth = $(window).width(), 
+
+		function getColumnNumber() {
+			var winWidth = $(window).width(),
 			columnNumber = 1;
-		
+
 			if (winWidth > 1200) {
 				columnNumber = 5;
 			} else if (winWidth > 950) {
@@ -368,31 +368,31 @@ require_once('_includes.php');
 				columnNumber = 1;
 			}
 				return columnNumber;
-			}       
-			
+			}
+
 			function setColumns() {
-				var winWidth = $(window).width(), 
-				columnNumber = getColumnNumber(), 
+				var winWidth = $(window).width(),
+				columnNumber = getColumnNumber(),
 				itemWidth = Math.floor(winWidth / columnNumber);
-				
-				$container.find('.portfolio-item').each(function() { 
-					$(this).css( { 
-					width : itemWidth + 'px' 
+
+				$container.find('.portfolio-item').each(function() {
+					$(this).css( {
+					width : itemWidth + 'px'
 				});
 			});
 		}
-		
-		function setPortfolio() { 
+
+		function setPortfolio() {
 			setColumns();
 			$container.isotope('reLayout');
 		}
-			
-		$container.imagesLoaded(function () { 
+
+		$container.imagesLoaded(function () {
 			setPortfolio();
 		});
-		
-		$(window).on('resize', function () { 
-		setPortfolio();          
+
+		$(window).on('resize', function () {
+		setPortfolio();
 	});
 })(jQuery);
 </script>
