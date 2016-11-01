@@ -59,7 +59,7 @@ require_once('_includes.php');
 				<?php
 
 				$linktopage = ' <a class="btn btn-info" href="'.$link->link.'" target="_newWindow"><b>...</b></a>';
-				$linktolookup = '<a href="https://duckduckgo.com/?q='.urlencode($link->title).'&t=ffsb&ia=web" target="_srchWindow"> duckduckgo </a>';
+				$linktolookup = '<a class="btn btn-warning" href="https://duckduckgo.com/?q='.urlencode($link->title).'&t=ffsb&ia=web" target="_srchWindow"> duckduckgo </a>';
 				?>
 				<tr>
 					<th>link</th>
@@ -67,7 +67,8 @@ require_once('_includes.php');
 				</tr>
 				<tr>
 					<th>title</th>
-					<td><input type="text"  id="fldtitle" name="title" value="<?php echo $link->title;?>" size="100%"/></td>
+					<td><input type="text"  id="fldtitle" name="title" value="<?php echo $link->title;?>" size="100%"/><br />
+					<?php echo $linktolookup;?></td>
 				</tr>
 				<tr>
 					<th>status</th>
@@ -91,19 +92,19 @@ require_once('_includes.php');
 		<table class="table">
 			<tr>
 				<th>URL</th>
-				<td><?=$info['url']?></td>
+				<td><?php echo $info['url'];?></td>
 			</tr>
 			<tr>
 				<th>HTTPCode</th>
-				<td><?=$info['http_code']?></td>
+				<td><?php echo $info['http_code'];?></td>
 			</tr>
 			<tr>
 				<th>RedirectCount</th>
-				<td><?=$info['redirect_count']?></td>
+				<td><?php echo $info['redirect_count'];?></td>
 			</tr>
 			<tr>
 				<th>RedirectURL</th>
-				<td><?=$info['redirect_url']?></td>
+				<td><?php echo $info['redirect_url'];?></td>
 			</tr>
 		</table>
 		<button id="btnUserThisURL" onClick="useURL('<?php echo $info['url'];?>');">Use URL</button>
@@ -122,7 +123,7 @@ require_once('_includes.php');
 
 	function deleteLink(id) {
 		$.getJSON( "delById.php?id="+id, function( data ) {
-			console.log(data.status+" Deleting <?=$params['id']?>");
+			console.log(data.status+" Deleting <?php echo $params['id'];?>");
 			return false;
 		});
 	}

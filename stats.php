@@ -72,7 +72,7 @@ require_once('_includes.php');
             arsort($categories);
             $idx = 1;
             foreach($categories AS $category => $counter) {
-              ?><tr><td><?=$category?></td><td><?=$counter?></td></tr><?php
+              ?><tr><td><?php echo $category;?></td><td><?php echo $counter;?></td></tr><?php
               if ($idx > 10) { break; }
               $idx++;
             }
@@ -85,7 +85,7 @@ require_once('_includes.php');
 				$r = query("SELECT tags, count(*) AS counter FROM links GROUP BY tags ORDER BY counter DESC LIMIT 20");
 				foreach ($r['rows'] AS $row) {
 					if ($row[0] === null || $row[0] === '') { continue; }
-					?><tr><td><?=($row[0]===null?'NULL':($row[0]===''?'empty':$row[0]))?></td><td><?=$row[1]?></td></tr><?php
+					?><tr><td><?($row[0]===null?'NULL':($row[0]===''?'empty':$row[0]))?></td><td><?php echo $row[1];?></td></tr><?php
 				}
 				?>
 			</table>
@@ -108,8 +108,8 @@ require_once('_includes.php');
 				<?php
 				$query_response = query('SELECT status, count(*) FROM links WHERE status != 200 GROUP BY status ORDER BY count(*) DESC');
 				foreach($query_response['rows'] AS $row) {
-					?><p><a href="?status=<?=$row[0]?>"><i class="fa fa-angle-right"></i> <?=$row[0]?></a>
-						<span class="badge badge-theme pull-right"><?=$row[1]?></span></p><?php
+					?><p><a href="?status=<?php echo $row[0];?>"><i class="fa fa-angle-right"></i> <?php echo $row[0];?></a>
+						<span class="badge badge-theme pull-right"><?php echo $row[1];?></span></p><?php
 				}
 				?>
 

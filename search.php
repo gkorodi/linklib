@@ -10,7 +10,7 @@ require_once('_includes.php');
     <meta name="author" content="">
     <link rel="shortcut icon" href="assets/ico/favicon.ico">
 
-    <title><?=APP_TITLE?></title>
+    <title><?php echo APP_TITLE;?></title>
 
     <!-- Bootstrap core CSS -->
     <link href="assets/css/bootstrap.css" rel="stylesheet">
@@ -28,7 +28,7 @@ require_once('_includes.php');
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-    
+
     <script src="assets/js/modernizr.js"></script>
   </head>
 
@@ -42,19 +42,19 @@ require_once('_includes.php');
 	<div id="blue">
 	    <div class="container">
 			<div class="row">
-				<h3>Search Results for <b><?=$_REQUEST['q']?></b>.</h3>
+				<h3>Search Results for <b><?php echo $_REQUEST['q'];?></b>.</h3>
 			</div><!-- /row -->
 	    </div> <!-- /container -->
 	</div><!-- /blue -->
 
-	 
+
 	<!-- *****************************************************************************************************************
 	 BLOG CONTENT
 	 ***************************************************************************************************************** -->
 
 	 <div class="container mtb">
 	 	<div class="row">
-	 	
+
 	 		<! -- SINGLE POST -->
 	 		<div class="col-md-8">
 				<table class="table">
@@ -63,18 +63,18 @@ require_once('_includes.php');
 				$query_response = query($sql);
 				foreach ($query_response['rows'] AS $row) {
 					?>
-					<tr class="stat<?=$row[3]?>">
-						<td><a href="<?=$row[1]?>" target="_newWin"><?=$row[2]?></a><br />
-							<small><?=$row[5]?></small></td>
-						<td><button onclick="window.location='delentry.php?id=<?=$row[0]?>';" class="btn btn-success">Delete</button> </td>
+					<tr class="stat<?php echo $row[3];?>">
+						<td><a href="<?php echo $row[1];?>" target="_newWin"><?php echo $row[2];?></a><br />
+							<small><?php echo $row[5];?></small></td>
+						<td><button onclick="window.location='delentry.php?id=<?php echo $row[0];?>';" class="btn btn-success">Delete</button> </td>
 					</tr>
 					<?php
 				}
 				?>
 				</table>
 			</div><! --/col-lg-8 -->
-	 		
-	 		
+
+
 	 		<! -- SIDEBAR -->
 	 		<div class="col-lg-4">
 		 		<h4>Search</h4>
@@ -83,21 +83,21 @@ require_once('_includes.php');
 		 				<br/>
 		 				<input type="text" class="form-control" placeholder="Search something">
 		 			</p>
-		 			
+
 		 		<div class="spacing"></div>
-		 		
+
 		 		<h4>Statuses</h4>
 		 		<div class="hline"></div>
 				<?php
 				$query_response = query('SELECT status, count(*) FROM links WHERE status != 200 GROUP BY status ORDER BY count(*) DESC');
 				foreach($query_response['rows'] AS $row) {
-					?><p><a href="?status=<?=$row[0]?>"><i class="fa fa-angle-right"></i> <?=$row[0]?></a> 
-						<span class="badge badge-theme pull-right"><?=$row[1]?></span></p><?php
+					?><p><a href="?status=<?php echo $row[0];?>"><i class="fa fa-angle-right"></i> <?php echo row[0];?></a>
+						<span class="badge badge-theme pull-right"><?php echo $row[1];?></span></p><?php
 				}
 				?>
-		 		
+
 		 		<div class="spacing"></div>
-		 		
+
 		 		<h4>Popular Tags</h4>
 		 		<div class="hline"></div>
 	 			<p>
@@ -116,9 +116,9 @@ require_once('_includes.php');
 							}
 						}
 					}
-					
+
 					foreach($categories AS $category => $counter) {?>
-						<a class="btn btn-theme" href="categorysearch.php?category=<?=$category?>" role="button"><?=$category?> <small><?=$counter?></small></a><?php
+						<a class="btn btn-theme" href="categorysearch.php?category=<?php echo $category;?>" role="button"><?php echo $category;?> <small><?php echo $counter;?></small></a><?php
 					}
 					?>
 
@@ -163,11 +163,11 @@ require_once('_includes.php');
 		 				United States.<br/>
 		 			</p>
 		 		</div>
-		 	
+
 		 	</div><! --/row -->
 	 	</div><! --/container -->
 	 </div><! --/footerwrap -->
-	 
+
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->

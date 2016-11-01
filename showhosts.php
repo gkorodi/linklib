@@ -10,7 +10,7 @@ require_once('_includes.php');
     <meta name="author" content="">
     <link rel="shortcut icon" href="assets/ico/favicon.ico">
 
-    <title><?=APP_TITLE?></title>
+    <title><?php echo APP_TITLE;?></title>
 
     <!-- Bootstrap core CSS -->
     <link href="assets/css/bootstrap.css" rel="stylesheet">
@@ -42,7 +42,7 @@ require_once('_includes.php');
 	<div id="blue">
 	    <div class="container">
 			<div class="row">
-				<h3>Search Results by host <b><?=$_REQUEST['host']?></b>.</h3>
+				<h3>Search Results by host <b><?php echo $_REQUEST['host'];?></b>.</h3>
 			</div><!-- /row -->
 	    </div> <!-- /container -->
 	</div><!-- /blue -->
@@ -76,8 +76,8 @@ require_once('_includes.php');
 				foreach($hostList AS $link => $count) {
 				?>
 				<tr>
-					<td><a href="searchbyhost.php?host=<?=$link?>"><?=$link?></a></td>
-					<td><?=$count?></td>
+					<td><a href="searchbyhost.php?host=<?php echo $link;?>"><?php echo $link;?></a></td>
+					<td><?php echo $count;?></td>
 				</tr>
 				<?php
 				}
