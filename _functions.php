@@ -3,6 +3,7 @@ session_start();
 require_once('_includes.php');
 
 if (isset($_REQUEST['method'])) {
+
 	if ($_REQUEST['method']==='deletelink') {
 		$link = new Link($_REQUEST['id']);
 
@@ -15,6 +16,26 @@ if (isset($_REQUEST['method'])) {
 			$resp['message'] = 'Could not delete link, with id <b>'.$_REQUEST['id'].'</b><br />'.
 				'<small>'.$link->getErrorListFormatted().'</small>';
 		}
+	} else if ($_REQUEST['method']==='getRecentPosts') {
+		$resp['status'] = 'ok';
+		$resp['message'] = 'recent posts are not available.';
+		$resp['debugs'] = '';
+	} else if ($_REQUEST['method']==='getHostList') {
+		$resp['status'] = 'ok';
+		$query_response = query('SELECT link FROM links WHERE status != 200');
+
+		$hostList = Array();
+		foreach($query_response['rows'] AS $row) {
+			$lst = split('/',  $row[0]);
+			if (isset($lst[2])) {
+				$hostList[$lst[2]]++;
+			} else {
+				$hostList[$lst[2]] = 1;
+			}
+		}
+		asort($hostList);
+		$resp['hostlist'] = $hostList;
+
 	} else if ($_REQUEST['method']==='testlink') {
 		$link = new Link($_REQUEST['id']);
 		if ($link->test()) {

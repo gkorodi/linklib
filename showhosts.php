@@ -47,41 +47,13 @@ require_once('_includes.php');
 	    </div> <!-- /container -->
 	</div><!-- /blue -->
 
-
-	<!-- *****************************************************************************************************************
-	 BLOG CONTENT
-	 ***************************************************************************************************************** -->
-
 	 <div class="container mtb">
 	 	<div class="row">
 
 	 		<! -- SINGLE POST -->
 	 		<div class="col-md-8">
-				<?php
-				$query_response = query('SELECT link FROM links WHERE status != 200');
+				<table id="hostlist_table" class="table">
 
-				$hostList = Array();
-				foreach($query_response['rows'] AS $row) {
-					$lst = split('/',  $row[0]);
-					if (isset($lst[2])) {
-						$hostList[$lst[2]]++;
-					} else {
-						$hostList[$lst[2]] = 1;
-					}
-				}
-				?>
-				<table class="table">
-				<?php
-				asort($hostList);
-				foreach($hostList AS $link => $count) {
-				?>
-				<tr>
-					<td><a href="searchbyhost.php?host=<?php echo $link;?>"><?php echo $link;?></a></td>
-					<td><?php echo $count;?></td>
-				</tr>
-				<?php
-				}
-				?>
 				</table>
 			</div><! --/col-lg-8 -->
 
@@ -99,29 +71,28 @@ require_once('_includes.php');
 
 		 		<h4>Statuses</h4>
 		 		<div class="hline"></div>
+        <div id="status_list" />
 
 		 		<div class="spacing"></div>
-				<?php require_once('_recent_posts.php');?>
+				<div id="recent_posts" />
 
 	 		</div>
 	 	</div><! --/row -->
 	 </div><! --/container -->
 
+   <?php require_once('_footer.php'); ?>
 
-<?php require_once('_footer.php'); ?>
+   <!-- Bootstrap core JavaScript
+   ================================================== -->
+   <!-- Placed at the end of the document so the pages load faster -->
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+   <script src="assets/js/bootstrap.min.js"></script>
+   <script src="assets/js/retina-1.1.0.js"></script>
+   <script src="assets/js/jquery.hoverdir.js"></script>
+   <script src="assets/js/jquery.hoverex.min.js"></script>
+   <script src="assets/js/jquery.prettyPhoto.js"></script>
+   <script src="assets/js/jquery.isotope.min.js"></script>
+   <script src="assets/js/custom.js"></script>
 
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <script src="assets/js/bootstrap.min.js"></script>
-	<script src="assets/js/retina-1.1.0.js"></script>
-	<script src="assets/js/jquery.hoverdir.js"></script>
-	<script src="assets/js/jquery.hoverex.min.js"></script>
-	<script src="assets/js/jquery.prettyPhoto.js"></script>
-  	<script src="assets/js/jquery.isotope.min.js"></script>
-  	<script src="assets/js/custom.js"></script>
-
-
-  </body>
+ </body>
 </html>
