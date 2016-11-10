@@ -68,7 +68,7 @@ if (isset($_SESSION['uid'])) {
 				<div class="col-lg-8 col-lg-offset-2 himg">
 					<form method="POST">
 						<input type="text" name="uid" />
-						<button>Login</button>
+						<button class="btn btn-info">Login</button>
 					</form>
 				</div>
 			</div><!-- /row -->

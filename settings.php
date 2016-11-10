@@ -46,17 +46,26 @@ require_once('_includes.php');
 	<div class="container mtb">
 		<div class="row">
 			<div class="col-lg-8">
-				
-				<form method="POST">
-					DB_HOST: <input type="text" name="DB_HOST" value="<?php echo DB_HOST;?>" /><br />
-					<button class="btn btn-success">Save</button>
-				</form>
-
+        <table class="table">
+				<?php
+        $configvars = Array('DB_HOST','DB_PORT','DB_USER','DB_PASSWORD', 'DB_NAME');
+        foreach ($configvars AS $configvar) {
+          ?>
+          <tr>
+            <th><?php echo $configvar;?>:</th>
+            <td><input type="text" name="<?php echo $configvar;?>"
+              value="<?php eval('$var = '.$configvar.';'); echo $var;?>" size="100"/></td>
+            <td><button class="btn btn-success">Save</button></td>
+          </tr>
+          <?php
+        }
+        ?>
+        </table>
 			</div>
 
 			<! -- SIDEBAR -->
 			<div class="col-lg-4">
-
+        <h4>Sidebar</h4>
 			</div>
 		</div><! --/row -->
 	</div><! --/container -->
@@ -69,13 +78,12 @@ require_once('_includes.php');
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script src="assets/js/bootstrap.min.js"></script>
-	<script src="assets/js/retina-1.1.0.js"></script>
-	<script src="assets/js/jquery.hoverdir.js"></script>
-	<script src="assets/js/jquery.hoverex.min.js"></script>
-	<script src="assets/js/jquery.prettyPhoto.js"></script>
-  	<script src="assets/js/jquery.isotope.min.js"></script>
-  	<script src="assets/js/custom.js"></script>
-
+	  <script src="assets/js/retina-1.1.0.js"></script>
+    <script src="assets/js/jquery.hoverdir.js"></script>
+    <script src="assets/js/jquery.hoverex.min.js"></script>
+    <script src="assets/js/jquery.prettyPhoto.js"></script>
+    <script src="assets/js/jquery.isotope.min.js"></script>
+    <script src="assets/js/custom.js"></script>
 
   </body>
 </html>

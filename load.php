@@ -8,6 +8,10 @@ define('INPUT_DIR',"/Users/gaborkorodi/Desktop");
 define("TBL_RAW_LINKS","links");
 require_once('/opt/config/vars');
 
+echo DB_HOST.PHP_EOL;
+echo DB_PORT.PHP_EOL;
+echo '--------------'.PHP_EOL;
+
 class DBQueryService {
 	var $conn;
 	var $stmtUpate;

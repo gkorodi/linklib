@@ -28,7 +28,7 @@
                 <li><a href="single-post.html">SINGLE POST</a></li>
                 <li><a href="portfolio.php">PORTFOLIO</a></li>
                 <li><a href="article.php">ARTICLE</a></li>
-                <li><a href="account.php">Account</a></li>
+                <li><a href="showhosts.php">SHOWHOSTS</a></li>
                 <li><a href="settings.php">SETTINGS</a></li>
                 <li><a href="logout.php">LOGOUT</a></li>
               </ul>
