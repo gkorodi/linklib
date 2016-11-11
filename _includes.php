@@ -32,8 +32,8 @@ function query($sql) {
 	// and some other from: http://www.pontikis.net/blog/how-to-write-code-for-any-database-with-php-adodb
 	$errors = Array();
 	$response['sql'] = $sql;
-
-	$conn = new mysqli(DB_HOST.(DB_PORT!=null?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
+	
+	$conn = new mysqli(DB_HOST.':'.DB_PORT, DB_USER, DB_PASSWORD, DB_NAME);
 	if ($mysqli->connect_errno) {
 		array_push($errors, "Connect failed: %s\n", $mysqli->connect_error);
 	} else {

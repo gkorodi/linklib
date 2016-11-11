@@ -14,7 +14,7 @@ $link = $all_links['rows'][rand(1, count($all_links['rows']))];
     <meta name="author" content="">
     <link rel="shortcut icon" href="assets/ico/favicon.ico">
 
-    <title><?=APP_TITLE?></title>
+    <title><?php echo APP_TITLE;?></title>
 
     <!-- Bootstrap core CSS -->
     <link href="assets/css/bootstrap.css" rel="stylesheet">
@@ -32,7 +32,6 @@ $link = $all_links['rows'][rand(1, count($all_links['rows']))];
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-    
     <script src="assets/js/modernizr.min.js"></script>
   </head>
 
@@ -46,70 +45,66 @@ $link = $all_links['rows'][rand(1, count($all_links['rows']))];
 	<div id="blue">
 	    <div class="container">
 			<div class="row">
-				<h3><b><?=$link[2]?></b>.</h3>
+				<h3><b><?php echo $link[2];?></b>.</h3>
 			</div><!-- /row -->
 	    </div> <!-- /container -->
 	</div><!-- /blue -->
 
-	 
-	<!-- *****************************************************************************************************************
-	 BLOG CONTENT
-	 ***************************************************************************************************************** -->
 
 	 <div class="container mtb">
 	 	<div class="row">
-	 	
+
 	 		<! -- SINGLE POST -->
 	 		<div class="col-md-8">
 				<form role="form" id="frmEdit" method="POST">
-					
+
 					<div class="row">
 					            <div class="form-group col-lg-2">
 					                <label for="code">ID</label>
-							<input type="hidden" name="id" id="fldID" value="<?=$link[0]?>" />
-					                <?=$link[0]?>
+							<input type="hidden" name="id" id="fldID" value="<?php echo $link[0];?>" />
+					                <?php echo $link[0];?>
 					            </div>
 					        </div>
 
 					        <div class="row">
 					            <div class="form-group col-lg-12">
 					                <label for="code">Link</label>
-					                <input type="text" class="form-control input-normal" name="fldLink" value="<?=$link[1]?>" />
+					                <input type="text" class="form-control input-normal" name="fldLink" value="<?php echo $link[1];?>" />
 					            </div>
 					        </div>
-					
+
 					        <div class="row">
 					            <div class="form-group col-lg-12">
 					                <label for="code">Title</label>
-					                <input type="text" class="form-control input-normal" name="fldTitle" value="<?=$link[2]?>" />
+					                <input type="text" class="form-control input-normal" name="fldTitle" value="<?php echo link[2];?>" />
 					            </div>
 					        </div>
-					
+
 					        <div class="row">
 					            <div class="form-group col-lg-2">
 					                <label for="code">Status</label>
-					                <input type="text" class="form-control input-normal" name="fldStatus" value="<?=$link[3]?>" />
+					                <input type="text" class="form-control input-normal" name="fldStatus" value="<?php echo $link[3]?;>" />
 					            </div>
 					        </div>
-					
+
 					        <div class="row">
 					            <div class="form-group col-lg-4">
 					                <label for="code">Update Date</label>
-					                <input type="text" class="form-control input-normal" name="fldUpdateDate" value="<?=$link[4]?>" />
+					                <input type="text" class="form-control input-normal" name="fldUpdateDate" value="<?php echo $link[4];?>" />
 					            </div>
 					        </div>
-					
+
 					        <div class="row">
 					            <div class="form-group col-lg-12">
 					                <label for="code">Tabs</label>
-					                <input type="text" class="form-control input-normal" name="fldTabs" value="<?=$link[5]?>" />
+					                <input type="text" class="form-control input-normal" name="fldTabs" value="<?php echo $link[5];?>" />
 					            </div>
 					        </div>
-					
+
 					<button class="btn" id="btnUpdate">Update</button>
 					<button class="btn" id="btnDelete">Delete</button>
-					
-					
+
+
 					</form>
 			</div>
 
@@ -118,37 +113,35 @@ $link = $all_links['rows'][rand(1, count($all_links['rows']))];
 				<h4>Extras</h4>
 				<div class="hline"></div>
 				<br />
-				<a class="btn btn-success" href="<?=$link[1]?>" target="_newWindow">PopOut</a><br />
+				<a class="btn btn-success" href="<?php echo $link[1];?>" target="_newWindow">PopOut</a><br />
 				<br />
-				<a class="btn btn-success" href="https://duckduckgo.com/?q=<?=urlencode($link[2])?>&ia=web" target="_srchWindow"> duckduckgo </a><br />
+				<a class="btn btn-success" href="https://duckduckgo.com/?q=<?php echo urlencode($link[2]);?>&ia=web" target="_srchWindow"> duckduckgo </a><br />
 				<br />
 				<a class="btn btn-success pull-right" href="random-single.php">Next</a>
-		 			
+
 		 		<div class="spacing"></div>
 		 		<h4>Statuses</h4>
 		 		<div class="hline"></div>
 		 		<?php
 				$resp = query("SELECT * FROM raw_extras WHERE linkid = ".$link[0]);
 				if ($resp['rows'][0][3] === 'header') {
-					
 					$obj = json_decode($resp['rows'][0][2]);
-					
+
 					echo 'Download speed <b>'.$obj->speed_download.'</b> '.
 						'for <b>'.$obj->download_content_length.'</b> bytes'.
 						'<br />';
-					
-					
+
+
 					if ($obj->redirect_count>0) {
 						echo 'redirected '.$obj->redirect_count.' time'.($obj->redirect_count!=1?'s':'').
 							'<br />';
 						echo ' in '.$obj->redirect_time.' seconds to <br />';
 						echo '<a href="'.$obj->redirect_url.'" target="_newWindow">here</a>';
 					}
-					
 					if ($obj->ssl_verify_results) {
 						echo 'SSL failed.<br />';
 					}
-					
+
 				} else if ($resp['rows'][0][3] === '') {
 					echo 'No header information';
 				} else {
@@ -161,7 +154,7 @@ $link = $all_links['rows'][rand(1, count($all_links['rows']))];
 	 </div><! --/container -->
 
 
-<?php require_once('_footer.php'); ?>	 
+<?php require_once('_footer.php'); ?>
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
@@ -173,22 +166,20 @@ $link = $all_links['rows'][rand(1, count($all_links['rows']))];
 	<script src="assets/js/jquery.prettyPhoto.js"></script>
   	<script src="assets/js/jquery.isotope.min.js"></script>
 	<script src="assets/js/custom.js"></script>
-    
     <script src="assets/js/bootbox.min.js"></script>
 
 	<script>
 	$(document).ready(function(e) {
 
-	
 	});
-	
+
 	$('#frmEdit').on('submit', function(){
 		console.log("Submitting edit form.");
 		return true;
 	});
 
 	$('#btnDelete').on('click', function(e) {
-		$.get('_functions.php?method=deletelink&id=<?=$link[0]?>', function(e,o) {
+		$.get('_functions.php?method=deletelink&id=<?php echo $link[0];?>', function(e,o) {
 			console.log("returned");
 			console.log(e);
 			console.log(o);
@@ -207,7 +198,6 @@ $link = $all_links['rows'][rand(1, count($all_links['rows']))];
 
 			return false;
 		}).always(function() {
-			
 		});
 	});
 
@@ -230,7 +220,6 @@ $link = $all_links['rows'][rand(1, count($all_links['rows']))];
 			console.log(o);
 			return false;
 		}).always(function() {
-			
 		});
 	});
 

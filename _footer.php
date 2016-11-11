@@ -7,12 +7,12 @@
 		 			<p>I am digital janitor and overall problem solver. I have international experience, financial industry and cloud development projects to prove my talents. Look me up ;)</p>
 		 		</div>
 		 		<div class="col-lg-4">
-		 			<?=APP_SOCIAL_LINKS?>
+		 			<?php echo APP_SOCIAL_LINKS;?>
 		 		</div>
 		 		<div class="col-lg-4">
-		 			<?=APP_ADDRESS?>
+		 			<?php echo APP_ADDRESS;?>
 		 		</div>
-		 	
+
 		 	</div><! --/row -->
 	 	</div><! --/container -->
 	 </div><! --/footerwrap -->

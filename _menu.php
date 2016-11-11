@@ -12,11 +12,10 @@
         </div>
         <div class="navbar-collapse collapse navbar-right">
           <ul class="nav navbar-nav">
-
             <li class="active"><a href="index.php">HOME</a></li>
             <li><a href="stats.php">STATS</a></li>
             <li><a href="load.php">LOAD</a></li>
-	    <li><a href="about.php">ABOUT</a></li>
+            <li><a href="about.php">ABOUT</a></li>
             <li><a href="contact.php">CONTACT</a></li>
             <?php
             if (isset($_SESSION['uid'])) {
@@ -28,7 +27,7 @@
                 <li><a href="single-post.html">SINGLE POST</a></li>
                 <li><a href="portfolio.php">PORTFOLIO</a></li>
                 <li><a href="article.php">ARTICLE</a></li>
-                <li><a href="account.php">Account</a></li>
+                <li><a href="hostlist.php">HOSTLIST</a></li>
                 <li><a href="settings.php">SETTINGS</a></li>
                 <li><a href="logout.php">LOGOUT</a></li>
               </ul>

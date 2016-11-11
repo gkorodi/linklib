@@ -23,7 +23,7 @@
 					<td><a href="<?php echo $row[1];?>" target="_newWin"><?php echo $row[2];?></a></td>
 					<td><?php echo $row[4];?></td>
 					<td><button onclick="window.location='delentry.php?id=<?php echo $row[0];?>';" class="button">Delete</button> </td>
-					<td><a href="edit.php?id=<?=$row[0]?>"
+					<td><a href="edit.php?id=<?php echo $row[0];?>"
 						target="_editWin">...</a></td>
 				</tr>
 				<?php

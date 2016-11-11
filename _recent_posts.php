@@ -5,10 +5,9 @@
 	$posts = query('SELECT * FROM links ORDER BY last_updated DESC LIMIT 5');
 	foreach ($posts['rows'] AS $post) {
 		?><li>
-		    <a href="<?=$post[1]?>"><?=$post[2]?></a>	
-		    <em>Posted on <?=$post[4]?></em>
+		    <a href="<?php echo $post[1];?>"><?php echo $post[2];?></a>
+		    <em>Posted on <?php echo $post[4];?></em>
 		</li><?php
 	}
 ?>
 </ul>
-

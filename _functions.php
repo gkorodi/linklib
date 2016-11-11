@@ -15,6 +15,80 @@ if (isset($_REQUEST['method'])) {
 			$resp['message'] = 'Could not delete link, with id <b>'.$_REQUEST['id'].'</b><br />'.
 				'<small>'.$link->getErrorListFormatted().'</small>';
 		}
+	} else if ($_REQUEST['method']==='getRandomList') {
+		//$sql = 'SELECT count(*) AS rowcount FROM links WHERE status != 200';
+		//$query_response = query($sql);
+		$resp['status'] = 'ok';
+		$extra_criteria = (isset($_REQUEST['status'])?'AND status='.$_REQUEST['status']:'');
+		if (isset($_REQUEST['notags'])) {
+			$extra_criteria .= ' AND tags IS NULL ';
+		}
+		$sql='SELECT * FROM links WHERE '.
+			'status != 200 '.
+			$extra_criteria.
+			' LIMIT 100';
+		
+		echo $dbhost;
+		
+		$resp['linklist'] = query($sql);
+		
+	} else if ($_REQUEST['method']==='getRecentPosts') {
+		$r = query("SELECT * FROM links ORDER BY last_updated LIMIT 10");
+		$resp['status'] = 'ok';
+		$resp['message'] = 'recent posts are not available.';
+		$resp['debugs'] = '';
+
+	} else if ($_REQUEST['method']==='getTags') {
+		$resp['status'] = 'ok';
+		$resp['tag_list'] = Array('Design','Wordpress','Flat','Modern');
+
+	} else if ($_REQUEST['method']==='getStatusList') {
+		$resp['status'] = 'ok';
+		$query_response = query('SELECT status, count(*) FROM links WHERE status != 200 GROUP BY status ORDER BY count(*) DESC');
+		$resp['status_list'] = $query_response['rows'];
+
+	} else if ($_REQUEST['method']==='getStats') {
+		$resp['status'] = 'ok';
+
+		$categories['empty'] = 0;
+		$categories['NULL'] = 0;
+		$r = query("SELECT tags FROM links GROUP BY tags");
+		foreach ($r['rows'] AS $row) {
+			if ($row[0]===null) { $categories['NULL']++; continue;}
+			if ($row[0]==='') { $categories['empty']++; continue;}
+			$cats = explode(',', $row[0]);
+			foreach($cats AS $category) {
+				$c = trim($category);
+				if (isset($categories[$c])) {
+					$categories[$c]++;
+				} else {
+					$categories[$c] = 1;
+				}
+			}
+		}
+		arsort($categories);
+		$resp['categories'] = $categories;
+
+		$r = query("SELECT tags, count(*) AS counter FROM links GROUP BY tags ORDER BY counter DESC LIMIT 20");
+		$resp['category_combinations'] = $r['rows'];
+
+
+	} else if ($_REQUEST['method']==='getHostList') {
+		$resp['status'] = 'ok';
+		$query_response = query('SELECT link FROM links WHERE status != 200');
+
+		$hostList = Array();
+		foreach($query_response['rows'] AS $row) {
+			$lst = split('/',  $row[0]);
+			if (isset($lst[2])) {
+				$hostList[$lst[2]]++;
+			} else {
+				$hostList[$lst[2]] = 1;
+			}
+		}
+		asort($hostList);
+		
+		$resp['hostlist'] = $hostList;
 	} else if ($_REQUEST['method']==='testlink') {
 		$link = new Link($_REQUEST['id']);
 		if ($link->test()) {

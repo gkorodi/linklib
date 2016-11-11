@@ -1,9 +1,9 @@
-<?php require_once('_includes.php'); ?><!DOCTYPE "html">
+<?php require_once('_includes.php');?><!DOCTYPE "html">
 <html>
 <head>
-	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-	<script   src="http://code.jquery.com/jquery-2.2.4.min.js"   integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="   crossorigin="anonymous"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+	<script src="http://code.jquery.com/jquery-2.2.4.min.js"  crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" crossorigin="anonymous"></script>
 </head>
 <body>
 	<div class="container">
@@ -19,7 +19,7 @@
 		$rec['nextid'] = '-1';
 		?>
 		<form id="frmFileUpdate" method="POST">
-			<input type="hidden" name="filename" value="<?=urlencode($files[0])?>" />
+			<input type="hidden" name="filename" value="<?php echo urlencode($files[0]);?>" />
 <table class="table">
 	<tbody>
 	<tr>
@@ -28,19 +28,19 @@
 	</tr>
 	<tr>
 		<th>link</th>
-		<td><input size="100%" type="text" value="<?=$rec['link']?>" name="link" /></td>
+		<td><input size="100%" type="text" value="<?php echo $rec['link'];?>" name="link" /></td>
 	</tr>
 	<tr>
 		<th>title</th>
-		<td><input size="100%" type="text" value="<?=$rec['title']?>" name="title" /></td>
+		<td><input size="100%" type="text" value="<?php echo $rec['title'];?>" name="title" /></td>
 	</tr>
 	<tr>
 		<th>status</th>
-		<td><input size="100%" type="text" value="<?=$rec['status']?>" name="status" /></td>
+		<td><input size="100%" type="text" value="<?php echo $rec['status'];?>" name="status" /></td>
 	</tr>
 	<tr>
 		<th>last_updated</th>
-		<td><input size="100%" type="text" value="<?=$rec['stats']?>" name="last_updated" /></td>
+		<td><input size="100%" type="text" value="<?php echo $rec['stats'];?>" name="last_updated" /></td>
 	</tr>
 	<tr>
 		<th>tags</th>

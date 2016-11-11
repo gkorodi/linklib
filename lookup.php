@@ -36,7 +36,6 @@ require_once('_includes.php');
 	if (isset($_REQUEST['notstatus'])) {
 		$criteria .= ' AND status != '.$_REQUEST['notstatus'];
 	}
-	
 	if (isset($_REQUEST['notabs'])) {
 		$criteria .= ' AND tabs IS NULL';
 	}
@@ -52,9 +51,9 @@ require_once('_includes.php');
 		}
 		$criteria .= " AND INSTR(`column`, '{$needle}') > 0"; "(".implode(',', $a).")";
 	}
-	
+
 	$queryString = "SELECT * FROM links WHERE UCASE(title) LIKE '%".strtoupper(urldecode($_REQUEST['q']))."%' ".$criteria." ORDER BY last_updated LIMIT 100";
-	?>Query: <pre><?=$queryString?></pre><?php
+	?>Query: <pre><?php echo $queryString;?></pre><?php
 	$entryList = query($queryString);
 } else {
 	// This is when we DO NOT have a criteria
@@ -70,13 +69,13 @@ require_once('_includes.php');
 echo "<table class='table'>";
 foreach($entryList['rows'] AS $row){
 	?>
-	<tr class="stat<?=($row[3]===''?'empty':($row[3]==null?'NULL':$row[3]))?>">
-		<td><a href="<?=$row[1]?>" target="_newWin"><?=$row[2]?></a><br />
-			<small><?=($row[5] != '' || $row[5] != null?$row[5]:'none')?></small></td>
-		<td><?=($row[4] != '' || $row[4] != null?$row[4]:'empty')?></td>
-		
-		<td><button onclick="window.location='delentry.php?id=<?=$row[0]?>';" class="button">Delete</button> </td>
-		<td><a href="edit.php?id=<?=$row[0]?>"
+	<tr class="stat<?php echo ($row[3]===''?'empty':($row[3]==null?'NULL':$row[3]))?>">
+		<td><a href="<?php echo $row[1]?>" target="_newWin"><?php echo $row[2]?></a><br />
+			<small><?php echo ($row[5] != '' || $row[5] != null?$row[5]:'none')?></small></td>
+		<td><?php echo ($row[4] != '' || $row[4] != null?$row[4]:'empty')?></td>
+
+		<td><button onclick="window.location='delentry.php?id=<?php echo $row[0]?>';" class="button">Delete</button> </td>
+		<td><a href="edit.php?id=<?php echo $row[0]?>"
 			target="_editWin">...</a></td>
 	</tr>
 	<?php
