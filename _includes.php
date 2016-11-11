@@ -17,14 +17,6 @@ define('APP_SOCIAL_LINKS','<h4>Social Links</h4><div class="hline-w"></div><p>'.
 
 require_once('/opt/config/vars');
 
-
-$dbhost = '127.0.0.1';
-
-if (DB_PORT!=null) {
-	$dbhost .= ":".DB_PORT;
-}
-
-
 function errorMessage($msg) {
 	echo '<div style="color: red">'.$msg.'</div>';
 }
@@ -40,8 +32,8 @@ function query($sql) {
 	// and some other from: http://www.pontikis.net/blog/how-to-write-code-for-any-database-with-php-adodb
 	$errors = Array();
 	$response['sql'] = $sql;
-
-	$conn = new mysqli($dbhost, DB_USER, DB_PASSWORD, DB_NAME);
+	
+	$conn = new mysqli(DB_HOST.':'.DB_PORT, DB_USER, DB_PASSWORD, DB_NAME);
 	if ($mysqli->connect_errno) {
 		array_push($errors, "Connect failed: %s\n", $mysqli->connect_error);
 	} else {

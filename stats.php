@@ -51,48 +51,16 @@ require_once('_includes.php');
       <div class="row">
         <! -- BLOG POSTS LIST -->
         <div class="col-lg-8">
-          <table class="table">
-            <?php
-            $categories['empty'] = 0;
-            $categories['NULL'] = 0;
-            $r = query("SELECT tags FROM links GROUP BY tags");
-            foreach ($r['rows'] AS $row) {
-              if ($row[0]===null) { $categories['NULL']++; continue;}
-              if ($row[0]==='') { $categories['empty']++; continue;}
-              $cats = explode(',', $row[0]);
-              foreach($cats AS $category) {
-                $c = trim($category);
-                if (isset($categories[$c])) {
-                  $categories[$c]++;
-                } else {
-                  $categories[$c] = 1;
-                }
-              }
-            }
-            arsort($categories);
-            $idx = 1;
-            foreach($categories AS $category => $counter) {
-              ?><tr><td><?php echo $category;?></td><td><?php echo $counter;?></td></tr><?php
-              if ($idx > 10) { break; }
-              $idx++;
-            }
-            ?>
+          <table id="stats_list" class="table">
+
           </table>
           <h4>Category Combinations</h4>
+          <table class="table">
+          </table>
+        </div>
 
-			<table class="table">
-				<?php
-				$r = query("SELECT tags, count(*) AS counter FROM links GROUP BY tags ORDER BY counter DESC LIMIT 20");
-				foreach ($r['rows'] AS $row) {
-					if ($row[0] === null || $row[0] === '') { continue; }
-					?><tr><td><?($row[0]===null?'NULL':($row[0]===''?'empty':$row[0]))?></td><td><?php echo $row[1];?></td></tr><?php
-				}
-				?>
-			</table>
-			</div>
-
-	 		<! -- SIDEBAR -->
-	 		<div class="col-lg-4">
+        <! -- SIDEBAR -->
+        <div class="col-lg-4">
 		 		<h4>Search</h4>
 		 		<div class="hline"></div>
 		 			<p>
@@ -105,37 +73,14 @@ require_once('_includes.php');
 
 		 		<h4>Statuses</h4>
 		 		<div class="hline"></div>
-				<?php
-				$query_response = query('SELECT status, count(*) FROM links WHERE status != 200 GROUP BY status ORDER BY count(*) DESC');
-				foreach($query_response['rows'] AS $row) {
-					?><p><a href="?status=<?php echo $row[0];?>"><i class="fa fa-angle-right"></i> <?php echo $row[0];?></a>
-						<span class="badge badge-theme pull-right"><?php echo $row[1];?></span></p><?php
-				}
-				?>
 
 		 		<div class="spacing"></div>
-
-				<?php require_once('_recent_posts.php');?>
-
+        <div id="recent_posts" ></div>
 		 		<div class="spacing"></div>
 
 		 		<h4>Popular Tags</h4>
 		 		<div class="hline"></div>
-		 			<p>
-		            	<a class="btn btn-theme" href="#" role="button">Design</a>
-		            	<a class="btn btn-theme" href="#" role="button">Wordpress</a>
-		            	<a class="btn btn-theme" href="#" role="button">Flat</a>
-		            	<a class="btn btn-theme" href="#" role="button">Modern</a>
-		            	<a class="btn btn-theme" href="#" role="button">Wallpaper</a>
-		            	<a class="btn btn-theme" href="#" role="button">HTML5</a>
-		            	<a class="btn btn-theme" href="#" role="button">Pre-processor</a>
-		            	<a class="btn btn-theme" href="#" role="button">Developer</a>
-		            	<a class="btn btn-theme" href="#" role="button">Windows</a>
-		            	<a class="btn btn-theme" href="#" role="button">Phothosop</a>
-		            	<a class="btn btn-theme" href="#" role="button">UX</a>
-		            	<a class="btn btn-theme" href="#" role="button">Interface</a>
-		            	<a class="btn btn-theme" href="#" role="button">UI</a>
-		            	<a class="btn btn-theme" href="#" role="button">Blog</a>
+		 			<p id="popular_tags">
 		 			</p>
 	 		</div>
 	 	</div><! --/row -->
@@ -156,6 +101,14 @@ require_once('_includes.php');
   	<script src="assets/js/jquery.isotope.min.js"></script>
   	<script src="assets/js/custom.js"></script>
 
-
+<script>
+$.getJSON('_functions.php?method=getTags', function(data) {
+  if (data.status == 'ok') {
+    $.each(data.tag_list, function(idx, item){
+      $('#popular_tags').append('<a class="btn btn-theme" href="#" role="button">'+item+'</a>');
+    });
+  }
+});
+</script>
   </body>
 </html>

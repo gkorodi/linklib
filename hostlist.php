@@ -33,60 +33,55 @@ require_once('_includes.php');
   </head>
 
   <body>
-	<?php require_once('_menu.php'); ?>
+    <!-- Fixed navbar -->
+    <?php require_once('_menu.php'); ?>
 
-	<div id="blue">
-	    <div class="container">
-			<div class="row">
-				<h3>Random 100.</h3>
-			</div><!-- /row -->
-	    </div> <!-- /container -->
-	</div><!-- /blue -->
+    <div id="blue">
+      <div class="container">
+        <div class="row">
+          <h3>SHOW HOSTS.</h3>
+        </div><!-- /row -->
+      </div> <!-- /container -->
+    </div><!-- /blue -->
 
+    <div class="container mtb">
+      <div class="row">
 
-	 <div class="container mtb">
-	 	<div class="row">
+        <div class="col-lg-8">
+		<h4>Host List</h4>
+		<div id="hostlist">
+		</div>
+        </div>
 
-	 		<! -- BLOG POSTS LIST -->
-	 		<div class="col-lg-8">
-				<table id="random_links_table" class="table">
-				
-				</table>
-			</div><! --/col-lg-8 -->
+        <! -- SIDEBAR -->
+        <div class="col-lg-4">
+		<h4>Search</h4>
+		<div class="hline"></div>
+		<p>
+		<br/><form action="search.php">
+		<input type="text" class="form-control" name="q" placeholder="Search something">
+		</form>
+		</p>
 
+		<div class="spacing"></div>
 
-	 		<! -- SIDEBAR -->
-	 		<div class="col-lg-4">
-		 		<h4>Search</h4>
-		 		<div class="hline"></div>
-		 			<p>
-		 				<br/><form action="search.php">
-		 				<input type="text" class="form-control" name="q" placeholder="Search something">
-					</form>
-		 			</p>
+		<h4>Statuses</h4>
+		<div class="hline"></div>
 
-		 		<div class="spacing"></div>
+		<div class="spacing"></div>
+		<div id="recent_posts" ></div>
+		<div class="spacing"></div>
 
-		 		<h4>Statuses</h4>
-		 		<div class="hline"></div>
-				<div id="status_list" >
-				</div>
-				
-		 		<div class="spacing"></div>
-
-				<div id="recent_posts">
-				</div>
-
-		 		<div class="spacing"></div>
-
-		 		<h4>Popular Tags</h4>
-		 		<div class="hline"></div>
-		 		<p id="popular_tags"></p>
-	 		</div>
-	 	</div><! --/row -->
+		<h4>Popular Tags</h4>
+		<div class="hline"></div>
+		<p id="popular_tags">
+		</p>
+		</div>
+		</div><! --/row -->
 	 </div><! --/container -->
-	 
-	 <?php require_once('_footer.php'); ?>
+
+
+	<?php require_once('_footer.php'); ?>
 
 	<!-- Bootstrap core JavaScript
 	================================================== -->
@@ -99,6 +94,5 @@ require_once('_includes.php');
 	<script src="assets/js/jquery.prettyPhoto.js"></script>
 	<script src="assets/js/jquery.isotope.min.js"></script>
 	<script src="assets/js/custom.js"></script>
-
   </body>
 </html>
