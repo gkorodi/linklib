@@ -36,7 +36,6 @@ require_once('_includes.php');
 	if (isset($_REQUEST['notstatus'])) {
 		$criteria .= ' AND status != '.$_REQUEST['notstatus'];
 	}
-
 	if (isset($_REQUEST['notabs'])) {
 		$criteria .= ' AND tabs IS NULL';
 	}

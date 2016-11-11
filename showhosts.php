@@ -10,7 +10,7 @@ require_once('_includes.php');
     <meta name="author" content="">
     <link rel="shortcut icon" href="assets/ico/favicon.ico">
 
-    <title><?php echo APP_TITLE;?></title>
+    <title><?=APP_TITLE?></title>
 
     <!-- Bootstrap core CSS -->
     <link href="assets/css/bootstrap.css" rel="stylesheet">
@@ -33,40 +33,66 @@ require_once('_includes.php');
   </head>
 
   <body>
-    <!-- Fixed navbar -->
-    <?php require_once('_menu.php'); ?>
 
-    <!-- *****************************************************************************************************************
-    BLUE WRAP
-    ***************************************************************************************************************** -->
-    <div id="blue">
-      <div class="container">
-        <div class="row">
-          <h3>STATS.</h3>
-        </div><!-- /row -->
-      </div> <!-- /container -->
-    </div><!-- /blue -->
+	  <?php require_once('_menu.php'); ?>
 
-    <div class="container mtb">
-      <div class="row">
-        <! -- BLOG POSTS LIST -->
-        <div class="col-lg-8">
-          <table id="stats_list" class="table">
+	<!-- *****************************************************************************************************************
+	 BLUE WRAP
+	 ***************************************************************************************************************** -->
+	<div id="blue">
+	    <div class="container">
+			<div class="row">
+				<h3>Search Results by host <b><?=$_REQUEST['host']?></b>.</h3>
+			</div><!-- /row -->
+	    </div> <!-- /container -->
+	</div><!-- /blue -->
 
-          </table>
-          <h4>Category Combinations</h4>
-          <table class="table">
-          </table>
-        </div>
 
-        <! -- SIDEBAR -->
-        <div class="col-lg-4">
+	<!-- *****************************************************************************************************************
+	 BLOG CONTENT
+	 ***************************************************************************************************************** -->
+
+	 <div class="container mtb">
+	 	<div class="row">
+
+	 		<! -- SINGLE POST -->
+	 		<div class="col-md-8">
+				<?php
+				$query_response = query('SELECT link FROM links WHERE status != 200');
+
+				$hostList = Array();
+				foreach($query_response['rows'] AS $row) {
+					$lst = split('/',  $row[0]);
+					if (isset($lst[2])) {
+						$hostList[$lst[2]]++;
+					} else {
+						$hostList[$lst[2]] = 1;
+					}
+				}
+				?>
+				<table class="table">
+				<?php
+				asort($hostList);
+				foreach($hostList AS $link => $count) {
+				?>
+				<tr>
+					<td><a href="searchbyhost.php?host=<?=$link?>"><?=$link?></a></td>
+					<td><?=$count?></td>
+				</tr>
+				<?php
+				}
+				?>
+				</table>
+			</div><! --/col-lg-8 -->
+
+
+	 		<! -- SIDEBAR -->
+	 		<div class="col-lg-4">
 		 		<h4>Search</h4>
 		 		<div class="hline"></div>
 		 			<p>
-		 				<br/><form action="search.php">
-		 				<input type="text" class="form-control" name="q" placeholder="Search something">
-					</form>
+		 				<br/>
+		 				<input type="text" class="form-control" placeholder="Search something">
 		 			</p>
 
 		 		<div class="spacing"></div>
@@ -75,19 +101,14 @@ require_once('_includes.php');
 		 		<div class="hline"></div>
 
 		 		<div class="spacing"></div>
-        <div id="recent_posts" ></div>
-		 		<div class="spacing"></div>
+				<?php require_once('_recent_posts.php');?>
 
-		 		<h4>Popular Tags</h4>
-		 		<div class="hline"></div>
-		 			<p id="popular_tags">
-		 			</p>
 	 		</div>
 	 	</div><! --/row -->
 	 </div><! --/container -->
 
 
-	<?php require_once('_footer.php'); ?>
+<?php require_once('_footer.php'); ?>
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
@@ -101,14 +122,6 @@ require_once('_includes.php');
   	<script src="assets/js/jquery.isotope.min.js"></script>
   	<script src="assets/js/custom.js"></script>
 
-<script>
-$.getJSON('_functions.php?method=getTags', function(data) {
-  if (data.status == 'ok') {
-    $.each(data.tag_list, function(idx, item){
-      $('#popular_tags').append('<a class="btn btn-theme" href="#" role="button">'+item+'</a>');
-    });
-  }
-});
-</script>
 
+  </body>
 </html>

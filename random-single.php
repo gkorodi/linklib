@@ -32,7 +32,6 @@ $link = $all_links['rows'][rand(1, count($all_links['rows']))];
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-
     <script src="assets/js/modernizr.min.js"></script>
   </head>
 
@@ -51,10 +50,6 @@ $link = $all_links['rows'][rand(1, count($all_links['rows']))];
 	    </div> <!-- /container -->
 	</div><!-- /blue -->
 
-
-	<!-- *****************************************************************************************************************
-	 BLOG CONTENT
-	 ***************************************************************************************************************** -->
 
 	 <div class="container mtb">
 	 	<div class="row">
@@ -130,7 +125,6 @@ $link = $all_links['rows'][rand(1, count($all_links['rows']))];
 		 		<?php
 				$resp = query("SELECT * FROM raw_extras WHERE linkid = ".$link[0]);
 				if ($resp['rows'][0][3] === 'header') {
-
 					$obj = json_decode($resp['rows'][0][2]);
 
 					echo 'Download speed <b>'.$obj->speed_download.'</b> '.
@@ -144,7 +138,6 @@ $link = $all_links['rows'][rand(1, count($all_links['rows']))];
 						echo ' in '.$obj->redirect_time.' seconds to <br />';
 						echo '<a href="'.$obj->redirect_url.'" target="_newWindow">here</a>';
 					}
-
 					if ($obj->ssl_verify_results) {
 						echo 'SSL failed.<br />';
 					}
@@ -173,12 +166,10 @@ $link = $all_links['rows'][rand(1, count($all_links['rows']))];
 	<script src="assets/js/jquery.prettyPhoto.js"></script>
   	<script src="assets/js/jquery.isotope.min.js"></script>
 	<script src="assets/js/custom.js"></script>
-
     <script src="assets/js/bootbox.min.js"></script>
 
 	<script>
 	$(document).ready(function(e) {
-
 
 	});
 
@@ -207,7 +198,6 @@ $link = $all_links['rows'][rand(1, count($all_links['rows']))];
 
 			return false;
 		}).always(function() {
-
 		});
 	});
 
@@ -230,7 +220,6 @@ $link = $all_links['rows'][rand(1, count($all_links['rows']))];
 			console.log(o);
 			return false;
 		}).always(function() {
-
 		});
 	});
 

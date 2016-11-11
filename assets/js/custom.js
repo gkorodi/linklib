@@ -1,8 +1,6 @@
 (function($) {
-
-// prettyPhoto
 	jQuery(document).ready(function(){
-		
+
 		// Load recent posts
 		jQuery('#recent_posts').each(function() {
 			$(this).html('Recent Posts');

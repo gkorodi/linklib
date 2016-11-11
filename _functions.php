@@ -3,7 +3,6 @@ session_start();
 require_once('_includes.php');
 
 if (isset($_REQUEST['method'])) {
-
 	if ($_REQUEST['method']==='deletelink') {
 		$link = new Link($_REQUEST['id']);
 
@@ -16,7 +15,6 @@ if (isset($_REQUEST['method'])) {
 			$resp['message'] = 'Could not delete link, with id <b>'.$_REQUEST['id'].'</b><br />'.
 				'<small>'.$link->getErrorListFormatted().'</small>';
 		}
-		
 	} else if ($_REQUEST['method']==='getRandomList') {
 		//$sql = 'SELECT count(*) AS rowcount FROM links WHERE status != 200';
 		//$query_response = query($sql);
@@ -91,7 +89,6 @@ if (isset($_REQUEST['method'])) {
 		asort($hostList);
 		
 		$resp['hostlist'] = $hostList;
-
 	} else if ($_REQUEST['method']==='testlink') {
 		$link = new Link($_REQUEST['id']);
 		if ($link->test()) {
