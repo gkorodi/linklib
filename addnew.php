@@ -11,7 +11,7 @@ require_once('_includes.php');
     <meta name="author" content="">
     <link rel="shortcut icon" href="assets/ico/favicon.ico">
 
-    <title><?=APP_TITLE?></title>
+    <title><?php echo APP_TITLE;?></title>
 
     <!-- Bootstrap core CSS -->
     <link href="assets/css/bootstrap.css" rel="stylesheet">
@@ -62,35 +62,35 @@ require_once('_includes.php');
 					        <div class="row">
 					            <div class="form-group col-lg-12">
 					                <label for="code">Link</label>
-					                <input type="text" class="form-control input-normal" name="fldLink" value="<?=$link[1]?>" />
+					                <input type="text" class="form-control input-normal" name="fldLink" value="<?php echo $link[1];?>" />
 					            </div>
 					        </div>
 					
 					        <div class="row">
 					            <div class="form-group col-lg-12">
 					                <label for="code">Title</label>
-					                <input type="text" class="form-control input-normal" name="fldTitle" value="<?=$link[2]?>" />
+					                <input type="text" class="form-control input-normal" name="fldTitle" value="<?php echo $link[2];?>" />
 					            </div>
 					        </div>
 					
 					        <div class="row">
 					            <div class="form-group col-lg-2">
 					                <label for="code">Status</label>
-					                <input type="text" class="form-control input-normal" name="fldStatus" value="<?=$link[3]?>" />
+					                <input type="text" class="form-control input-normal" name="fldStatus" value="<?php echo $link[3];?>" />
 					            </div>
 					        </div>
 					
 					        <div class="row">
 					            <div class="form-group col-lg-4">
 					                <label for="code">Update Date</label>
-					                <input type="text" class="form-control input-normal" name="fldUpdateDate" value="<?=$link[4]?>" />
+					                <input type="text" class="form-control input-normal" name="fldUpdateDate" value="<?php echo $link[4];?>" />
 					            </div>
 					        </div>
 					
 					        <div class="row">
 					            <div class="form-group col-lg-12">
 					                <label for="code">Tabs</label>
-					                <input type="text" class="form-control input-normal" name="fldTabs" value="<?=$link[5]?>" />
+					                <input type="text" class="form-control input-normal" name="fldTabs" value="<?php echo $link[5];?>" />
 					            </div>
 					        </div>
 					

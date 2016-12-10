@@ -26,9 +26,12 @@
                 <li><a href="random.php">RANDOM100</a></li>
                 <li><a href="single-post.html">SINGLE POST</a></li>
                 <li><a href="portfolio.php">PORTFOLIO</a></li>
-                <li><a href="article.php">ARTICLE</a></li>
-                <li><a href="hostlist.php">HOSTLIST</a></li>
-                <li><a href="settings.php">SETTINGS</a></li>
+		
+                <li><a href="linkedit.php">RANDOMLINK</a></li>
+                <li><a href="list_hosts.php">LIST HOSTS</a></li>
+                <li><a href="list_tags.php">LIST TAGS</a></li>
+                <li>---</li>
+		<li><a href="settings.php">SETTINGS</a></li>
                 <li><a href="logout.php">LOGOUT</a></li>
               </ul>
               <?php

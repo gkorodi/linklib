@@ -1,14 +1,15 @@
 #!/bin/sh +x
 
 log() {
-	/usr/local/opt/php55/bin/php -r "echo date('c');"
+	php -r "echo date('c');"
 	echo " "$1
 }
 log "Starting"
 
-/usr/local/mysql/bin/mysqldump links > /tmp/links_dbdump.sql
-/usr/local/bin/aws s3 cp /tmp/links_dbdump.sql s3://www.gaborkorodi.com/
+mysqldump links > /tmp/links_dbdump.sql
+aws s3 cp /tmp/links_dbdump.sql s3://www.gaborkorodi.com/
 RC=$?
+
 if [ ${RC} -eq 0 ] ;
 then
   log "Archived dbdump to S3 bucket."

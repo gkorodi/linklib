@@ -21,11 +21,7 @@ if (isset($_SESSION['uid'])) {
 ?><!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
+	  <?php require_once('_metatags.php');?>
     <link rel="shortcut icon" href="assets/ico/favicon.ico">
 
     <title><?php echo APP_TITLE;?></title>
@@ -361,18 +357,12 @@ if (isset($_SESSION['uid'])) {
 	 	</div><! --/container -->
 	 </div><! --/footerwrap -->
 
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <script src="assets/js/bootstrap.min.js"></script>
-	<script src="assets/js/retina-1.1.0.js"></script>
-	<script src="assets/js/jquery.hoverdir.js"></script>
-	<script src="assets/js/jquery.hoverex.min.js"></script>
-	<script src="assets/js/jquery.prettyPhoto.js"></script>
-  	<script src="assets/js/jquery.isotope.min.js"></script>
-  	<script src="assets/js/custom.js"></script>
 
+	<!-- Bootstrap core JavaScript
+	================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<?php require_once('_scripts.php'); ?>
+	
 
     <script>
 // Portfolio

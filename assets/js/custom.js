@@ -1,4 +1,31 @@
+function getParam(name, url) {
+    if (!url) {
+      url = window.location.href;
+    }
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+
+function delete_link(linkid) {
+	$('#linkdetails-'+linkid).hide();
+}
+
+function edit_link(linkid) {
+	window.location='edit.php?id='+linkid;
+}
+
 (function($) {
+	
+	$('#btnDeleteLink').on('click', function() {
+		console.log($(this));
+		console.log($(this).parent());
+	})
+	
+	
 	jQuery(document).ready(function(){
 
 		// Load recent posts
@@ -6,20 +33,16 @@
 			$(this).html('Recent Posts');
 		});
 		
-		jQuery('#random_list_table').each(function() {
-			$(this).append('<tr><td>Cell</td></tr>');
-		});
-
-		jQuery('#hostlist').each(function() {
-			$.get('_functions.php?method=getHostList', function(data) {
+		jQuery('#searchresults').each(function() {
+			$.get('_functions.php?method=getSearchResults&q='+getParam('q'), function(data) {
 				var table = $('<table>').addClass('table');
-				$.each(data.hostlist, function(idx, item) {
+				$.each(data.searchresults.rows, function(idx, item) {
 					var row = $('<tr>');
-					row.append($('<td>').html('<a href="#">'+idx+'</a>'));
-					row.append($('<td>').text(item));
+					row.append($('<td>').html('<a href="'+item[1]+'" target="_newWindow">'+item[2]+'</a><br /><small>'+(item[5]!=null?item[5]:'no tag')+'</small>'));
+					row.append($('<td>').html('<a href="#" class="btn btn-info">Edit</button>'));
 					table.append(row);
 				});
-				$('#hostlist').append(table);
+				$('#searchresults').html(table);
 			});
 		});
 		

@@ -1,5 +1,6 @@
 <?php
 session_start();
+date_default_timezone_set('US/Eastern');
 
 if (basename($_SERVER['PHP_SELF'])  != 'login.php') {
 	if (!isset($_SESSION['uid'])) { header("Location: login.php"); }
@@ -33,7 +34,7 @@ function query($sql) {
 	$errors = Array();
 	$response['sql'] = $sql;
 	
-	$conn = new mysqli(DB_HOST.':'.DB_PORT, DB_USER, DB_PASSWORD, DB_NAME);
+	$conn = new mysqli(DB_HOST.(defined(DB_PORT)?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
 	if ($mysqli->connect_errno) {
 		array_push($errors, "Connect failed: %s\n", $mysqli->connect_error);
 	} else {
@@ -58,6 +59,148 @@ function query($sql) {
 	return $response;
 }
 
+class DBQueryService {
+	var $conn;
+	var $stmtUpate;
+	var $stmtInsert;
+	var $lastAffectedRow;
+	
+	var $debugs = Array();
+	
+	function logger($msg) {
+		array_push($this->debugs, date('c')." ".$msg);
+	}
+
+	function DBQueryService() {
+		$this->conn = new mysqli(DB_HOST.(defined(DB_PORT)?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
+		$this->logger("Connected to ".DB_NAME." database.");
+
+		if (!($this->stmtUpdate = $this->conn->prepare("UPDATE links SET link = ?, title = ?, status = ?, tags = ? WHERE id = ?"))) {
+		    $this->logger("Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error);
+		}
+
+		if (!($this->stmtInsert = $this->conn->prepare("INSERT links (link,title,status,tags,last_updated) VALUES (?,?,?,?,?)"))) {
+			$this->logger("Prepare INSERT failed: (". $mysqli->errno. ") " . $mysqli->error);
+		}
+
+		if (!($this->stmtAddExtraDetails = $this->conn->prepare("INSERT raw_extras (linkid, details, type) VALUES (?,?,?)"))) {
+			$this->logger("Prepare INSERT failed: (". $mysqli->errno. ") " . $mysqli->error);
+		}
+	}
+
+	function getAffectedRows() {
+		return $this->lastAffectedRow;
+	}
+
+	function getInsertId() {
+		return mysqli_stmt_insert_id ( $this->stmtInsert );
+	}
+
+	function addExtraDetails($row) {
+		if (!$this->stmtAddExtraDetails->bind_param("iss",
+			$row['linkid'],
+			$row['details'],
+			$row['type']
+			)
+		) {
+			$this->logger("Binding parameters ".print_r($row, true)." failed: (" . $this->stmtAddExtraDetails->errno . ") " . $this->stmtAddExtraDetails->error);
+		}
+
+		if (!$this->stmtAddExtraDetails->execute()) {
+		    $this->logger("Execute failed: (" . $this->stmtAddExtraDetails->errno . ") " . $this->stmtAddExtraDetails->error);
+		}
+	}
+
+	function addRow($row) {
+		//$v1="'" . $this->conn->real_escape_string('col1_value') . "'";
+		$status = false;
+		
+		$rowTitle = $this->conn->real_escape_string($row['title']);
+
+		if (!$this->stmtInsert->bind_param("ssiss",
+			$row['link'],
+			$rowTitle,
+			$row['status'],
+			$row['tags'],
+			$row['last_updated']
+			)
+		) {
+			$this->logger("Binding parameters ".json_encode($row)." failed: (" . $this->stmtInsert->errno . ") " . $this->stmtInsert->error);
+		}
+
+		if (!$this->stmtInsert->execute()) {
+		    $this->logger("Execute failed: (" . $this->stmtInsert->errno . ") " . $this->stmtInsert->error);
+		    
+		} else {
+			$this->lastAffectedRow = $this->stmtInsert->affected_rows;
+			$this->logger("Inserted '.$this->lastAffectedRow.' row successfully.");
+			$status = true;
+		}
+		return $status;
+	}
+
+	function insertRow($mapFielValuePairs) {
+		/* Prepared statement, stage 2: bind and execute */
+		if (!$this->stmtUpdate->bind_param("ssisi",
+			$mapFielValuePairs['link'],
+			$mapFielValuePairs['title'],
+			$mapFielValuePairs['status'],
+			$mapFielValuePairs['tags'],
+			$mapFielValuePairs['id'])) {
+		    $this->logger("Binding parameters failed: (" . $this->stmtUpdate->errno . ") " . $this->stmtUpdate->error);
+		}
+
+		if (!$this->stmtUpdate->execute()) {
+		    $this->logger("Execute failed: (" . $this->stmtUpdate->errno . ") " . $this->stmtUpdate->error);
+		}
+
+		/* Prepared statement: repeated execution, only data transferred from client to server */
+		/*for ($id = 2; $id < 5; $id++) {
+		    if (!$stmt->execute()) {
+		        echo date('c')." Execute failed: (" . $stmt->errno . ") " . $stmt->error;
+		    }
+		}*/
+
+		/* explicit close recommended */
+		$this->stmtUpdate->close();
+	}
+
+	function getRows($sql) {
+
+		$rs=$this->conn->query($sql);
+
+		if($rs === false) {
+		  trigger_error('Wrong SQL: ' . $sql . ' Error: ' . $conn->error, E_USER_ERROR);
+		} else {
+		  $rows_returned = $rs->num_rows;
+		}
+
+		$rows = Array();
+		/*
+		$rs->data_seek(0);
+		while($row = $rs->fetch_assoc()){
+		    echo $row['title'] . '<br>';
+		}*/
+
+
+		$rs->data_seek(0);
+		while($row = $rs->fetch_assoc()){
+			$rows[] = $row;
+
+			//foreach($row AS $k=>$v) {
+			//	$rows[$k] = $v;
+			//}
+		}
+		$rs->free();
+
+		return $rows;
+	}
+
+	function close() {
+		$this->conn->close();
+	}
+}
+
 class Link {
 	var $errors = Array();
 	var $debugs = Array();
@@ -71,33 +214,38 @@ class Link {
 
 	var $row = Array();
 
-	function __construct($id) {
-		array_push($this->debugs, "Initialize Link object with id ".$id);
-		$this->id = $id;
-		array_push($this->debugs, "Initialized Link object with new id: ".$this->id);
-
-		$mysqli = new mysqli(DB_HOST.(DB_PORT!=null?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
-		/* check connection */
-		if ($mysqli->connect_errno) {
-		    array_push($errors, "Connect failed: %s\n", $mysqli->connect_error);
-
+	function __construct($id = null) {
+		if ($id == null) {
+			array_push($this->debugs, "Create an empty object. No 'id' has been specified in constructor.");
 		} else {
-			$query = "SELECT * FROM links WHERE id = ${id}";
-			if ($result = $mysqli->query($query)) {
-			    /* fetch associative array */
-			    while ($row = $result->fetch_assoc()) {
-			        $this->link = $row['link'];
-				$this->title = $row['title'];
-				$this->status = $row['status'];
-				$this->tags = $row['tags'];
+			array_push($this->debugs, "Initialize Link object with id ".$id);
+			$this->id = $id;
+			array_push($this->debugs, "Initialized Link object with new id: ".$this->id);
 
-				$this->row = $row;
-			    }
-			    /* free result set */
-			    $result->free();
+			$mysqli = new mysqli(DB_HOST.(defined(DB_PORT)?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
+			/* check connection */
+			if ($mysqli->connect_errno) {
+			    array_push($errors, "Connect failed: %s\n", $mysqli->connect_error);
+
+			} else {
+				$query = "SELECT * FROM links WHERE id = ${id}";
+				if ($result = $mysqli->query($query)) {
+				    /* fetch associative array */
+				    while ($row = $result->fetch_assoc()) {
+				        $this->link = $row['link'];
+					$this->title = $row['title'];
+					$this->status = $row['status'];
+					$this->tags = $row['tags'];
+
+					$this->row = $row;
+				    }
+				    /* free result set */
+				    $result->free();
+				}
+				/* close connection */
+				$mysqli->close();
 			}
-			/* close connection */
-			$mysqli->close();
+			
 		}
 	}
 
@@ -105,7 +253,7 @@ class Link {
 		// Default to error, just in case.
 		$status = false;
 
-		$mysqli = new mysqli(DB_HOST.(DB_PORT!=null?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
+		$mysqli = new mysqli(DB_HOST.(defined(DB_PORT)?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
 		if ($mysqli->connect_errno) {
 		    array_push($this->errors, "Failed to connect to MySQL: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error);
 		} else {
@@ -124,7 +272,7 @@ class Link {
 
 	function refresh() {
 		$sql = 'SELECT * FROM links WHERE id = '.$this->id;
-		$conn = new mysqli(DB_HOST.(DB_PORT!=null?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
+		$conn = new mysqli(DB_HOST.(defined(DB_PORT)?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
 
 		$rs = $conn->query($sql);
 		if($rs === false) {
@@ -209,9 +357,9 @@ class Link {
 
 		// Default to error, just in case.
 		$status = false;
-		$mysqli = new mysqli(DB_HOST.(DB_PORT!=null?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
+		$mysqli = new mysqli(DB_HOST.(defined(DB_PORT)?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
 		if ($mysqli->connect_errno) {
-		    array_push($this->errors, "Failed to connect to MySQL: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error);
+		    array_push($this->debugs, "Failed to connect to MySQL: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error);
 		} else {
 			$mysqli->autocommit(true);
 
@@ -234,13 +382,45 @@ class Link {
 			}
 			$mysqli->close();
 		}
+		
+		$this->refresh();
+		
 		return $status;
+	}
+	
+	function save() {
+		array_push($this->debugs, "Saving data to database.");
+		
+		$status = false;
+		$dbservice = new DBQueryService();
+		
+		$raw_data['title'] = (isset($_REQUEST['title'])?$_REQUEST['title']:'');
+		$raw_data['link'] = $_REQUEST['link'];
+		$raw_data['status'] = '-1';
+		$raw_data['last_updated'] = date('Y-m-d H:i:s');
+		$raw_data['tags'] = (isset($_REQUEST['tags'])?$_REQUEST['tags']:'');
+
+		if ($dbservice->addRow($raw_data)) {
+			$linkid = $dbservice->getInsertId();
+			array_push($this->debugs, "New link, with id ".$linkid." has been inserted.");
+			$status = true;
+		} else {
+			array_push($this->debugs, "Could not save link.");
+		}
+		$dbservice->close();
+		
+		foreach($dbservice->debugs AS $dbgline) {
+			array_push($this->debugs, " dbService() ".$dbgline);
+		}
+		array_push($this->debugs, "Link.save() function returning:".$status);
+		return $status;
+		
 	}
 
 	function updateByMap($fieldmap) {
 		// Default to error, just in case.
 		$status = false;
-		$mysqli = new mysqli(DB_HOST.(DB_PORT!=null?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
+		$mysqli = new mysqli(DB_HOST.(defined(DB_PORT)?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
 		if ($mysqli->connect_errno) {
 		    array_push($this->errors, "Failed to connect to MySQL: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error);
 		} else {

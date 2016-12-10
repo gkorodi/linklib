@@ -1,13 +1,9 @@
 <?php
 require_once('_includes.php');
 
-echo "DB_HOST:".DB_HOST;
-echo "DB_PORT:".DB_PORT;
-
-$dbhost = DB_HOST.':'.DB_PORT.'';
 $sql = 'SELECT count(*) FROM links';
 
-$conn = new mysqli($dbhost, DB_USER, DB_PASSWORD, DB_NAME);
+$conn = new mysqli(DB_HOST.(defined('DB_PORT')?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
 if ($mysqli->connect_errno) {
   array_push($errors, "Connect failed: %s\n", $mysqli->connect_error);
 } else {

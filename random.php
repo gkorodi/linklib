@@ -3,11 +3,7 @@ require_once('_includes.php');
 ?><!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
+	  <?php require_once('_metatags.php');?>
     <link rel="shortcut icon" href="assets/ico/favicon.ico">
 
     <title><?php echo APP_TITLE;?></title>
@@ -17,7 +13,7 @@ require_once('_includes.php');
 
     <!-- Custom styles for this template -->
     <link href="assets/css/style.css" rel="stylesheet">
-    <link href="assets/css/font-awesome.min.css" rel="stylesheet">
+    
 
 
     <!-- Just for debugging purposes. Don't actually copy this line! -->
@@ -48,9 +44,29 @@ require_once('_includes.php');
 	 	<div class="row">
 
 	 		<! -- BLOG POSTS LIST -->
-	 		<div class="col-lg-8">
-				<table id="random_links_table" class="table">
+	 		<div id="randomlist" class="col-lg-8">
+				<h4>Random 100 List</h4>
+				<table class="table">
+				<?php
 				
+				$extra_criteria = (isset($_REQUEST['status'])?'AND status='.$_REQUEST['status']:'');
+				if (isset($_REQUEST['notags'])) {
+					$extra_criteria .= ' AND tags IS NULL ';
+				}
+				$sql='SELECT * FROM links WHERE '.'status != 200 '.$extra_criteria.' LIMIT 100';
+		
+				$resultset = query($sql);
+				foreach ($resultset['rows'] AS $row) {
+					?>
+					<tr>
+						<td><a href="<?php echo $row[1];?>"><?php echo $row[2];?></a><br />
+							<small><?php echo $row[5];?></small></td>
+						<td><button class="btn btn-danger">Del</button></td>
+						<td><a class="btn btn-info" href="linkedit.php?id=<?php echo $row[0];?>" target="_newLinkWin">Edit</a></td>
+					</tr>
+					<?php
+				}
+				?>
 				</table>
 			</div><! --/col-lg-8 -->
 
@@ -88,17 +104,12 @@ require_once('_includes.php');
 	 
 	 <?php require_once('_footer.php'); ?>
 
+
 	<!-- Bootstrap core JavaScript
 	================================================== -->
 	<!-- Placed at the end of the document so the pages load faster -->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-	<script src="assets/js/bootstrap.min.js"></script>
-	<script src="assets/js/retina-1.1.0.js"></script>
-	<script src="assets/js/jquery.hoverdir.js"></script>
-	<script src="assets/js/jquery.hoverex.min.js"></script>
-	<script src="assets/js/jquery.prettyPhoto.js"></script>
-	<script src="assets/js/jquery.isotope.min.js"></script>
-	<script src="assets/js/custom.js"></script>
+	<?php require_once('_scripts.php'); ?>
+	
 
   </body>
 </html>

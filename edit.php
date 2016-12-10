@@ -52,6 +52,9 @@ require_once('_includes.php');
 			errorMessage('Could not re-query the link for id '.$link->id);
 			errorMessage(implode('<br />', $link->debugs));
 		}
+		
+		$linklist = query("SELECT * FROM links WHERE status != 200 and tags IS NULL");
+		$nextlink = $linklist['rows'][rand ( 1 , count($linklist['rows'])-1 )];
 		?>
 		<form method="POST">
 			<input type="hidden" name="id" value="<?php echo $link->id;?>" />
@@ -63,7 +66,7 @@ require_once('_includes.php');
 				?>
 				<tr>
 					<th>link</th>
-					<td><input type="text"  id="fldlink" name="link" value="<?php echo $link->link;?>" size="100%"/></td>
+					<td><input type="text"  id="fldlink" name="link" value="<?php echo $link->link;?>" size="100%"/> <?php echo $linktopage; ?></td>
 				</tr>
 				<tr>
 					<th>title</th>
@@ -111,7 +114,7 @@ require_once('_includes.php');
 		<hr />
 
 		<a class="btn btn-danger text-center" onClick="deleteLink(<?php echo $link->id;?>);">Delete</a>
-		<a class="btn btn-info pull-right" href="edit.php?id=<?php echo $nextLinkId;?>">Next</a><br />
+		<a class="btn btn-info pull-right" href="edit.php?id=<?php echo $nextlink[0];?>">Next</a><br />
 	</div>
 
 
