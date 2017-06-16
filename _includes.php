@@ -1,11 +1,7 @@
 <?php
 session_start();
-date_default_timezone_set('US/Eastern');
 
-if (basename($_SERVER['PHP_SELF'])  != 'login.php') {
-	if (!isset($_SESSION['uid'])) { header("Location: login.php"); }
-} else {
-}
+date_default_timezone_set('US/Eastern');
 
 define('APP_ROOT','/linklib/');
 define('APP_TITLE','linkLIB');
@@ -15,8 +11,92 @@ define('APP_SOCIAL_LINKS','<h4>Social Links</h4><div class="hline-w"></div><p>'.
 	'<a href="https://www.flickr.com/photos/crampus" target="_newWindow"><i class="fa fa-flickr"></i></a>'.
 	'<a href="#"><i class="fa fa-twitter"></i></a>'.
 	'</p>');
+define('FEED_DIR','data');
 
 require_once('/opt/config/vars');
+
+if (basename($_SERVER['PHP_SELF'])  != 'login.php') {
+	if (!isset($_SESSION['uid'])) {
+		header("Location: login.php");
+	}
+}
+
+function getLinkStatus($url) {
+
+	$ch = curl_init($url);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+	$json = curl_exec($ch);
+	$info = curl_getinfo($ch);
+	curl_close($ch);
+
+	return $info['http_code'];
+}
+
+function showRowSkinny($row) {
+	?>
+	<tr id="row<?php echo $row[0];?>">
+		<td> </td>
+		<td>
+			<a href="<?php echo $row[1];?>" target="_newWindow"><?php echo urldecode($row[2]);?></a><br />
+			<small><?php echo justHostName($row[1]); ?></small>
+		</td>
+		<td>
+			<small><?php echo date('Y-m-d', strtotime($row[4]));?></small>
+		</td>
+		<td>
+			<?php
+			foreach(explode(',', $row[5]) AS $tag) { ?>
+				<span class="badge"><?php echo $tag;?></span>
+			<?php
+			}
+			?>
+			<button class="btn btn-sm" onClick="checkDetails(<?php echo $row[0];?>);">
+				<span class="glyphicon glyphicon-plus"> </span>
+			</button>
+		</td>
+		<td>
+			<button class="btn btn-sm btn-danger pull-right" onClick="deleteLink(<?php echo $row[0];?>);">
+				<span class="glyphicon glyphicon-remove"> </span>
+			</button>
+		</td>
+		<td>
+
+			<a class="btn btn-sm btn-info" href="linkedit.php?id=<?php echo $row[0];?>" target="_winEditLink">
+				<span class="glyphicon glyphicon-ok"> </span>
+			</a>
+		</td>
+
+	</tr>
+	<?php
+}
+function showRow($row) {
+	?>
+	<tr id="row<?php echo $row[0];?>">
+		<td> </td>
+		<td>
+			<a href="<?php echo $row[1];?>" target="_newWindow"><?php echo urldecode($row[2]);?></a><br />
+			<small><?php echo justHostName($row[1]);?></small>
+		</td>
+		<td>
+			<input type="text" id="tags<?php echo $row[0];?>" onChange="repairLink(<?php echo $row[0];?>, $(this).val());" value="<?php echo $row[5];?>" />
+	</td>
+	<td>
+		<?php echo date('Y-m-d', strtotime($row[4]));?>
+	</td>
+	<td>
+			<button class="btn btn-sm btn-danger pull-right" onClick="deleteLink(<?php echo $row[0];?>);">
+				<span class="glyphicon glyphicon-remove"> </span>
+			</button>
+</td><td>
+			<a class="btn btn-sm btn-info" href="linkedit.php?id=<?php echo $row[0];?>" target="_winEditLink">
+				<span class="glyphicon glyphicon-ok"> </span>
+			</a>
+		</td>
+
+	</tr>
+	<?php
+}
 
 function errorMessage($msg) {
 	echo '<div style="color: red">'.$msg.'</div>';
@@ -33,9 +113,9 @@ function query($sql) {
 	// and some other from: http://www.pontikis.net/blog/how-to-write-code-for-any-database-with-php-adodb
 	$errors = Array();
 	$response['sql'] = $sql;
-	
-	$conn = new mysqli(DB_HOST.(defined(DB_PORT)?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
-	if ($mysqli->connect_errno) {
+
+	$conn = new mysqli(DB_HOST.(array_key_exists('DB_PORT', get_defined_vars())?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
+	if ($conn->connect_errno) {
 		array_push($errors, "Connect failed: %s\n", $mysqli->connect_error);
 	} else {
 		$rs = $conn->query($sql);
@@ -64,9 +144,9 @@ class DBQueryService {
 	var $stmtUpate;
 	var $stmtInsert;
 	var $lastAffectedRow;
-	
+
 	var $debugs = Array();
-	
+
 	function logger($msg) {
 		array_push($this->debugs, date('c')." ".$msg);
 	}
@@ -114,7 +194,7 @@ class DBQueryService {
 	function addRow($row) {
 		//$v1="'" . $this->conn->real_escape_string('col1_value') . "'";
 		$status = false;
-		
+
 		$rowTitle = $this->conn->real_escape_string($row['title']);
 
 		if (!$this->stmtInsert->bind_param("ssiss",
@@ -130,10 +210,10 @@ class DBQueryService {
 
 		if (!$this->stmtInsert->execute()) {
 		    $this->logger("Execute failed: (" . $this->stmtInsert->errno . ") " . $this->stmtInsert->error);
-		    
+
 		} else {
 			$this->lastAffectedRow = $this->stmtInsert->affected_rows;
-			$this->logger("Inserted '.$this->lastAffectedRow.' row successfully.");
+			$this->logger("Inserted ".$this->lastAffectedRow." row successfully.");
 			$status = true;
 		}
 		return $status;
@@ -211,6 +291,7 @@ class Link {
 	var $status = '';
 	var $last_updated = '';
 	var $tags = '';
+	var $content = '';
 
 	var $row = Array();
 
@@ -222,7 +303,7 @@ class Link {
 			$this->id = $id;
 			array_push($this->debugs, "Initialized Link object with new id: ".$this->id);
 
-			$mysqli = new mysqli(DB_HOST.(defined(DB_PORT)?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
+			$mysqli = new mysqli(DB_HOST.(defined('DB_PORT')?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
 			/* check connection */
 			if ($mysqli->connect_errno) {
 			    array_push($errors, "Connect failed: %s\n", $mysqli->connect_error);
@@ -236,7 +317,6 @@ class Link {
 					$this->title = $row['title'];
 					$this->status = $row['status'];
 					$this->tags = $row['tags'];
-
 					$this->row = $row;
 				    }
 				    /* free result set */
@@ -245,7 +325,7 @@ class Link {
 				/* close connection */
 				$mysqli->close();
 			}
-			
+
 		}
 	}
 
@@ -253,7 +333,7 @@ class Link {
 		// Default to error, just in case.
 		$status = false;
 
-		$mysqli = new mysqli(DB_HOST.(defined(DB_PORT)?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
+		$mysqli = new mysqli(DB_HOST.(defined('DB_PORT')?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
 		if ($mysqli->connect_errno) {
 		    array_push($this->errors, "Failed to connect to MySQL: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error);
 		} else {
@@ -272,7 +352,7 @@ class Link {
 
 	function refresh() {
 		$sql = 'SELECT * FROM links WHERE id = '.$this->id;
-		$conn = new mysqli(DB_HOST.(defined(DB_PORT)?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
+		$conn = new mysqli(DB_HOST.(defined('DB_PORT')?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
 
 		$rs = $conn->query($sql);
 		if($rs === false) {
@@ -308,7 +388,7 @@ class Link {
 
 		$this->status = $info['http_code'];
 		if ($this->status == 200) {
-			if ($this->updateSimple()) {
+			if ($this->update()) {
 				array_push($this->debugs, "Updated the link with status of 200.");
 				return true;
 			} else {
@@ -321,14 +401,13 @@ class Link {
 		}
 	}
 
-
 	function getURLInfo() {
 		array_push($this->debugs, 'The current link is "'.$this->link.'"');
-
+		$this->content = '';
 		$ch = curl_init($this->link);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-		$json = curl_exec($ch);
+		$this->content = curl_exec($ch);
 		$info = curl_getinfo($ch);
 		curl_close($ch);
 		return $info;
@@ -357,17 +436,18 @@ class Link {
 
 		// Default to error, just in case.
 		$status = false;
-		$mysqli = new mysqli(DB_HOST.(defined(DB_PORT)?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
+		$mysqli = new mysqli(DB_HOST.(defined('DB_PORT')?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
 		if ($mysqli->connect_errno) {
 		    array_push($this->debugs, "Failed to connect to MySQL: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error);
 		} else {
 			$mysqli->autocommit(true);
 
-			$sqlString = 'UPDATE links SET last_updated = CURRENT_DATE ';
-			$sqlString .= ", link = '".$mysqli->real_escape_string($this->link)."'";
+			$sqlString = "UPDATE links SET link = '".$mysqli->real_escape_string($this->link)."'";
 			$sqlString .= ", title = '".$mysqli->real_escape_string($this->title)."'";
 			$sqlString .= ", tags = '".$mysqli->real_escape_string($this->tags)."'";
 			$sqlString .= ", status = ".$mysqli->real_escape_string($this->status);
+			$sqlString .= ", last_updated = '".$mysqli->real_escape_string($this->last_updated)."'";
+
 			$sqlString .= ' WHERE id = '.$this->id;
 
 			array_push($this->debugs, "SQL:".$sqlString);
@@ -382,39 +462,73 @@ class Link {
 			}
 			$mysqli->close();
 		}
-		
+
 		$this->refresh();
-		
+
 		return $status;
 	}
-	
-	function save() {
-		array_push($this->debugs, "Saving data to database.");
-		
+
+	function addLink() {
+		array_push($this->debugs, "Link.addLink() Starting");
+
 		$status = false;
 		$dbservice = new DBQueryService();
-		
+
+		$raw_data['link'] = $this->link;
+		$raw_data['title'] = $this->title;
+		$raw_data['status'] = $this->status;
+		$raw_data['last_updated'] = $this->last_updated;
+		$raw_data['tags'] = $this->tags;
+		foreach($raw_data AS $k=>$v) {
+			array_push($this->debugs, "Link.addLink() field ${k} is [${v}]");
+		}
+
+		if ($dbservice->addRow($raw_data)) {
+			$linkid = $dbservice->getInsertId();
+			array_push($this->debugs, "Link.addLink() New link #".$linkid." has been inserted.");
+			$this->id = $linkid;
+			$status = true;
+		} else {
+			array_push($this->debugs, "Link.addLink() Could not save link.");
+		}
+		$dbservice->close();
+
+		foreach($dbservice->debugs AS $dbgline) {
+			array_push($this->debugs, " dbService() ".$dbgline);
+		}
+
+		array_push($this->debugs, "Link.addLink() function returning:".$status);
+		return $status;
+	}
+
+	function save() {
+		array_push($this->debugs, "Saving data to database.");
+
+		$status = false;
+		$dbservice = new DBQueryService();
+
 		$raw_data['title'] = (isset($_REQUEST['title'])?$_REQUEST['title']:'');
 		$raw_data['link'] = $_REQUEST['link'];
-		$raw_data['status'] = '-1';
+		$raw_data['status'] = ($this->status!=''?$this->status:-1);
 		$raw_data['last_updated'] = date('Y-m-d H:i:s');
 		$raw_data['tags'] = (isset($_REQUEST['tags'])?$_REQUEST['tags']:'');
 
 		if ($dbservice->addRow($raw_data)) {
 			$linkid = $dbservice->getInsertId();
 			array_push($this->debugs, "New link, with id ".$linkid." has been inserted.");
+			$this->id = $linkid;
 			$status = true;
 		} else {
 			array_push($this->debugs, "Could not save link.");
 		}
 		$dbservice->close();
-		
+
 		foreach($dbservice->debugs AS $dbgline) {
 			array_push($this->debugs, " dbService() ".$dbgline);
 		}
 		array_push($this->debugs, "Link.save() function returning:".$status);
 		return $status;
-		
+
 	}
 
 	function updateByMap($fieldmap) {
@@ -456,5 +570,10 @@ class Link {
 	function logupdate($msg) {
 		file_put_contents('/var/tmp/linklib_log.txt', $msg.PHP_EOL , FILE_APPEND | LOCK_EX);
 	}
+}
+
+function justHostName($url) {
+	$a = explode('/', $url);
+	return $a[2];
 }
 ?>

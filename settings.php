@@ -42,21 +42,30 @@ require_once('_includes.php');
 	<div class="container mtb">
 		<div class="row">
 			<div class="col-lg-8">
+
         <table class="table">
 				<?php
         $configvars = Array('DB_HOST','DB_PORT','DB_USER','DB_PASSWORD', 'DB_NAME');
         foreach ($configvars AS $configvar) {
           ?>
           <tr>
-            <th><?php echo $configvar;?>:</th>
-            <td><input type="text" name="<?php echo $configvar;?>"
-              value="<?php eval('$var = '.$configvar.';'); echo $var;?>" size="100"/></td>
-            <td><button class="btn btn-success">Save</button></td>
+            <th>
+              <?php echo $configvar;?>:
+            </th>
+            <td>
+              <input type="text" name="<?php echo $configvar;?>"
+              value="<?php eval('$var = '.$configvar.';'); echo $var;?>" size="100"/>
+            </td>
+            <td>
+              <button class="btn btn-success">Save</button>
+            </td>
           </tr>
           <?php
         }
         ?>
         </table>
+
+        <pre><?php var_dump($_SESSION);?></pre>
 			</div>
 
 			<! -- SIDEBAR -->

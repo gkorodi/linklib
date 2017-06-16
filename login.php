@@ -1,6 +1,6 @@
 <?php
 require_once('_includes.php');
-
+$debugs = Array();
 $errors = Array();
 if (isset($_SESSION['uid'])) {
 	array_push($errors, 'Already logged in, as '.$_SESSION['uid']);
@@ -8,13 +8,20 @@ if (isset($_SESSION['uid'])) {
 	if (!isset($_REQUEST['uid'])) {
 		array_push($errors, 'No UID specified. Need it to verify!');
 	} else {
-		if ($_REQUEST['uid'] === APP_SUPERUSER) {
-			$_SESSION['uid'] = $_REQUEST['uid'];
-			
+		session_unset();
+		$debugs[] = 'Unsetting variables';
 
-			header('Location: index.php');
+		if (in_array($_REQUEST['uid'], explode(',', APP_ADMIN))) {
+			$debugs[] = 'User <b>'.$_REQUEST['uid'].'</b> is in the ADMIN list <i>'.APP_ADMIN.'</i>';
+			$_SESSION['uid'] = $_REQUEST['uid'];
+			$_SESSION['role'] = 'ADMIN2';
+		} elseif (in_array($_REQUEST['uid'], explode(',', APP_USERS))) {
+			$debugs[] = 'User <b>'.$_REQUEST['uid'].'</b> is in the USER list <i>'.APP_USERS.'</i>';
+			$_SESSION['uid'] = $_REQUEST['uid'];
+			$_SESSION['role'] = 'USER2';
+
 		} else {
-			array_push($errors, 'UID:<b>'.$_REQUEST['uid'].'</b> is not a superuser! <b>'.APP_SUPERUSER.'</b> is!');
+			array_push($errors, 'UID:<b>'.$_REQUEST['uid'].'</b> has no role!');
 		}
 	}
 }
@@ -362,7 +369,7 @@ if (isset($_SESSION['uid'])) {
 	================================================== -->
 	<!-- Placed at the end of the document so the pages load faster -->
 	<?php require_once('_scripts.php'); ?>
-	
+
 
     <script>
 // Portfolio

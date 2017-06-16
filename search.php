@@ -38,81 +38,84 @@ require_once('_includes.php');
 	<div id="blue">
 	    <div class="container">
 			<div class="row">
-				<h3>Search Results for <b><?php echo $_REQUEST['q'];?></b>.</h3>
+				<!-- <h3>Search Results for <b><?php echo $_REQUEST['q'];?></b>.</h3> -->
+
+				 <form id="frmSearchQuery" class="form-inline" method="GET">
+				  <div class="form-group">
+				    <label for="fldQ"> Search for: </label>
+				    <input type="text" class="form-control" id="fldQ" name="q" value="<?php echo (isset($_REQUEST['q'])?$_REQUEST['q']:'');?>" />
+				  </div>
+
+          <div class="form-group">
+				    <label for="fldNoTags"> NoTags: </label>
+				    <input type="checkbox" class="form-control" id="fldNoTags" name="fldNoTags" <?php echo (isset($_REQUEST['fldNoTags'])?'checked':'');?> />
+				  </div>
+
+          <div class="form-group">
+				    <label for="fldOldestFirst"> OldestFirst: </label>
+				    <input type="checkbox" class="form-control" id="fldOldestFirst" name="fldOldestFirst" <?php echo (isset($_REQUEST['fldOldestFirst'])?'checked':'');?> />
+				  </div>
+				</form>
 			</div><!-- /row -->
 	    </div> <!-- /container -->
 	</div><!-- /blue -->
 
 	 <div class="container">
 	 	<div class="row">
-	 		<!-- SINGLE POST -->
-	 		<div class="col-lg-7">
-				
 				<table class="table">
 					<tbody>
 						<?php
-						
-						$sql="SELECT * FROM links WHERE UCASE(title) LIKE '%".$_REQUEST['q']."%' ORDER BY title DESC";
-						$searchresults = query($sql);
-							
-						foreach($searchresults['rows'] AS $row) {
-							?>
-							<tr id="linkdetails-<?php echo $row[0]; ?>">
-								<td><?php echo $row[2]; ?></td>
-								<td><button class="btn" onClick="delete_link(<?php echo $row[0]; ?>);">Del</button></td>
-								<td><button class="btn" onClick="edit_link(<?php echo $row[0]; ?>);">...</button></td>
+						if (isset($_REQUEST['q'])) {
+							$sql="SELECT * FROM links WHERE UCASE(title) LIKE '%".$_REQUEST['q']."%' ".
+								(isset($_REQUEST['fldNoTags'])?" AND tags = ''":"").
+								" ORDER BY last_updated ".(isset($_REQUEST['fldOldestFirst'])?'ASC':'DESC')." LIMIT 1000";
+							$searchresults = query($sql);
+
+							foreach($searchresults['rows'] AS $row) {
+							/*?>
+							<tr id="row<?php echo $row[0]; ?>">
+								<td>
+									<a href="<?php echo $row[1]; ?>" target="_winLinkURL"><?php echo $row[2]; ?></a><br />
+									<small>host: <b><?php echo justHostName($row[1]);?></b><br />
+									update: <b><?php echo $row[4];?></b></small>
+								</td>
+								<td>
+									<input class="fldTags" type="text"
+										data-ref="<?php echo $row[0]; ?>" name="tags"
+											value="<?php echo $row[5];?>" />
+								</td>
+								<td>
+									<button class="btn btn-sm btn-danger" onClick="dellink(<?php echo $row[0]; ?>);">Del</button>
+									<a class="btn btn-sm btn-info"
+										href="linkedit.php?id=<?php echo $row[0]; ?>" target="_newWin">...</a>
+								</td>
 							</tr>
-							<?php
+							<?php*/
+                showRow($row);
+							}
 						}
-							
 						?>
 					</tbody>
 				</table>
-				
-			</div><!--/col-lg-8 -->
-
-
-	 		<!-- SIDEBAR -->
-	 		<div class="col-lg-3">
-		 		<h4>Search</h4>
-		 		<div class="hline"></div>
-		 			<p>
-		 				<br/>
-		 				<input type="text" class="form-control" placeholder="Search something">
-		 			</p>
-
-		 		<div class="spacing"></div>
-
-		 		<h4>Statuses</h4>
-		 		<div id="statuslist" class="hline"></div>
-
-		 		<div class="spacing"></div>
-
-		 		<h4>Popular Tags</h4>
-		 		<div class="hline"></div>
-				<p id="populartags"></p>
-
-				<div class="spacing"></div>
-				<p id="recentposts"></p>
-
-	 		</div>
 	 	</div><!--/row -->
 	 </div><!--/container -->
 
-	 <?php require_once('_footer.php'); ?>
+	<?php require_once('_footer.php'); ?>
 
 	<!-- Bootstrap core JavaScript
 	================================================== -->
 	<!-- Placed at the end of the document so the pages load faster -->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-	<script src="assets/js/bootstrap.min.js"></script>
-	<script src="assets/js/retina-1.1.0.js"></script>
-	<script src="assets/js/jquery.hoverdir.js"></script>
-	<script src="assets/js/jquery.hoverex.min.js"></script>
-	<script src="assets/js/jquery.prettyPhoto.js"></script>
-	<script src="assets/js/jquery.isotope.min.js"></script>
-	<script src="assets/js/custom.js"></script>
+	<?php require_once('_scripts.php'); ?>
 
-
+	<script>
+  	$(document).ready(function() {
+      $('input[name=fldNoTags]').on('change', function() {
+        $('#frmSearchQuery').submit();
+      });
+      $('input[name=fldOldestFirst]').on('change', function() {
+        $('#frmSearchQuery').submit();
+      });
+  	});
+	</script>
   </body>
 </html>

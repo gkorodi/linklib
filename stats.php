@@ -47,7 +47,7 @@ require_once('_includes.php');
     <div class="container mtb">
       <div class="row">
         <! -- BLOG POSTS LIST -->
-	
+
         <div class="col-lg-8">
 		<h4>Metrics</h4>
 		<table class="table">
@@ -55,14 +55,17 @@ require_once('_includes.php');
 		$querylist = Array(
 			"Total Link Count"=>"SELECT count(*) total_link_count FROM links;",
 			"OK Status" => "SELECT count(*) status_ok_count FROM links WHERE status = 200;",
-			"Missing Tags" => "SELECT count(*) tags_missing_count FROM links WHERE tags IS NULL;",
-			"Missing Status" => "SELECT count(*) status_missing_count FROM links WHERE status IS NULL;",
-			"Missing Dates" => "SELECT count(*) date_missing_count FROM links WHERE last_updated IS NULL;"
+      "Missing Tags" => "SELECT count(*) tags_missing_count FROM links WHERE tags IS NULL;",
+      "Empty Tags" => "SELECT count(*) tags_missing_count FROM links WHERE tags = '';",
+      "Missing Status" => "SELECT count(*) status_missing_count FROM links WHERE status IS NULL;",
+      "Empty Status" => "SELECT count(*) status_missing_count FROM links WHERE status = '';",
+      "Missing Dates" => "SELECT count(*) date_missing_count FROM links WHERE last_updated IS NULL;",
+      "Empty Dates" => "SELECT count(*) date_missing_count FROM links WHERE last_updated = '';"
 		);
 		$tlc = -1;
 		foreach($querylist AS $k=>$query_sql) {
 			$resultset = query($query_sql);
-			
+
 			if ($k === "Total Link Count") {
 				$tlc = $resultset['rows'][0][0];
 			}
@@ -73,7 +76,7 @@ require_once('_includes.php');
 			<td><?php echo ($k!="Total Link Count"?' '.number_format(($resultset['rows'][0][0]/$tlc)*100,2).' %':''); ?></td>
 			</tr>
 			<?php
-		}	
+		}
 		?>
 		</table>
         </div>
@@ -97,7 +100,7 @@ require_once('_includes.php');
 			echo '<tr><th>'.$row[0].'</th><td>'.$row[1].'</td></tr>';
 		}
 		?></table>
-	
+
 		<div class="spacing"></div>
 		<h4>Recent Posts</h4>
 		<div class="hline"></div>
@@ -124,6 +127,6 @@ require_once('_includes.php');
 	<script src="assets/js/jquery.isotope.min.js"></script>
 	<script src="assets/js/custom.js"></script>
 
-	
+
 </body>
 </html>

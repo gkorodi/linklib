@@ -1,139 +1,156 @@
 <?php
 require_once('_includes.php');
+
+if (isset($_REQUEST['id']) && $_REQUEST['id']!='' ) {
+	$link = new Link($_REQUEST['id']);
+
+	$link->title = str_replace('+',' ',$link->title);
+
+} else {
+	$linklist = query("SELECT * FROM links WHERE tags = '' OR last_updated IS NULL");
+	$idx = rand(0,count($linklist['rows'])-1);
+	header("Location: ?id=".$linklist['rows'][$idx][0]);
+}
 ?>
 <html>
 <head>
+	<?php require_once('_metatags.php');?>
+	<!-- Bootstrap core CSS -->
+	<link href="assets/css/bootstrap.css" rel="stylesheet">
 
-	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-
-	<script   src="http://code.jquery.com/jquery-2.2.4.min.js"   integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="   crossorigin="anonymous"></script>
-
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+	<!-- Custom styles for this template -->
+	<link href="assets/css/style.css" rel="stylesheet">
+	<link href="assets/css/font-awesome.min.css" rel="stylesheet">
 
 	<style>
 	tr.stat200 { background-color: lightGreen;}
 	tr.stat301 { background-color: pink;}
 	</style>
-
 </head>
 <body>
 
 	<div class="container">
 		<?php
-		if (isset($_REQUEST['id'])) {
-			$link = new Link($_REQUEST['id']);
-		} else {
-
-		}
+		$info = $link->getURLInfo();
 
 		if (isset($_POST['id'])) {
-			echo "Updating link!";
-
 			$link->link = $_POST['link'];
 			$link->title = $_POST['title'];
-			$info = $link->getURLInfo();
 			$link->status = $info['http_code'];
 			$link->tags = $_POST['tags'];
 
-			if ($link->update()) {
-
-			} else {
+			if (!$link->update()) {
 				errorMessage('Could not update link '.$link->id);
 				errorMessage(implode('<br />', $link->debugs));
+			} else {
+				echo "Updated";
 			}
+
 		} else {
 			// This is just to look up the link, not to change the
 			// details on the database.
 		}
 
-		if ($link->refresh()) {
+		/*if ($link->refresh()) {
 			debugMessage('Refreshed link details for id '.$link->id);
 		} else {
 			errorMessage('Could not re-query the link for id '.$link->id);
 			errorMessage(implode('<br />', $link->debugs));
+		}*/
+
+		if (!isset($linklist)) {
+			$linklist = query("SELECT * FROM links WHERE tags = '' OR last_updated IS NULL");
 		}
-		
-		$linklist = query("SELECT * FROM links WHERE status != 200 and tags IS NULL");
 		$nextlink = $linklist['rows'][rand ( 1 , count($linklist['rows'])-1 )];
-		?>
-		<form method="POST">
-			<input type="hidden" name="id" value="<?php echo $link->id;?>" />
-			<table class='table'>
-				<?php
 
-				$linktopage = ' <a class="btn btn-info" href="'.$link->link.'" target="_newWindow"><b>...</b></a>';
-				$linktolookup = '<a class="btn btn-warning" href="https://duckduckgo.com/?q='.urlencode($link->title).'&t=ffsb&ia=web" target="_srchWindow"> duckduckgo </a>';
-				?>
-				<tr>
-					<th>link</th>
-					<td><input type="text"  id="fldlink" name="link" value="<?php echo $link->link;?>" size="100%"/> <?php echo $linktopage; ?></td>
-				</tr>
-				<tr>
-					<th>title</th>
-					<td><input type="text"  id="fldtitle" name="title" value="<?php echo $link->title;?>" size="100%"/><br />
-					<?php echo $linktolookup;?></td>
-				</tr>
-				<tr>
-					<th>status</th>
-					<td><input type="text"  id="fldstatus" name="status" value="<?php echo $link->status;?>" size="100%"/></td>
-				</tr>
-				<tr>
-					<th>last updated</th>
-					<td><input type="text"  id="fldlastupdate" name="last_updated" value="<?php echo $link->last_updated;?>" size="100%"/></td>
-				</tr>
-				<tr>
-					<th>tags</th>
-					<td><input type="text"  id="fldtags" name="tags" value="<?php echo $link->tags;?>" size="100%"/></td>
-				</tr>
-			</table>
-			<button class="btn btn-success">Update</button>
+		if ($info['http_code'] == 200 && $info['redirect_count']>0) {
+			$link->link = $info['url'];
+		}
+
+		if (strpos($link->link,'?')) {
+			$link->link = substr($link->link,0, strpos('?', $link->link));
+		}
+		?>
+
+		<div class="row">
+			<a class="btn btn-info pull-right" href="edit.php?id=<?php echo $nextlink[0];?>">Next</a>
+
+			<a class="btn btn-info pull-right"  style="margin:3px; margin-left: 20px" onClick="repairLink();">Repair</a>
+
+			<a class="btn btn-warning pull-right" style="margin:3px"
+			href="https://duckduckgo.com/?q=<?php echo urlencode($link->title);?>&t=ffsb&ia=web" target="_srchWindow">Duck</a>
+
+			<a class="btn btn-danger pull-right" onClick="deleteLink(<?php echo $link->id;?>);">Delete</a>
+		</div>
+
+		<form id="frmEditLink" method="POST">
+
+		        <div class="form-group">
+		        <a href="<?php echo $link->link;?>" target="_newWindow"><h3><?php echo $link->title;?></h3></a>
+		        </div>
+
+						<input type="hidden" name="id" value="<?php echo $link->id;?>" />
+
+		        <div class="form-group">
+		          <label for="link">link</label>
+		          <input type="text" class="form-control" id="link" placeholder="URL of the link" name="link" value="<?php echo $link->link;?>" />
+		        </div>
+
+		        <div class="form-group">
+		          <label for="title">title</label>
+		          <input type="text" class="form-control" id="title" placeholder="Title of the link" name="title" value="<?php echo $link->title;?>" />
+		        </div>
+
+
+		        <div class="form-group">
+		          <label for="tags">tags</label>
+		          <input type="text" class="form-control" id="tags" placeholder="Tags of the link" name="tags" value="<?php echo $link->tags;?>" />
+		        </div>
+
+		        <div class="form-group">
+		          <label for="status">status</label>
+		          <input type="text" class="form-control" id="status" placeholder="Status of the link" name="status" value="<?php echo $link->status;?>" />
+		          <!--<small id="statusHelp" class="form-text text-muted">...</small>-->
+		        </div>
+						<button class="btn btn-success pull-left">Update</button>
 		</form>
+		<?php echo $info['http_code'].'/'.$info['redirect_count'];?><br />
+		<br />
+			<textarea rows=20 cols=150><?php echo str_replace("\n\n","\n", str_replace('  ',' ',$link->content)); ?></textarea>
 
-		<?php
-		$info = $link->getURLInfo();
-		?>
-		<table class="table">
-			<tr>
-				<th>URL</th>
-				<td><?php echo $info['url'];?></td>
-			</tr>
-			<tr>
-				<th>HTTPCode</th>
-				<td><?php echo $info['http_code'];?></td>
-			</tr>
-			<tr>
-				<th>RedirectCount</th>
-				<td><?php echo $info['redirect_count'];?></td>
-			</tr>
-			<tr>
-				<th>RedirectURL</th>
-				<td><?php echo $info['redirect_url'];?></td>
-			</tr>
-		</table>
-		<button id="btnUserThisURL" onClick="useURL('<?php echo $info['url'];?>');">Use URL</button>
-		<hr />
-
-		<a class="btn btn-danger text-center" onClick="deleteLink(<?php echo $link->id;?>);">Delete</a>
-		<a class="btn btn-info pull-right" href="edit.php?id=<?php echo $nextlink[0];?>">Next</a><br />
 	</div>
 
+	<!-- Bootstrap core JavaScript
+	================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<?php require_once('_scripts.php'); ?>
 
 
 	<script>
-	function useURL(url) {
-		$('#fldlink').val(url);
+	function useURL(url, code) {
+		$('input[name="link"]').val(url);
+		$('input[name="status"]').val(code);
 	}
 
 	function deleteLink(id) {
-		$.getJSON( "delById.php?id="+id, function( data ) {
-			console.log(data.status+" Deleting <?php echo $params['id'];?>");
-			return false;
+		$.getJSON( "linkdelete.php?id="+id, function( data ) {
+			if (data.status == 'ok') {
+				window.location='edit.php?id=<?php echo $nextlink[0];?>';
+			} else {
+				alert("Could notn delete link: "+data.message);
+			}
 		});
+	}
+
+	function repairLink() {
+		$('input[name="tags"]').val('repair');
+		$('#frmEditLink').submit();
 	}
 
 	function advanceTo(id) {
 		window.location='?id='+id;
 	}
+
 	</script>
 </body>
 </html>
