@@ -98,6 +98,23 @@ function showRow($row) {
 	<?php
 }
 
+function showUserRow($row) {
+	?>
+	<tr id="row<?php echo $row[0];?>">
+		<td><?php echo justHostName($row[1]);?></small></td>
+		<td>
+			<h4><a href="<?php echo $row[1];?>" target="_newWindow"><?php echo urldecode($row[2]);?></a></h4><br />
+			<?php
+			foreach(explode(',', $row[5]) AS $tag) { echo '<span class="badge">'.$tag.'</span> ';}
+			 ?></small>
+		</td>
+	<td>
+		<?php echo date('Y-m-d', strtotime($row[4]));?>
+	</td>
+	</tr>
+	<?php
+}
+
 function errorMessage($msg) {
 	echo '<div style="color: red">'.$msg.'</div>';
 }

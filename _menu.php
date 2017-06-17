@@ -17,12 +17,15 @@
             <li><a href="search.php">SEARCH</a></li>
             <li><a href="query.php">QUERY</a></li>
             <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'ADMIN') {
-              ?><li><a href="addnew.php">NEWLINK</a></li><?php
-            }?>
-            <li><a href="curate_files.php">CURATE</a></li>
-            <?php
+              ?>
+              <li><a href="addnew.php">NEWLINK</a></li>
+              <li><a href="curate_files.php">CURATE</a></li>
+              <?php
+            }
+
             if (isset($_SESSION['uid']) && $_SESSION['role'] === 'ADMIN') {
               ?>
+
               <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo strtoupper($_SESSION['uid']).' '.($_SESSION['role']?$_SESSION['role']:'anonymous');?> <b class="caret"></b></a>
               <ul class="dropdown-menu">

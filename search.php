@@ -14,7 +14,7 @@ require_once('_includes.php');
     <!-- Custom styles for this template -->
     <link href="assets/css/style.css" rel="stylesheet">
     <link href="assets/css/font-awesome.min.css" rel="stylesheet">
-
+    <link href="https://cdn.datatables.net/1.10.15/css/jquery.dataTables.min.css" rel="stylesheet" />
 
     <!-- Just for debugging purposes. Don't actually copy this line! -->
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
@@ -62,7 +62,16 @@ require_once('_includes.php');
 
 	 <div class="container">
 	 	<div class="row">
-				<table class="table">
+      <br />
+				<table class="table" id="tableLinks">
+          <thead>
+            <tr>
+              <th>Host</th>
+              <th>Link</th>
+              <th>Tags</th>
+              <th>Date</th>
+            </tr>
+          </thead>
 					<tbody>
 						<?php
 						if (isset($_REQUEST['q'])) {
@@ -91,12 +100,37 @@ require_once('_includes.php');
 								</td>
 							</tr>
 							<?php*/
-                showRow($row);
+                if ($_SESSION['role'] == 'USER') {
+
+                  ?>
+
+                  <tr id="row<?php echo $row[0];?>">
+                    <td>
+                      <?php echo justHostName($row[1]);?>
+                    </td>
+                    <td>
+                      <a href="<?php echo $row[1];?>" target="_newWindow"><?php echo urldecode($row[2]);?></a>
+                    </td>
+                    <td>
+                      <?php
+                      foreach(explode(',', $row[5]) AS $tag) { echo '<span class="badge">'.$tag.'</span> ';}
+                      ?>
+                    </td>
+                    <td>
+                      <?php echo date('Y-m-d', strtotime($row[4]));?>
+                    </td>
+                  </tr>
+
+                  <?php
+                } else {
+                  showRow($row);
+                }
 							}
 						}
 						?>
 					</tbody>
 				</table>
+        <br />
 	 	</div><!--/row -->
 	 </div><!--/container -->
 
@@ -109,6 +143,8 @@ require_once('_includes.php');
 
 	<script>
   	$(document).ready(function() {
+      $('#tableLinks').DataTable();
+
       $('input[name=fldNoTags]').on('change', function() {
         $('#frmSearchQuery').submit();
       });

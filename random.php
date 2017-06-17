@@ -62,21 +62,14 @@ for($idx=0;$idx<(count($resultset['rows'])-1);$idx++) {
         			<small><?php echo justHostName($row[1]);?></small>
         		</td>
         		<td>
-        		<?php
-        		if ($modified != null && $modified == 'repair') {?>
+        		    <input type="text" id="tags<?php echo $row[0];?>"
+                  onChange="repairLink(<?php echo $row[0];?>, $(this).val());" value="<?php echo $row[5];?>" />
+        	  </td>
 
-        			<input type="text" id="tags<?php echo $row[0];?>" onChange="repairLink(<?php echo $row[0];?>, $(this).val());" value="<?php echo $row[5];?>" />
+            <td>
+        		  <?php echo date('Y-m-d', strtotime($row[4]));?>
+        	  </td>
 
-        		<?php } else { ?>
-
-        				<input type="text" id="tags<?php echo $row[0];?>" onChange="tagLink(<?php echo $row[0];?>, $(this).val());" value="<?php echo $row[5];?>" />
-
-        		<?php } ?>
-        	</td>
-        	<td>
-        		<?php echo date('Y-m-d', strtotime($row[4]));?>
-        	</td>
-        	
             <td>
         			<a class="btn btn-sm btn-info" href="linkedit.php?id=<?php echo $row[0];?>" target="_winEditLink">
         				<span class="glyphicon glyphicon-ok"> </span>

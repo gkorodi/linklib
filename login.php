@@ -14,11 +14,11 @@ if (isset($_SESSION['uid'])) {
 		if (in_array($_REQUEST['uid'], explode(',', APP_ADMIN))) {
 			$debugs[] = 'User <b>'.$_REQUEST['uid'].'</b> is in the ADMIN list <i>'.APP_ADMIN.'</i>';
 			$_SESSION['uid'] = $_REQUEST['uid'];
-			$_SESSION['role'] = 'ADMIN2';
+			$_SESSION['role'] = 'ADMIN';
 		} elseif (in_array($_REQUEST['uid'], explode(',', APP_USERS))) {
 			$debugs[] = 'User <b>'.$_REQUEST['uid'].'</b> is in the USER list <i>'.APP_USERS.'</i>';
 			$_SESSION['uid'] = $_REQUEST['uid'];
-			$_SESSION['role'] = 'USER2';
+			$_SESSION['role'] = 'USER';
 
 		} else {
 			array_push($errors, 'UID:<b>'.$_REQUEST['uid'].'</b> has no role!');
