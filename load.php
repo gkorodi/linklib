@@ -6,38 +6,35 @@ $dbservice = new DBQueryService();
 $processed = 0;
 $failed = 0;
 
-//$fileList = glob("/Volumes/My Book/Links/*.webloc");
-$fileList = glob(INPUT_DIR."/*.webloc");
-echo "There are ".count($fileList)." files to process.";
+function processFile($filename) {
 
-//$filename = $fileList[0];
-foreach($fileList AS $filename) {
-
-	$raw_data['title'] = basename($filename, '.webloc');
-	$file_details = stat($filename);
-
-	$xml=simplexml_load_file($filename) or die("Error: Cannot create object from file:".$filename);
-	$lurl = $xml->dict->string.'';
-
-	$url_details = getURLInfo($lurl);
-
-	$raw_data['link'] = $url_details['info']['url'];
-	$raw_data['status'] = $url_details['info']['http_code'];
-	$raw_data['last_updated'] = date('Y-m-d H:i:s', $file_details['mtime']);
-	$raw_data['tags'] = getTags($filename);
-
-	if ($dbservice->addRow($raw_data)) {
-		echo date('c').' Could not insert details for '.$filename.PHP_EOL;
-		$failed++;
+	if (pathinfo($filename, PATHINFO_EXTENSION) == 'webloc') {
 	} else {
-		$linkid = $dbservice->getInsertId();
-		$dbservice->addExtraDetails(Array('details'=>json_encode($url_details['info']), 'type'=>'header', 'linkid'=>$linkid));
-		unlink($filename);
 	}
-	$processed++;
+
+$raw_data['title'] = basename($filename, '.webloc');
+$file_details = stat($filename);
+
+$xml=simplexml_load_file($filename) or die("Error: Cannot create object from file:".$filename);
+$lurl = $xml->dict->string.'';
+
+$url_details = getURLInfo($lurl);
+
+$raw_data['link'] = $url_details['info']['url'];
+$raw_data['status'] = $url_details['info']['http_code'];
+$raw_data['last_updated'] = date('Y-m-d H:i:s', $file_details['mtime']);
+$raw_data['tags'] = getTags($filename);
+
+if ($dbservice->addRow($raw_data)) {
+	echo date('c').' Could not insert details for '.$filename.PHP_EOL;
+} else {
+	$linkid = $dbservice->getInsertId();
+	$dbservice->addExtraDetails(Array('details'=>json_encode($url_details['info']), 'type'=>'header', 'linkid'=>$linkid));
+	unlink($filename);
+}
 }
 
 $dbservice->close();
-echo date('c')." Processed: ".($processed--)." Failed: ".($failed--).PHP_EOL;
 
+foreach(glob(getenv('FEED_DIR').'/*.*') AS $fn) { processFile($fn); }
 ?>

@@ -463,19 +463,20 @@ class Link {
 			$sqlString .= ", title = '".$mysqli->real_escape_string($this->title)."'";
 			$sqlString .= ", tags = '".$mysqli->real_escape_string($this->tags)."'";
 			$sqlString .= ", status = ".$mysqli->real_escape_string($this->status);
-			$sqlString .= ", last_updated = '".$mysqli->real_escape_string($this->last_updated)."'";
+			$sqlString .= ", last_updated = '".$mysqli->real_escape_string(date('c', strtotime(substr($this->last_updated,0,19))))."'";
 
 			$sqlString .= ' WHERE id = '.$this->id;
 
 			array_push($this->debugs, "SQL:".$sqlString);
 
-			if ($mysqli->query($sqlString) === TRUE) {
+			$return_status = $mysqli->query($sqlString);
+			if ( $return_status === TRUE) {
 				$status = true;
-				array_push($this->debugs, "Link ".$this->id." has been successfully updated.");
+				array_push($this->debugs, "Link ".$this->id." has been successfully updated. AffectedRows:".$mysqli->affected_rows);
 				array_push($this->debugs, "Statement was [".$sqlString."]");
 			} else {
 				array_push($this->debugs, "Could not execute update statement [".$sqlString."]");
-				array_push($this->debugs, " (errno:" . $mysqli->errno . ", errmsg:" .$mysqli->error.")");
+				array_push($this->debugs, " (status:".print_r($return_status, true)." errno:" . $mysqli->errno . ", errmsg:" .$mysqli->error.")");
 			}
 			$mysqli->close();
 		}

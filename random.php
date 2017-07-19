@@ -54,30 +54,56 @@ for($idx=0;$idx<(count($resultset['rows'])-1);$idx++) {
 				<?php
 				foreach ($idlist AS $itemidx) {
 					$row = $resultset['rows'][$itemidx];
-					?>
-          <tr id="row<?php echo $row[0];?>">
-        		<td> </td>
-        		<td>
-        			<a href="<?php echo $row[1];?>" target="_newWindow"><?php echo urldecode($row[2]);?></a><br />
-        			<small><?php echo justHostName($row[1]);?></small>
-        		</td>
-        		<td>
-        		    <input type="text" id="tags<?php echo $row[0];?>"
-                  onChange="repairLink(<?php echo $row[0];?>, $(this).val());" value="<?php echo $row[5];?>" />
-        	  </td>
 
-            <td>
-        		  <?php echo date('Y-m-d', strtotime($row[4]));?>
-        	  </td>
+          if (isset($_SESSION['role']) && $_SESSION['role'] == 'USER') {
+            ?>
+            <tr id="row<?php echo $row[0];?>">
+              <td>
+                <?php echo date('Y-m-d', strtotime($row[4]));?>
+              </td>
+          		<td>
+          			<b><a href="<?php echo $row[1];?>" target="_newWindow"><?php echo urldecode($row[2]);?></a></b><br />
+          			<small><?php echo justHostName($row[1]);?></small>
+          		</td>
+              <td>
+                <?php foreach(explode(',', $row[5]) AS $tag) {
+                    ?><span class="badge"><?php echo $tag;?></span> <?php
+                }?>
+          	  </td>
+              <td>
+                <span class="glyphicon glyphicon-ok"> </span>
+          	  </td>
+              <td>
+                <span class="glyphicon glyphicon-remove"> </span>
+          	  </td>
+          	</tr>
+            <?php
+          } elseif (isset($_SESSION['role']) && $_SESSION['role'] == 'ADMIN') {
+            ?>
+            <tr id="row<?php echo $row[0];?>">
+          		<td>
+          			<a href="<?php echo $row[1];?>" target="_newWindow"><?php echo urldecode($row[2]);?></a><br />
+          			<small><?php echo justHostName($row[1]);?></small>
+          		</td>
+          		<td>
+          		    <input type="text" id="tags<?php echo $row[0];?>"
+                    onChange="repairLink(<?php echo $row[0];?>, $(this).val());" value="<?php echo $row[5];?>" />
+          	  </td>
 
-            <td>
-        			<a class="btn btn-sm btn-info" href="linkedit.php?id=<?php echo $row[0];?>" target="_winEditLink">
-        				<span class="glyphicon glyphicon-ok"> </span>
-        			</a>
-        		</td>
+              <td>
+          		  <?php echo date('Y-m-d', strtotime($row[4]));?>
+          	  </td>
 
-        	</tr>
-          <?php
+              <td>
+          			<a class="btn btn-sm btn-info" href="linkedit.php?id=<?php echo $row[0];?>" target="_winEditLink">
+          				<span class="glyphicon glyphicon-ok"> </span>
+          			</a>
+          		</td>
+          	</tr>
+            <?php
+          } else {
+
+          }
 				}
 				?>
 				</table>

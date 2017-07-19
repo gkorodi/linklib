@@ -533,7 +533,8 @@ if (isset($_REQUEST['method'])) {
 				if ($link->update()) {
 					$resp['status'] = 'ok';
 					$resp['message'] = 'Updated link, with id *'.$_REQUEST['id'].'* and column *'.$col.'*';
-					array_push($debugs,'Updated link, with id <b>'.$_REQUEST['id'].'</b> and column *'.$col.'*');
+					array_push($debugs, implode($link->debugs));
+					array_push($debugs,'Updated link, with id <b>'.$_REQUEST['id'].'</b> and column *'.$col.'* with value `'.$_REQUEST['value'].'`');
 
 				} else {
 					$resp['status'] = 'error';

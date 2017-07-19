@@ -65,12 +65,28 @@ require_once('_includes.php');
       <br />
 				<table class="table" id="tableLinks">
           <thead>
-            <tr>
-              <th>Host</th>
-              <th>Link</th>
-              <th>Tags</th>
-              <th>Date</th>
-            </tr>
+            <?php
+            if ($_SESSION['role'] == 'USER') {
+              ?>
+              <tr>
+                <th>Host</th>
+                <th>Link</th>
+                <th>Tags</th>
+                <th>Date</th>
+              </tr>
+              <?php
+            } else {
+              ?>
+              <tr>
+                <th>Link</th>
+                <th>Tags</th>
+                <th>Date</th>
+                <th> </th>
+                <th> </th>
+              </tr>
+              <?php
+            }
+             ?>
           </thead>
 					<tbody>
 						<?php
@@ -101,9 +117,7 @@ require_once('_includes.php');
 							</tr>
 							<?php*/
                 if ($_SESSION['role'] == 'USER') {
-
                   ?>
-
                   <tr id="row<?php echo $row[0];?>">
                     <td>
                       <?php echo justHostName($row[1]);?>
@@ -120,10 +134,34 @@ require_once('_includes.php');
                       <?php echo date('Y-m-d', strtotime($row[4]));?>
                     </td>
                   </tr>
-
                   <?php
                 } else {
-                  showRow($row);
+
+                  ?>
+                  <tr id="row<?php echo $row[0];?>">
+                    <td>
+                      <a href="<?php echo $row[1];?>" target="_newWindow"><?php echo urldecode($row[2]);?></a><br />
+                      <small><?php echo justHostName($row[1]);?></small>
+                    </td>
+                    <td>
+                      <input type="text" id="tags<?php echo $row[0];?>" onChange="repairLink(<?php echo $row[0];?>, $(this).val());" value="<?php echo $row[5];?>" />
+                  </td>
+                  <td>
+                    <?php echo date('Y-m-d', strtotime($row[4]));?>
+                  </td>
+                  <td>
+                      <button class="btn btn-sm btn-danger pull-right" onClick="deleteLink(<?php echo $row[0];?>);">
+                        <span class="glyphicon glyphicon-remove"> </span>
+                      </button>
+                </td><td>
+                      <a class="btn btn-sm btn-info" href="linkedit.php?id=<?php echo $row[0];?>" target="_winEditLink">
+                        <span class="glyphicon glyphicon-ok"> </span>
+                      </a>
+                    </td>
+
+                  </tr>
+                  <?php
+
                 }
 							}
 						}
