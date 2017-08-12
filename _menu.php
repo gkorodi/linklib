@@ -43,10 +43,25 @@
               </ul>
               <?php
             } elseif (isset($_SESSION['uid']) && $_SESSION['role'] === 'USER') {
-              # code...
+              ?>
+              <li><a href="search.php">SEARCH</a></li>
+              <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo strtoupper($_SESSION['uid']);?> <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="random.php">RANDOM100</a></li>
+                <li><a href="linkedit.php">RANDOMLINK</a></li>
+                <li><a href="list_hosts.php">LIST HOSTS</a></li>
+                <li><a href="list_tags.php">LIST TAGS</a></li>
+                <li><a href="list_status.php">LIST STATUS</a></li>
+                <li>---</li>
+                <li><a href="about.php">ABOUT</a></li>
+                <li><a href="contact.php">CONTACT</a></li>
+                <li><a href="logout.php">LOGOUT</a></li>
+              </ul>
+              <?php
             } else {
               ?>
-              <li><a href="login.php">LOGIN</a></li>
+              <li class="<?php echo (basename($_SERVER['PHP_SELF'],'.php')=='login'?'active':'');?>"><a href="login.php">LOGIN</a></li>
               <?php
             }
             ?>

@@ -111,7 +111,7 @@ if (isset($_REQUEST['tag'])) {
 					<tbody>
 					<?php
 					foreach($resultset['rows'] AS $row) {
-						$lst = split('/',  $row[0]);
+						$lst = explode('/',  $row[0]);
 						?>
 						<tr id="row<?php echo $row[0];?>">
 							<td>

@@ -297,12 +297,11 @@ require_once('_includes.php');
 
 	<?php require_once('_footer.php'); ?>
 
-
 	<!-- Bootstrap core JavaScript
 	================================================== -->
 	<!-- Placed at the end of the document so the pages load faster -->
 	<?php require_once('_scripts.php'); ?>
-	
+
 
 
     <script>

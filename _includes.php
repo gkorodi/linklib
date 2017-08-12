@@ -5,17 +5,24 @@ date_default_timezone_set('US/Eastern');
 
 define('APP_ROOT','/linklib/');
 define('APP_TITLE','linkLIB');
-define('APP_ADDRESS', '<h4>Our Bunker</h4><div class="hline-w"></div><p>95 prince st<br/>Boston, 02113<br/>USA<br/></p>');
-define('APP_SOCIAL_LINKS','<h4>Social Links</h4><div class="hline-w"></div><p>'.
+define('APP_ADDRESS', '<h4>Our Bunker</h4>'.
+'<div class="hline-w"></div>'.
+'<p>'.
+	'Boston, MA<br/>'.
+	'London, UK<br />'.
+	'Budapest, Hungary'.
+'</p>');
+define('APP_SOCIAL_LINKS','<h4>Social Links</h4><div class="hline-w"></div>'.
+'<p>'.
 	'<a href="https://www.linkedin.com/in/gaborkorodi" target="_newWindow"><i class="fa fa-linkedin"></i></a>'.
-	'<a href="https://www.flickr.com/photos/crampus" target="_newWindow"><i class="fa fa-flickr"></i></a>'.
-	'<a href="#"><i class="fa fa-twitter"></i></a>'.
-	'</p>');
+	'<a href="https://twitter.com/korodigabor" target="_newWindow"><i class="fa fa-twitter"></i></a>'.
+	'<a href="https://gaborkorodi.wordpress.com" target="_newWindow"><i class="fa fa-globe"></i></a>'.
+'</p>');
 define('FEED_DIR','data');
 
 require_once('/opt/config/vars');
 
-if (basename($_SERVER['PHP_SELF'])  != 'login.php' && (basename($_SERVER['PHP_SELF'])  != 'stats.php') ) {
+if (in_array(basename($_SERVER['PHP_SELF']), explode(',','login,stats,index'))) {
 	if (!isset($_SESSION['uid'])) {
 		header("Location: login.php");
 	}
