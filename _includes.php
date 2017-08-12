@@ -15,7 +15,7 @@ define('FEED_DIR','data');
 
 require_once('/opt/config/vars');
 
-if (basename($_SERVER['PHP_SELF'])  != 'login.php') {
+if (basename($_SERVER['PHP_SELF'])  != 'login.php' && (basename($_SERVER['PHP_SELF'])  != 'stats.php') ) {
 	if (!isset($_SESSION['uid'])) {
 		header("Location: login.php");
 	}
