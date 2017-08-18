@@ -439,30 +439,19 @@ class Link {
 
 	function update() {
 
-		/*
+		array_push($this->debugs, "link.update() Updating link ".$this->id);
 
-	$conn = new mysqli($DBServer, $DBUser, $DBPass, $DBName);
-	$conn->autocommit(TRUE);
-
-	if (!($stmtUpdate = $conn->prepare("UPDATE links SET link = ?, title = ?, status = ?, tags = ? WHERE id = ?"))) {
-	    echo "Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error;
-	}
-	if (!$stmtUpdate->bind_param("ssisi", $_POST['link'],$_POST['title'],$info['http_code'],$_POST['tags'], $_POST['id'])) {
-	    echo "Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error;
-	}
-
-	if (!$stmtUpdate->execute()) {
-	    echo "Execute failed: (" . $stmt->errno . ") " . $stmt->error;
-	}
-		*/
-
-		array_push($this->debugs, "Updating link ".$this->id);
+		array_push($this->debugs, "link.update()   link        :".$this->link);
+		array_push($this->debugs, "link.update()   title       :".$this->title);
+		array_push($this->debugs, "link.update()   tags        :".$this->tags);
+		array_push($this->debugs, "link.update()   status      :".$this->status);
+		array_push($this->debugs, "link.update()   last_updated:".$this->last_updated);
 
 		// Default to error, just in case.
 		$status = false;
 		$mysqli = new mysqli(DB_HOST.(defined('DB_PORT')?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
 		if ($mysqli->connect_errno) {
-		    array_push($this->debugs, "Failed to connect to MySQL: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error);
+		    array_push($this->debugs, "link.update() Failed to connect to MySQL: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error);
 		} else {
 			$mysqli->autocommit(true);
 
@@ -470,24 +459,24 @@ class Link {
 			$sqlString .= ", title = '".$mysqli->real_escape_string($this->title)."'";
 			$sqlString .= ", tags = '".$mysqli->real_escape_string($this->tags)."'";
 			$sqlString .= ", status = ".$mysqli->real_escape_string($this->status);
-			$sqlString .= ", last_updated = '".$mysqli->real_escape_string(date('c', strtotime(substr($this->last_updated,0,19))))."'";
-
+			$sqlString .= ", last_updated = '".$mysqli->real_escape_string(date('Y-m-d H:i:s', strtotime(substr($this->last_updated,0,19))))."'";
 			$sqlString .= ' WHERE id = '.$this->id;
 
-			array_push($this->debugs, "SQL:".$sqlString);
+			foreach(explode(',', $sqlString) AS $sstr) {
+				array_push($this->debugs, "link.update() SQL:".$sstr);
+			}
 
 			$return_status = $mysqli->query($sqlString);
 			if ( $return_status === TRUE) {
 				$status = true;
-				array_push($this->debugs, "Link ".$this->id." has been successfully updated. AffectedRows:".$mysqli->affected_rows);
-				array_push($this->debugs, "Statement was [".$sqlString."]");
+				array_push($this->debugs, "link.update() Link ".$this->id." has been successfully updated. AffectedRows:".$mysqli->affected_rows);
+				array_push($this->debugs, "link.update() Statement was [".$sqlString."]");
 			} else {
-				array_push($this->debugs, "Could not execute update statement [".$sqlString."]");
-				array_push($this->debugs, " (status:".print_r($return_status, true)." errno:" . $mysqli->errno . ", errmsg:" .$mysqli->error.")");
+				array_push($this->debugs, "link.update() Could not execute update statement [".$sqlString."]");
+				array_push($this->debugs, "link.update() (status:".print_r($return_status, true)." errno:" . $mysqli->errno . ", errmsg:" .$mysqli->error.")");
 			}
 			$mysqli->close();
 		}
-
 		$this->refresh();
 
 		return $status;
@@ -557,35 +546,43 @@ class Link {
 	}
 
 	function updateByMap($fieldmap) {
+		array_push($this->debugs, "Link.updateByMap() fieldmap:.");
+		foreach($fieldmap AS $k=>$v) {
+			array_push($this->debugs, "Link.updateByMap() ${k} = '${v}'");
+		}
 		// Default to error, just in case.
 		$status = false;
-		$mysqli = new mysqli(DB_HOST.(defined(DB_PORT)?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
+		$mysqli = new mysqli(DB_HOST.(defined('DB_PORT')?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
 		if ($mysqli->connect_errno) {
 		    array_push($this->errors, "Failed to connect to MySQL: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error);
 		} else {
 			$mysqli->autocommit(true);
-			$sqlString = 'UPDATE links SET last_updated = CURRENT_DATE ';
+			$sqlString = 'UPDATE links '.
+				'SET last_updated = '.(isset($fieldmap['last_updated'])?"'".date('Y-m-d H:i:s', strtotime($fieldmap['last_updated']))."'":'CURRENT_DATE')." ";
 
-			if (isset($fieldmap['fldLink'])) {
-				$sqlString .= ", link = '".$fieldmap['fldLink']."'";
+			if (isset($fieldmap['link'])) {
+				$sqlString .= ", link = '".$fieldmap['link']."'";
 			}
 
-			if (isset($fieldmap['fldTitle'])) {
-				$sqlString .= ", title = '".$fieldmap['fldTitle']."'";
+			if (isset($fieldmap['title'])) {
+				$sqlString .= ", title = '".$fieldmap['title']."'";
 			}
 
-			if (isset($fieldmap['fldTags'])) {
-				$sqlString .= ", tags = '".$fieldmap['fldTags']."'";
+			if (isset($fieldmap['tags'])) {
+				$sqlString .= ", tags = '".$fieldmap['tags']."'";
 			}
-
 			$sqlString .= ' WHERE id = '.$this->id;
+			
+			foreach(explode(',', $sqlString) AS $sstr) {
+				array_push($this->debugs, "Link.updateByMap() SQL: ".$sstr);
+			}
 
 			if ($mysqli->query($sqlString) === TRUE) {
 				$status = true;
-				array_push($this->debugs, "Link ".$this->id." has been successfully updated.");
-				array_push($this->debugs, "Statement was [".$sqlString."]");
+				array_push($this->debugs, "Link.updateByMap() Link ".$this->id." has been successfully updated.");
 			} else {
-				array_push($this->errors, "Could not execute update statement [".$sqlString."] (errno:" . $mysqli->errno . ", errmsg:" .$mysqli->error.")");
+				array_push($this->debugs, "Link.updateByMap() Could not execute SQL statement.");
+				array_push($this->debugs, "Link.updateByMap() SQLException " . $mysqli->errno . "/" .$mysqli->error);
 			}
 			$mysqli->close();
 		}

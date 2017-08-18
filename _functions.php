@@ -30,14 +30,14 @@ function findMetaTags($content) {
 }
 
 if (isset($_REQUEST['method'])) {
-	array_push($debugs, 'Method '.$_REQUEST['method'].' has been specified.');
+	array_push($debugs, '_functions.php Method '.$_REQUEST['method'].' has been specified.');
 
 	if ($_REQUEST['method']==='deletelink') {
 		$link = new Link($_REQUEST['id']);
 		if ($link->delete()) {
 			$resp['status'] = 'ok';
 			$resp['message'] = 'Deleted link, with id <b>'.$_REQUEST['id'].'</b>';
-			array_push($debugs, implode('<br />', $link->debugs));
+			array_push($debugs, $link->debugs);
 		} else {
 			$resp['status'] = 'error';
 			$resp['message'] = 'Could not delete link, with id <b>'.$_REQUEST['id'].'</b><br />'.
@@ -186,6 +186,7 @@ if (isset($_REQUEST['method'])) {
 		$ch = curl_init($link->link);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT ,5); 
 		$content = curl_exec($ch);
 
 		$resp['meta'] = findMetaTags($content);
@@ -212,8 +213,11 @@ if (isset($_REQUEST['method'])) {
 			$resp['message'] = $newLink->message;
 		}
 	} else if ($_REQUEST['method']==='repairlink') {
+		array_push($debugs, 'repairlink() id:'.$_REQUEST['id']);
+		
 		$link = new Link($_REQUEST['id']);
 		$resp['message'] = 'Repair options for link '.$link->id;
+		
 		$resp['id'] = $link->id;
 		$resp['title'] = $link->title;
 		$resp['link'] = $link->link;
@@ -224,6 +228,8 @@ if (isset($_REQUEST['method'])) {
 		$ch = curl_init($link->link);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT ,5); 
+		
 		$content = curl_exec($ch);
 		$resp['info'] = curl_getinfo($ch);
 		curl_close($ch);
@@ -237,6 +243,7 @@ if (isset($_REQUEST['method'])) {
 
 		$link = new Link($_REQUEST['id']);
 		$resp['message'] = 'Repair options for link '.$link->id;
+		
 		$resp['id'] = $_REQUEST['id'];
 		$resp['title'] = $link->title;
 		$resp['link'] = $link->link;
@@ -246,6 +253,8 @@ if (isset($_REQUEST['method'])) {
 		$ch = curl_init($link->link);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT ,5); 
+		
 		$content = curl_exec($ch);
 		$resp['info'] = curl_getinfo($ch);
 		curl_close($ch);
@@ -255,40 +264,40 @@ if (isset($_REQUEST['method'])) {
 			$resp['message'] = 'Could not get the expected webpage!'.print_r($resp['info'], true);
 		} else {
 
-		$startpos = strpos($content, '>', strpos($content, '<title'));
-		$endpos = strpos($content, '</title', $startpos);
-		$resp['title'] = substr($content, $startpos+1, $endpos-$startpos-1);
+			$startpos = strpos($content, '>', strpos($content, '<title'));
+			$endpos = strpos($content, '</title', $startpos);
+			$resp['title'] = substr($content, $startpos+1, $endpos-$startpos-1);
 
-		$editorLink = '<div class="form-group">'.
-		'<label for="link">Link</label>'.
-		'<input type="text" class="form-control" id="link" name="link" placeholder="URL for the link " value="'.$resp['link'].'">'.
-		'</div>';
+			$editorLink = '<div class="form-group">'.
+			'<label for="link">Link</label>'.
+			'<input type="text" class="form-control" id="link" name="link" placeholder="URL for the link " value="'.$resp['link'].'">'.
+			'</div>';
 
-		$editorTitle = '<div class="form-group">'.
-		'<label for="title">Title</label>'.
-		'<input type="title" class="form-control" id="title" name="title" '.
-			'placeholder="Enter the title of the link" value="'.$resp['title'].'">'.
-		'</div>';
+			$editorTitle = '<div class="form-group">'.
+			'<label for="title">Title</label>'.
+			'<input type="title" class="form-control" id="title" name="title" '.
+				'placeholder="Enter the title of the link" value="'.$resp['title'].'">'.
+			'</div>';
 
-		$editorTags = '<div class="form-group">'.
-		'<label for="tags">Tags</label>'.
-		'<input type="text" class="form-control" id="tags" name="tags" placeholder="Comma separated list of tags." value="'.$resp['tags'].'">'.
-		'</div>';
+			$editorTags = '<div class="form-group">'.
+			'<label for="tags">Tags</label>'.
+			'<input type="text" class="form-control" id="tags" name="tags" placeholder="Comma separated list of tags." value="'.$resp['tags'].'">'.
+			'</div>';
 
-		$editorDate = '<div class="form-group">'.
-		'<label for="last_updated">Last Updated</label>'.
-		'<input type="text" class="form-control" id="last_updated" name="last_updated" placeholder="Last time updated" value="'.$resp['last_updated'].'">'.
-		'</div>';
+			$editorDate = '<div class="form-group">'.
+			'<label for="last_updated">Last Updated</label>'.
+			'<input type="text" class="form-control" id="last_updated" name="last_updated" placeholder="Last time updated" value="'.$resp['last_updated'].'">'.
+			'</div>';
 
-		$resp['body'] = '<form method="POST" action="linkedit.php?id='.$_REQUEST['id'].'">'.
-			'<input type="hidden" name="id" value="'.$_REQUEST['id'].'" />'.
-			$editorTitle.
-			$editorLink.
-			$editorTags.
-			$editorDate.
-			'<button type="submit" class="btn btn-default">Submit</button>'.
-		'</form>';
-	}
+			$resp['body'] = '<form method="POST" action="linkedit.php?id='.$_REQUEST['id'].'">'.
+				'<input type="hidden" name="id" value="'.$_REQUEST['id'].'" />'.
+				$editorTitle.
+				$editorLink.
+				$editorTags.
+				$editorDate.
+				'<button type="submit" class="btn btn-default">Submit</button>'.
+			'</form>';
+		}
 
 	} else if ($_REQUEST['method']==='getRandomTotal') {
 		$sql="SELECT count(*)  FROM links WHERE tags IS NULL OR last_updated IS NULL OR tags = '' OR last_updated = ''";
@@ -412,6 +421,8 @@ if (isset($_REQUEST['method'])) {
 		$ch = curl_init($_REQUEST['link']);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT ,5); 
+		
 		$json = curl_exec($ch);
 		$info = curl_getinfo($ch);
 		curl_close($ch);
@@ -463,95 +474,52 @@ if (isset($_REQUEST['method'])) {
 	} else if ($_REQUEST['method']==='updatelink') {
 		$link = new Link($_REQUEST['id']);
 
-		array_push($debugs,'updatelink id:'.$link->id);
-		array_push($debugs,'updatelink link:'.$link->link);
+		array_push($debugs,'updatelink() id:'.$link->id);
 
 		if (isset($_REQUEST['column'])) {
-			array_push($debugs,'updatelink column:'.$_REQUEST['column']);
-			array_push($debugs,'updatelink new value:'.$_REQUEST['value']);
-
 			$col = $_REQUEST['column'];
-			array_push($debugs,'updatelink Column to update:'.$col);
+			array_push($debugs,'updatelink() column:'.$col.' new value:`'.$_REQUEST['value'].'`');
 
-			// Only update the specified column
 			if ($col == 'link') {
 				$link->link = $_REQUEST['value'];
-				if ($link->update()) {
-					$resp['status'] = 'ok';
-					$resp['message'] = 'Updated link, with id <b>'.$_REQUEST['id'].'</b> and column <b>'.$_REQUEST['column'].'</b>';
-					array_push($debugs,'Updated link, with id *'.$_REQUEST['id'].'* and column *'.$_REQUEST['column'].'*');
-				} else {
-					$resp['status'] = 'error';
-					$resp['message'] = 'Could not update row with id:'.$link->id.' for column '.$_REQUEST['column'];
-					array_push($debugs, implode("\n", $link->debugs));
-				}
 			}
 
 			if ($col == 'title') {
 				$link->title = $_REQUEST['value'];
-				if ($link->update()) {
-					$resp['status'] = 'ok';
-					$resp['message'] = 'Updated link, with id <b>'.$_REQUEST['id'].'</b> and column <b>'.$_REQUEST['column'].'</b>';
-					array_push($debugs,'Updated link, with id *'.$_REQUEST['id'].'* and column *'.$_REQUEST['column'].'*');
-				} else {
-					$resp['status'] = 'error';
-					$resp['message'] = 'Could not update row with id:'.$link->id.' for column '.$_REQUEST['column'];
-					array_push($debugs, implode("\n", $link->debugs));
-				}
 			}
 
 			if ($col == 'status') {
 				$link->status = $_REQUEST['value'];
-				if ($link->update()) {
-					$resp['status'] = 'ok';
-					$resp['message'] = 'Updated link, with id <b>'.$_REQUEST['id'].'</b> and column <b>'.$_REQUEST['column'].'</b>';
-					array_push($debugs,'Updated link, with id *'.$_REQUEST['id'].'* and column *'.$_REQUEST['column'].'*');
-				} else {
-					$resp['status'] = 'error';
-					$resp['message'] = 'Could not update row with id:'.$link->id.' for column '.$_REQUEST['column'];
-					array_push($debugs, implode("\n", $link->debugs));
-				}
 			}
 
 			if ($col == 'tags') {
 				$link->tags = $_REQUEST['value'];
-				if ($link->update()) {
-					$resp['status'] = 'ok';
-					$resp['message'] = 'Updated link, with id *'.$_REQUEST['id'].'* and column *'.$col.'*';
-					array_push($debugs,'Updated link, with id <b>'.$_REQUEST['id'].'</b> and column *'.$col.'*');
-
-				} else {
-					$resp['status'] = 'error';
-					$resp['message'] = 'Could not update row with id:'.$link->id.' for column '.$col;
-					array_push($debugs,'Updated link, with id *'.$_REQUEST['id'].'* and column *'.$col.'*');
-
-				}
 			}
-
+			
 			if ($col == 'last_updated') {
 				$link->last_updated = $_REQUEST['value'];
-				if ($link->update()) {
-					$resp['status'] = 'ok';
-					$resp['message'] = 'Updated link, with id *'.$_REQUEST['id'].'* and column *'.$col.'*';
-					array_push($debugs, implode($link->debugs));
-					array_push($debugs,'Updated link, with id <b>'.$_REQUEST['id'].'</b> and column *'.$col.'* with value `'.$_REQUEST['value'].'`');
-
-				} else {
-					$resp['status'] = 'error';
-					$resp['message'] = 'Could not update row with id:'.$link->id.' for column '.$col;
-					array_push($debugs,'Could not update link, with id *'.$_REQUEST['id'].'* and column *'.$col.'*');
-				}
-				array_push($debugs, $link->debugs);
 			}
-		} else {
-			if ($link->update($_REQUEST)) {
+			
+			if ($link->update()) {
 				$resp['status'] = 'ok';
-				$resp['message'] = 'Updated link, with id <b>'.$_REQUEST['id'].'</b>';
-				array_push($debugs, implode("\n", $link->debugs));
+				$resp['message'] = 'Updated link, with id <b>'.$_REQUEST['id'].'</b> and column <b>'.$col.'</b>';
+				array_push($debugs,'Updated link, with id *'.$_REQUEST['id'].'* and column *'.$col.'*');
 			} else {
 				$resp['status'] = 'error';
-				$resp['message'] = 'Could not update link, with id <b>'.$_REQUEST['id'].'</b>'.
-					(count($link->errors)>0?implode('<br />', $link->errors):'').implode('<br />', $link->debugs);
+				$resp['message'] = 'Could not update row with id:'.$link->id.' for column '.$col;
+			}
+			array_push($debugs, $link->debugs);
+
+		} else {
+			if ($link->updateByMap($_REQUEST)) {
+				$resp['status'] = 'ok';
+				$resp['message'] = 'Updated link, with id <b>'.$_REQUEST['id'].'</b>';
+				array_push($debugs, $link->debugs);
+			} else {
+				$resp['status'] = 'error';
+				$resp['message'] = 'Could not update link, with id <b>'.$_REQUEST['id'].'</b>';
+				array_push($debugs, $link->debugs);
+				if (count($link->errors) > 0) { array_push($debugs, $link->errors); }
 			}
 		}
 	} else {

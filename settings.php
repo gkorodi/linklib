@@ -39,10 +39,9 @@ require_once('_includes.php');
 		</div> <!-- /container -->
 	</div><!-- /blue -->
 
-	<div class="container mtb">
+	<div class="container">
 		<div class="row">
-			<div class="col-lg-8">
-
+			<div class="col-lg-7">
         <table class="table">
 				<?php
         $configvars = Array('DB_HOST','DB_PORT','DB_USER','DB_PASSWORD', 'DB_NAME');
@@ -54,7 +53,7 @@ require_once('_includes.php');
             </th>
             <td>
               <input type="text" name="<?php echo $configvar;?>"
-              value="<?php eval('$var = '.$configvar.';'); echo $var;?>" size="100"/>
+              value="<?php (defined($configvar)?eval('$var = '.$configvar.';'):eval('$var = "N/A";')); echo $var;?>" />
             </td>
             <td>
               <button class="btn btn-success">Save</button>
@@ -64,12 +63,10 @@ require_once('_includes.php');
         }
         ?>
         </table>
-
-        <pre><?php var_dump($_SESSION);?></pre>
 			</div>
 
 			<! -- SIDEBAR -->
-			<div class="col-lg-4">
+			<div class="col-lg-5">
         <h4>Sidebar</h4>
 			</div>
 		</div><! --/row -->

@@ -14,19 +14,12 @@
           <ul class="nav navbar-nav">
             <li class="<?php echo (basename($_SERVER['PHP_SELF'],'.php')=='index'?'active':'');?>"><a href="index.php">HOME</a></li>
             <li class="<?php echo (basename($_SERVER['PHP_SELF'],'.php')=='stats'?'active':'');?>"><a href="stats.php">STATS</a></li>
-            <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'ADMIN') {
+            <?php if (isset($_SESSION['uid']) && isset($_SESSION['role']) && $_SESSION['role'] === 'ADMIN') {
               ?>
               <li><a href="search.php">SEARCH</a></li>
               <li><a href="query.php">QUERY</a></li>
               <li><a href="addnew.php">NEWLINK</a></li>
               <li><a href="curate_files.php">CURATE</a></li>
-              <?php
-            }
-
-            if (isset($_SESSION['uid']) && $_SESSION['role'] === 'ADMIN') {
-              ?>
-              <li><a href="search.php">SEARCH</a></li>
-              <li><a href="query.php">QUERY</a></li>
               <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo strtoupper($_SESSION['uid']).' '.($_SESSION['role']?$_SESSION['role']:'anonymous');?> <b class="caret"></b></a>
               <ul class="dropdown-menu">

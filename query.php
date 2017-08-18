@@ -54,17 +54,23 @@ require_once('_includes.php');
 				<?php
 				if (isset($_REQUEST['q'])) {
 					$searchresults = query($_REQUEST['q']);
+					if (count($searchresults['rows']) > 300) {
+						$searchresults['rows'] = array_slice($searchresults['rows'],0,300);
+					}
 					foreach($searchresults['rows'] AS $row) {
 						?>
 						<tr id="row<?php echo $row[0];?>">
 							<td>
-								<a href="<?php echo $row[1];?>" id="title-<?php echo $row[0];?>" target="_newWindow"><?php echo urldecode($row[2]);?></a><br />
+								<b>
+									<a href="<?php echo $row[1];?>" id="title-<?php echo $row[0];?>" target="_newWindow">
+										<?php echo urldecode($row[2]);?></a>
+								</b><br />
 								<small><?php echo $row[1];?></small><br />
 								<small id="date-<?php echo $row[0];?>"><?php echo date('Y-m-d', strtotime($row[4]));?></small>
 							</td>
 							<td>
 							<?php
-							if ($modified != null && $modified == 'repair') {?>
+							if (isset($modified) && $modified != null && $modified == 'repair') {?>
 								<input type="text" id="tags<?php echo $row[0];?>"
 									onChange="repairLink(<?php echo $row[0];?>, $(this).val());"
 										value="<?php echo $row[5];?>" />
@@ -78,7 +84,7 @@ require_once('_includes.php');
 							</td>
 							<td>
 								<button class="btn btn-sm btn-danger" onClick="deleteLink(<?php echo $row[0];?>);">
-									<span class="glyphicon glyphicon-remove"> </span>
+									<span class="glyphicon glyphicon-trash"> </span>
 								</button>
 							</td>
 							<td>
@@ -116,31 +122,64 @@ require_once('_includes.php');
 	
 	function repairlink(linkid) {
 		$('#title-'+linkid).html('...');
-
+		console.log("js.repairlink() Calling `repairlink` back-end process...");
+		
 		$.getJSON('_functions.php?method=repairlink&id='+linkid, function(data) {
+			console.log("js.repairlink() returned values are:");
 			console.log(data);
+			
 			if (data.status == 'ok') {
 				$('#title-'+linkid).html(data.meta.ogtitle);
-				var dateVar = Date();
-
+				var today = new Date();
+				var dd = today.getDate();
+				var mm = today.getMonth()+1; //January is 0!
+				var yyyy = today.getFullYear();
+				if(dd<10) { dd = '0'+dd }
+				if(mm<10) { mm = '0'+mm }
+				var dateVar = yyyy+'-'+mm+'-'+dd;
+				
+				var tagsVar = $('#tags'+linkid).val();
+				
 				if (data.meta.ogupdated_time) {
 					dateVar = data.meta.ogupdated_time;
+				} else if (data.meta.date) {
+					console.log("js.repairlink() using `date`");
+					
+					dateVar = data.meta.date;
 				} else if (data.meta.datePublished) {
+					console.log("js.repairlink() using `datePublished`");
 					dateVar = data.meta.datePublished;
 				} else if (data.meta.articlepublished_time) {
 					dateVar = data.meta.articlepublished_time;
+				} else if (data.meta.dateModified) {
+					console.log("js.repairlink() using `dateModified`");
+			
+					dateVar = data.meta.dateModified;
+				} else if (data.meta.modified) {
+					console.log("js.repairlink() using `modified`");
+			
+					dateVar = data.meta.modified;
 				} else if (data.meta.btmodDate) {
 					dateVar = data.meta.btmodDate;
 				}
 				$('#date-'+linkid).html(dateVar);
 
 				if (data.meta.news_keywords) {
-					$('#tags'+linkid).val(data.meta.news_keywords);
+					tagsVar = data.meta.news_keywords;
+				} else if (data.meta.category) {
+					tagsVar = data.meta.category;
 				}
 
-				console.log("Updating last_updated field");
-				$.getJSON('_functions.php?method=updatelink&id='+linkid+'&column=last_updated&value='+dateVar,
+				console.log("js.repairlink() Updating all fields");
+				$.getJSON('_functions.php',
+					{
+						"method":"updatelink",
+						"id": linkid,
+						"last_updated": dateVar,
+						"tags": tagsVar
+					},
 					function(ndata) {
+						console.log("js.repairlink() Response data:");
 						console.log(ndata);
 						if (ndata.status == 'ok') {
 							$('#row'+linkid).css('background-color','lightGreen');
@@ -150,28 +189,6 @@ require_once('_includes.php');
 						}
 					}
 				);
-
-				console.log("Updating status.");
-				$.getJSON('_functions.php?method=updatelink&id='+linkid+'&column=status&value=200',
-					function(ndata) {
-						console.log(ndata);
-						if (ndata.status == 'ok') {
-							$('#row'+linkid).css('background-color','lightGreen');
-						} else {
-							console.log(ndata);
-							$('#row'+linkid).css('background-color','red');
-						}
-					}
-				);
-
-				$.getJSON('_functions.php?method=updatelink&id='+linkid+'&column=title&value='+data.meta.ogtitle, function(ndata) {
-					if (ndata.status == 'ok') {
-						$('#row'+linkid).css('background-color','lightGreen');
-					} else {
-						console.log(ndata);
-						$('#row'+linkid).css('background-color','red');
-					}
-				});
 
 			} else {
 				$('#row'+linkid).css('background-color','pink');

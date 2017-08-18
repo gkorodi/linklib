@@ -60,7 +60,8 @@ require_once('_includes.php');
       "Missing Status" => "SELECT count(*) status_missing_count FROM links WHERE status IS NULL;",
       "Empty Status" => "SELECT count(*) status_missing_count FROM links WHERE status = '';",
       "Missing Dates" => "SELECT count(*) date_missing_count FROM links WHERE last_updated IS NULL;",
-      "Empty Dates" => "SELECT count(*) date_missing_count FROM links WHERE last_updated = '';"
+      "Empty Dates" => "SELECT count(*) date_missing_count FROM links WHERE last_updated = '';",
+	    "Wrong Dates" => "SELECT count(*) date_missing_count FROM links WHERE last_updated < '1969-01-01';"
 		);
 		$tlc = -1;
 		foreach($querylist AS $k=>$query_sql) {
