@@ -66,13 +66,8 @@ if (isset($_REQUEST['tag'])) {
   </head>
 
   <body>
-
-	  <?php require_once('_menu.php'); ?>
-
-	<!-- *****************************************************************************************************************
-	 BLUE WRAP
-	 ***************************************************************************************************************** -->
-	<div id="blue">
+		<?php require_once('_menu.php'); ?>
+		<div id="blue">
 	    <div class="container">
 			<div class="row">
 				<h3>Search Results by tag <b><?php echo (isset($_REQUEST['tag'])?$_REQUEST['tag']:'Not Set?! Whaaat?');?></b>.</h3>
@@ -102,11 +97,11 @@ if (isset($_REQUEST['tag'])) {
 							<td>Link</td>
 							<td>Timestamp</td>
 							<?php
-                                                        if ($_SESSION['role'] === 'ADMIN') {
-                                                                echo "<td> </td><td> </td>";
-                                                        }
-                                                        ?>
-                                                </tr>
+	            if ($_SESSION['role'] === 'ADMIN') {
+	                    echo "<td> </td><td> </td>";
+	            }
+	            ?>
+			    </tr>
 					</thead>
 					<tbody>
 					<?php
@@ -155,17 +150,18 @@ if (isset($_REQUEST['tag'])) {
 	 </div>
 	 <?php require_once('_footer.php'); ?>
 	 <?php require_once('_scripts.php'); ?>
-	 <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
 	 <script>
-	 $(document).ready(function() {
-    	$('#tableLinks').DataTable({"columns": [
-	null,
-	null,
-	null,
-    { "orderable": false },
-	{ "orderable": false }
-  ]});
-		} );
+		$(document).ready(function() {
+			$('#tableLinks').DataTable({
+				"columns": [
+					null,
+					null,
+					null,
+					{ "orderable": false },
+					{ "orderable": false }
+				]
+			});
+		});
 	 </script>
   </body>
 </html>

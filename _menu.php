@@ -1,4 +1,6 @@
     <!-- Fixed navbar -->
+		<?php $bname = basename($_SERVER['PHP_SELF'],'.php'); 
+		?>
     <div class="navbar navbar-default navbar-fixed-top" role="navigation">
       <div class="container">
         <div class="navbar-header">
@@ -19,7 +21,7 @@
               <li><a href="search.php">SEARCH</a></li>
               <li><a href="query.php">QUERY</a></li>
               <li><a href="addnew.php">NEWLINK</a></li>
-              <li><a href="curate_files.php">CURATE</a></li>
+              <li><a href="curate.php">CURATE</a></li>
               <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo strtoupper($_SESSION['uid']).' '.($_SESSION['role']?$_SESSION['role']:'anonymous');?> <b class="caret"></b></a>
               <ul class="dropdown-menu">
@@ -54,7 +56,7 @@
               <?php
             } else {
               ?>
-              <li class="<?php echo (basename($_SERVER['PHP_SELF'],'.php')=='login'?'active':'');?>"><a href="login.php">LOGIN</a></li>
+              <li class="<?php echo ($bname=='login'?'active':'');?>"><a href="login.php">LOGIN</a></li>
               <?php
             }
             ?>

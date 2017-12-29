@@ -90,14 +90,14 @@ if (isset($_POST['link'])) {
 				        <div class="row">
 				            <div class="form-group col-lg-12">
 				                <label for="code">Link</label>
-				                <input type="text" class="form-control input-normal" name="link"  />
+				                <input type="text" class="form-control input-normal" name="link" value="<?=(isset($_REQUEST['link'])?$_REQUEST['link']:'')?>"/>
 				            </div>
 				        </div>
 
 				        <div class="row">
 				            <div class="form-group col-lg-12">
 				                <label for="code">Title</label>
-				                <input type="text" class="form-control input-normal" name="title" />
+				                <input type="text" class="form-control input-normal" name="title" value="<?=(isset($_REQUEST['title'])?$_REQUEST['title']:'')?>"/>
 				            </div>
 				        </div>
 				        <div class="row">
@@ -128,7 +128,7 @@ if (isset($_POST['link'])) {
 	 	</div><! --/row -->
 	 </div><! --/container -->
 
-	<?php require_once('_footer.php'); ?>
+	 <?php require_once('_footer.php'); ?>
 
 	<!-- Bootstrap core JavaScript
 	================================================== -->
@@ -138,15 +138,13 @@ if (isset($_POST['link'])) {
 	<script>
 		$('#btnTest').on('click', function(e,o) {
 			$.getJSON('_functions.php?method=testlink&link='+$('input[name="link"]').val(), function(obj) {
-				var fontColor = 'gray';
-
-				if (obj.status == 'ok') {
-					fontColor = 'green';
-				} else {
-					fontColor = 'red';
-				}
-				$('#areaTestResults').html('<div style="color: '+fontColor+'">'+obj.message+'</div>'+
-					'<small>'+obj.debugs+'</small>');
+				var debugText = 'Debugs:';
+				$.each(obj.debugs, function(idx,e) {
+					debugText += e;
+				});
+				
+				$('#areaTestResults').html('<div style="color: '+(obj.status && obj.status == 'ok'?'green':'red')+'">'+obj.message+'</div>'+
+					'<small>'+debugText+'</small>');
 			});
 		});
 	</script>

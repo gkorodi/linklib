@@ -5,17 +5,71 @@ $resp['status'] = 'error';
 $resp['message'] = 'No method has been specified';
 $debugs = $_REQUEST;
 
+function get_web_page( $url )
+{
+    $user_agent='Mozilla/5.0 (Windows NT 6.1; rv:8.0) Gecko/20100101 Firefox/8.0';
+
+    $options = array(
+        CURLOPT_CUSTOMREQUEST  =>"GET",        //set request type post or get
+        CURLOPT_POST           =>false,        //set to GET
+        CURLOPT_USERAGENT      => $user_agent, //set user agent
+        CURLOPT_COOKIEFILE     =>"cookie.txt", //set cookie file
+        CURLOPT_COOKIEJAR      =>"cookie.txt", //set cookie jar
+        CURLOPT_RETURNTRANSFER => true,     // return web page
+        CURLOPT_HEADER         => false,    // don't return headers
+        CURLOPT_FOLLOWLOCATION => true,     // follow redirects
+        CURLOPT_ENCODING       => "",       // handle all encodings
+        CURLOPT_AUTOREFERER    => true,     // set referer on redirect
+        CURLOPT_CONNECTTIMEOUT => 120,      // timeout on connect
+        CURLOPT_TIMEOUT        => 120,      // timeout on response
+        CURLOPT_MAXREDIRS      => 10,       // stop after 10 redirects
+    );
+
+    $ch      = curl_init( $url );
+    curl_setopt_array( $ch, $options );
+    $content = curl_exec( $ch );
+    $err     = curl_errno( $ch );
+    $errmsg  = curl_error( $ch );
+    $header  = curl_getinfo( $ch );
+    curl_close( $ch );
+
+    $header['errno']   = $err;
+    $header['errmsg']  = $errmsg;
+    $header['content'] = $content;
+    return $header;
+}
+
+function curlGET($url) {
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_HEADER, 0);
+	curl_setopt($ch, CURLOPT_VERBOSE, 0);
+	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible;)");
+	curl_setopt($ch, CURLOPT_URL, $url);
+	$resp['content'] = curl_exec($ch);
+  $resp['errno'] = curl_errno( $ch );
+  $resp['errmsg'] = curl_error( $ch );
+  $resp['info'] = curl_getinfo( $ch );
+	curl_close($ch);
+	return $resp;
+}
+
 function findMetaTags($content) {
 	global $debugs;
+	$debugs[] = "findMetaTags() Starting";
+	$debugs[] = "findMetaTags() content length ".strlen($content);
 
 	$endpos = null;
 	$arr = Array();
 
 	$more_meta_tag = strpos($content, '<meta');
+	$debugs[] = "First meta tag is at ".$more_meta_tag." position";
 	while ($more_meta_tag) {
 		$endpos = strpos($content, '>', $more_meta_tag);
 		$tagvalues = substr($content,$more_meta_tag,$endpos-$more_meta_tag);
-
+		$debugs[] = "metatag: ".$tagvalues;
+		
 		//$xml = simplexml_load_string($tagvalues.'>');
 		//array_push($debugs, print_r($xml, true));
 		//$arr[$xml['name']] =  $xml['content'];
@@ -25,12 +79,15 @@ function findMetaTags($content) {
 			$arr[str_replace(':','',$parts[1])] =  $parts[3];
 		}
 		$more_meta_tag = strpos($content, '<meta', $endpos++);
+		$debugs[] = "Next meta tag is at ".$more_meta_tag." position";
 	}
+	$debugs[] = "findMetaTags() Finished.";
 	return $arr;
 }
 
 if (isset($_REQUEST['method'])) {
 	array_push($debugs, '_functions.php Method '.$_REQUEST['method'].' has been specified.');
+
 
 	if ($_REQUEST['method']==='deletelink') {
 		$link = new Link($_REQUEST['id']);
@@ -42,6 +99,24 @@ if (isset($_REQUEST['method'])) {
 			$resp['status'] = 'error';
 			$resp['message'] = 'Could not delete link, with id <b>'.$_REQUEST['id'].'</b><br />'.
 				'<small>'.$link->getErrorListFormatted().'</small>';
+		}
+	} else if ($_REQUEST['method']==='delcuratelink') {
+		$sql = "DELETE FROM tobecurated WHERE link LIKE '".$_REQUEST['link']."%';";
+		
+		$mysqli = new mysqli(DB_HOST.(defined('DB_PORT')?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
+		if ($mysqli->connect_errno) {
+			$resp['status'] = "ok";
+			$resp['message'] = "Failed to connect to MySQL: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error;
+		} else {
+			$mysqli->autocommit(true);
+			if ($mysqli->query($sql) === TRUE) {
+				$resp['status'] = "ok";
+				$resp['message'] = "Link `".$_REQUEST['link']."` has been deleted.";
+			} else {
+				$resp['status'] = "error";
+				$resp['message'] = "Could not delete link `".$_REQUEST['link']."`.". $mysqli->errno . "/" .$mysqli->error;
+			}
+			$mysqli->close();
 		}
 	} else if ($_REQUEST['method']==='delfile') {
 		$resp['status'] = 'error';
@@ -182,20 +257,15 @@ if (isset($_REQUEST['method'])) {
 
 	} else if ($_REQUEST['method']==='getheader') {
 		$link = new Link($_REQUEST['id']);
-
-		$ch = curl_init($link->link);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT ,5); 
-		$content = curl_exec($ch);
-
-		$resp['meta'] = findMetaTags($content);
-
+		$RESTresponse = curlGET(trim($link->link));
+		$debugs[] = print_r($RESTresponse, true);
+		
+		$debugs[] = 'About to parse '.strlen($RESTresponse['content'])." bytes.";
+		$resp['meta'] = findMetaTags($RESTresponse['content']);
+		$resp['info'] = $RESTresponse['info'];
 		$resp['status'] = 'ok';
 		$resp['message'] = 'URL Headers for '.$link->link;
-		//$resp['info'] = curl_getinfo($ch);
-		curl_close($ch);
-
+		
 	} else if ($_REQUEST['method']==='curate_done') {
 		$newLink = new Link();
 

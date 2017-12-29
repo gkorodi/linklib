@@ -44,11 +44,6 @@ if (isset($_REQUEST['host'])) {
 			<div class="row">
 				<h3>Search Results by host <a href="http://<?php echo $_REQUEST['host'];?>" target="_newWindow"><?php echo $_REQUEST['host'];?></a>
 				</h3>
-				<form method="GET" id="frmRefine">
-					<input type="checkbox" id="fldNoTags" name="notags" <?php echo (isset($_REQUEST['notags'])?'checked':'');?>/> NoTagsOnly
-					<input type="checkbox" id="fldOlderFirst" name="olderfirst" <?php echo (isset($_REQUEST['olderfirst'])?'checked':'');?>/> OlderFirst
-					<input type="hidden" id="fldHost" name="host" value="<?php echo $_REQUEST['host'];?>" />
-				</form>
 				<small>There are <?php echo count($resultset['rows']); ?> entries</small>
 			</div><!-- /row -->
 	    </div> <!-- /container -->
@@ -56,7 +51,7 @@ if (isset($_REQUEST['host'])) {
 
 	 <div class="container mtb">
      <div class="row">
-     <div class="col-md-12">
+     <div class="col-md-8">
 			<?php
 			if (!isset($_REQUEST['host'])) {
 				?>
@@ -110,6 +105,30 @@ if (isset($_REQUEST['host'])) {
 			}
 			?>
     </div>
+		
+		<div class="col-lg-4">
+			<h4>Filter</h4>
+			<div class="hline"></div>
+			<br />
+				<form method="GET" id="frmRefine">
+					<table cellpadding="5px">
+						<tr>
+							<td><input type="checkbox" id="fldNoTags" name="notags" <?php echo (isset($_REQUEST['notags'])?'checked':'');?>/></td>
+							<td>NoTagsOnly</td>
+						</tr>
+						<tr>
+							<td><input type="checkbox" id="fldOlderFirst" name="olderfirst" <?php echo (isset($_REQUEST['olderfirst'])?'checked':'');?>/></td>
+							<td>OlderFirst</td>
+						</tr>
+					</table>
+					
+					 
+					 
+					<input type="hidden" id="fldHost" name="host" value="<?php echo $_REQUEST['host'];?>" />
+				</form>
+			<div class="spacing"></div>
+			
+		</div>
       </div>
 	 </div><! --/container -->
 

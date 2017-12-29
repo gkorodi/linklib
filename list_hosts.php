@@ -36,7 +36,7 @@ require_once('_includes.php');
       <div class="container">
         <div class="row">
           <h3>Host List.</h3>
-          <form method="GET"><input type="checkbox" name="errors" onChange="submit();"/> Errors Only?</form>
+          
         </div><!-- /row -->
       </div> <!-- /container -->
     </div><!-- /blue -->
@@ -51,11 +51,16 @@ require_once('_includes.php');
 			$linklist = query("SELECT link, status, tags FROM links");
 			foreach($linklist['rows'] AS $row) {
 				$urlarr = explode('/', $row[0]);
-				$hostname = $urlarr[2];
-				if (isset($hostlist[$hostname])) {
-					$hostlist[$hostname]++;
+				if (count($urlarr)<3) {
+					echo "WARNING: Not enough elements [".$row[0]."]";
+					$hostlist[$row[0]] = 1;
 				} else {
-					$hostlist[$hostname] = 1;
+					$hostname = $urlarr[2];
+					if (isset($hostlist[$hostname])) {
+						$hostlist[$hostname]++;
+					} else {
+						$hostlist[$hostname] = 1;
+					}
 				}
 			}
 			arsort($hostlist);
@@ -88,14 +93,18 @@ require_once('_includes.php');
 
 		<! -- SIDEBAR -->
 		<div class="col-lg-4">
-			<h4>Search</h4>
+			<!--<h4>Search</h4>
 			<div class="hline"></div>
 			<p>
 			<br/><form action="search.php">
 			<input type="text" class="form-control" name="q" placeholder="Search something">
 			</form>
 			</p>
-
+			-->
+			<h4>Filter</h4>
+			<div class="hline"></div>
+			<br />
+			<form method="GET"><input type="checkbox" name="errors" <?=(isset($_REQUEST['errors'])?'checked':'')?> onChange="submit();"/> Errors Only?</form>
 			<div class="spacing"></div>
 
 			<h4>Statuses</h4>

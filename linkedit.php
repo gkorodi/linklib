@@ -221,10 +221,10 @@ if (isset($_POST['id'])) {
 			if (data.meta.published_at) {
 				$('#last_updated').val(data.meta.published_at);
 			}
-
 			if (data.meta.articlepublished_time) {
 				$('#last_updated').val(data.meta.articlepublished_time);
 			}
+			
 			$('#last_updated').css('background-color','white');
 		});
 	});
