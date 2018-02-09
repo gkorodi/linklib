@@ -42,9 +42,7 @@ if (isset($_REQUEST['host'])) {
 	<div id="blue">
 	    <div class="container">
 			<div class="row">
-				<h3>Search Results by host <a href="http://<?php echo $_REQUEST['host'];?>" target="_newWindow"><?php echo $_REQUEST['host'];?></a>
-				</h3>
-				<small>There are <?php echo count($resultset['rows']); ?> entries</small>
+				<h3>Search Results by host <a href="http://<?php echo $_REQUEST['host'];?>" target="_newWindow"><?php echo $_REQUEST['host'];?></a></h3>
 			</div><!-- /row -->
 	    </div> <!-- /container -->
 	</div><!-- /blue -->
@@ -64,7 +62,17 @@ if (isset($_REQUEST['host'])) {
 				<?php
 			} else {
         			echo '<table class="table">';
+					
+							$rd = $resultset['rows'][0][4];
+					$oldestEntryDate = (!isset($rd) || empty($rd)?date():strtotime($rd));
+					$latestEntryDate = (!isset($rd) || empty($rd)?date():strtotime($rd));
+					
 				foreach($resultset['rows'] AS $row) {
+					
+					$currentDate = (!isset($row[4]) || empty($row[4])?date():strtotime($row[4]));
+					$oldestEntryDate = ($oldestEntryDate > $currentDate?$currentDate:$oldestEntryDate);
+					$latestEntryDate = ($latestEntryDate < $currentDate?$currentDate:$latestEntryDate);
+
           ?>
           <tr id="row<?php echo $row[0];?>">
             <td>
@@ -107,23 +115,24 @@ if (isset($_REQUEST['host'])) {
     </div>
 		
 		<div class="col-lg-4">
+			<h4>Metrics</h4>
+			<div class="hline"></div>
+			<p>
+				There are <b><?php echo count($resultset['rows']); ?></b> entries<br />
+				From the oldest entry on <b><?=date('F d, Y', $oldestEntryDate)?></b> until the latest one on <b><?=date('F d, Y', $latestEntryDate)?></b>.
+			</p>
+			<div class="spacing"></div>
+
 			<h4>Filter</h4>
 			<div class="hline"></div>
 			<br />
 				<form method="GET" id="frmRefine">
-					<table cellpadding="5px">
-						<tr>
-							<td><input type="checkbox" id="fldNoTags" name="notags" <?php echo (isset($_REQUEST['notags'])?'checked':'');?>/></td>
-							<td>NoTagsOnly</td>
-						</tr>
+					<table cellpadding="10px" cellspacing="3px">
 						<tr>
 							<td><input type="checkbox" id="fldOlderFirst" name="olderfirst" <?php echo (isset($_REQUEST['olderfirst'])?'checked':'');?>/></td>
-							<td>OlderFirst</td>
+							<td> OlderFirst</td>
 						</tr>
 					</table>
-					
-					 
-					 
 					<input type="hidden" id="fldHost" name="host" value="<?php echo $_REQUEST['host'];?>" />
 				</form>
 			<div class="spacing"></div>
@@ -145,10 +154,6 @@ if (isset($_REQUEST['host'])) {
 
 	<script>
 	$(document).ready(function(){
-		$('#fldNoTags').on('change', function() {
-			$('#frmRefine').submit();
-		});
-
 		$('#fldOlderFirst').on('change', function() {
 			$('#frmRefine').submit();
 		});

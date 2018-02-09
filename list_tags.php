@@ -46,14 +46,9 @@ require_once('_includes.php');
         <div class="col-lg-8">
 		<div id="alltags">
 			<?php
-			$categories['empty'] = 0;
-			$categories['NULL'] = 0;
+			
 			$r = query("SELECT tags FROM links");
 			foreach ($r['rows'] AS $row) {
-
-				if ($row[0]===null) { $categories['NULL']++; continue;}
-				if ($row[0]==='') { $categories['empty']++; continue;}
-
 				$cats = explode(',', $row[0]);
 				foreach($cats AS $category) {
 					$c = trim($category);
@@ -110,9 +105,6 @@ require_once('_includes.php');
 	<?php require_once('_footer.php'); ?>
 
 	<?php require_once('_scripts.php'); ?>
-
-	<script>
-	</script>
 
   </body>
 </html>

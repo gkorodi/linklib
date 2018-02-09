@@ -205,26 +205,13 @@ if (isset($_POST['id'])) {
 		var getHeaderURL = '_functions.php?method=getheader&id=<?php echo $link->id;?>';
 		$.get(getHeaderURL, function(data) {
 			console.log(data);
+			$('#title').val(data.meta.og_title?data.meta.og_title:$('#title').val());
+			$('#last_updated').css('background-color','pink');
+			$('#last_updated').val(getDateMetaTag(data.meta));
 			$('#last_updated').css('background-color','orange');
 			if (data.status == 'ok') {
 				$('#status').val('200');
 			}
-			if (data.meta.ogtitle) {
-				$('#title').val(data.meta.ogtitle);
-			}
-			if (data.meta.datePublished) {
-				$('#last_updated').val(data.meta.datePublished);
-			}
-			if (data.meta.date) {
-				$('#last_updated').val(data.meta.date);
-			}
-			if (data.meta.published_at) {
-				$('#last_updated').val(data.meta.published_at);
-			}
-			if (data.meta.articlepublished_time) {
-				$('#last_updated').val(data.meta.articlepublished_time);
-			}
-			
 			$('#last_updated').css('background-color','white');
 		});
 	});

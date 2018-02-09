@@ -129,39 +129,11 @@ require_once('_includes.php');
 			console.log(data);
 			
 			if (data.status == 'ok') {
-				$('#title-'+linkid).html(data.meta.ogtitle);
-				var today = new Date();
-				var dd = today.getDate();
-				var mm = today.getMonth()+1; //January is 0!
-				var yyyy = today.getFullYear();
-				if(dd<10) { dd = '0'+dd }
-				if(mm<10) { mm = '0'+mm }
-				var dateVar = yyyy+'-'+mm+'-'+dd;
 				
+				$('#title-'+linkid).html(data.meta.og_title);
 				var tagsVar = $('#tags'+linkid).val();
+				var dateVar = getDateMetaTag(data.meta);
 				
-				if (data.meta.ogupdated_time) {
-					dateVar = data.meta.ogupdated_time;
-				} else if (data.meta.date) {
-					console.log("js.repairlink() using `date`");
-					
-					dateVar = data.meta.date;
-				} else if (data.meta.datePublished) {
-					console.log("js.repairlink() using `datePublished`");
-					dateVar = data.meta.datePublished;
-				} else if (data.meta.articlepublished_time) {
-					dateVar = data.meta.articlepublished_time;
-				} else if (data.meta.dateModified) {
-					console.log("js.repairlink() using `dateModified`");
-			
-					dateVar = data.meta.dateModified;
-				} else if (data.meta.modified) {
-					console.log("js.repairlink() using `modified`");
-			
-					dateVar = data.meta.modified;
-				} else if (data.meta.btmodDate) {
-					dateVar = data.meta.btmodDate;
-				}
 				$('#date-'+linkid).html(dateVar);
 
 				if (data.meta.news_keywords) {

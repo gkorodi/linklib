@@ -26,7 +26,7 @@ require_once('_includes.php');
 	<div id="blue">
 	    <div class="container">
 			<div class="row">
-				<h3>Status <?php echo $_REQUEST['status'];?></h3>
+				<h3>Status <b><?php echo (isset($_REQUEST['status'])?$_REQUEST['status']:'non 200');?></b></h3>
 			</div><!-- /row -->
 	    </div> <!-- /container -->
 	</div><!-- /blue -->
@@ -35,32 +35,42 @@ require_once('_includes.php');
 	 <div class="container mtb">
 	 	<div class="row">
 	 		<div id="randomlist" class="col-lg-8">
-					<table class="table">
+				<?php
+				$extra_criteria = (isset($_REQUEST['status'])?' AND status='.$_REQUEST['status']:'');
+				if (isset($_REQUEST['notags'])) { $extra_criteria .= ' AND tags IS NULL '; }
+				if (isset($_REQUEST['emptytags'])) { $extra_criteria .= " AND tags = '' "; }
+				
+				$sql='SELECT * FROM links WHERE (status IS NULL OR status != 200) '.$extra_criteria.' LIMIT 100';
+				$resultset = query($sql);
+				
+				echo 'There are '.count($resultset['rows']).' records.<br />';
+					
+				?>
+				
+				<table class="table">
+					<thead>
+						<tr>
+							<th>Link</th>
+							<th>Date</th>
+							<th> </th>
+							<th> </th>
+						</tr>
+					</thead>
+					
+					<tbody>
 					<?php
-					$extra_criteria = (isset($_REQUEST['status'])?' AND status='.$_REQUEST['status']:'');
-
-					if (isset($_REQUEST['notags'])) {
-						$extra_criteria .= ' AND tags IS NULL ';
-					}
-					if (isset($_REQUEST['emptytags'])) {
-						$extra_criteria .= " AND tags = '' ";
-					}
-					$sql='SELECT * FROM links WHERE '.'status != 200 '.$extra_criteria.' LIMIT 100';
-					$resultset = query($sql);
 					foreach ($resultset['rows'] AS $row) {
 						?>
 						<tr id="row<?php echo $row[0];?>">
 
-							<td><a href="<?php echo $row[1];?>" target="_newWindow"><?php echo $row[2];?></a><br />
-								<small><?php echo $row[1];?></small>
+							<td>
+								<a href="<?php echo $row[1];?>" target="_newWindow"><?php echo $row[2];?></a><br />
+								<small><?php echo $row[1];?></small><br />
+								<?php echo $row[5];?>
 							</td>
 
 							<td>
-								<input type="text" name="tags" value="<?php echo $row[5];?>" />
-							</td>
-
-							<td>
-								<small><?php echo ($row[4]==='0000-00-00 00:00:00'?'N/A':date('Y-m-d', strtotime($row[4])));?></small>
+								<small><?=$row[4]?></small>
 							</td>
 
 							<td>
@@ -69,7 +79,6 @@ require_once('_includes.php');
 									<span class="glyphicon glyphicon-minus"> </span>
 								</button>
 							</td>
-
 							<td>
 								<a class="btn btn-sm btn-info" href="linkedit.php?id=<?php echo $row[0];?>" target="_newLinkWin">
 									<span class="glyphicon glyphicon-pencil"> </span>
@@ -79,18 +88,18 @@ require_once('_includes.php');
 						<?php
 					}
 					?>
-					</table>
+					</tbody>
+				</table>
 			</div>
 
 	 		<div class="col-lg-4">
-		 		
 				<h4>Search</h4>
 		 		<div class="hline"></div>
-		 			<p>
-		 				<br/><form action="search.php">
-		 				<input type="text" class="form-control" name="q" placeholder="Search something">
-					</form>
-		 			</p>
+	 			<p>
+	 				<br/><form action="search.php">
+	 				<input type="text" class="form-control" name="q" placeholder="Search something">
+				</form>
+	 			</p>
 
 		 		<div class="spacing"></div>
 

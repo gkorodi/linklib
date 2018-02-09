@@ -35,16 +35,17 @@ require_once('_includes.php');
 	 HEADERWRAP
 	 ***************************************************************************************************************** -->
 	<div id="headerwrap">
-	    <div class="container">
+	    <div class="container"><img src="assets/img/hero-img-big.jpg">
 			<div class="row">
 				<div class="col-lg-8 col-lg-offset-2">
-					<h3>Show your work with this beautiful theme</h3>
-					<h1>Eyecatching Bootstrap 3 Theme.</h1>
-					<h5>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</h5>
-					<h5>More Lorem Ipsum added here too.</h5>
+					<h3>A library of URLs organized around various themes/tags.</h3>
+					<h1>linkLIB &copy;</h1>
+					<h5>Curated and current URLs representing many interesting categories and sub-genres.</h5>
+          <small>Photo by Eugenio Mazzone on Unsplash</small>
+          <br />
 				</div>
-				<div class="col-lg-8 col-lg-offset-2 himg">
-					<img src="assets/img/browser.png" class="img-responsive">
+				<div class="col-lg-8 col-lg-offset-2 ">
+					<!--  class="img-responsive" -->
 				</div>
 			</div><!-- /row -->
 	    </div> <!-- /container -->

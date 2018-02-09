@@ -55,34 +55,59 @@ function curlGET($url) {
 	return $resp;
 }
 
+
 function findMetaTags($content) {
 	global $debugs;
-	$debugs[] = "findMetaTags() Starting";
-	$debugs[] = "findMetaTags() content length ".strlen($content);
+	$debugs[] = "findMetaTags() Starting.";
+	libxml_use_internal_errors(true);
+	$metaTags = Array();
+	
+	// load the document
+	$doc = new DOMDocument;
 
-	$endpos = null;
-	$arr = Array();
-
-	$more_meta_tag = strpos($content, '<meta');
-	$debugs[] = "First meta tag is at ".$more_meta_tag." position";
-	while ($more_meta_tag) {
-		$endpos = strpos($content, '>', $more_meta_tag);
-		$tagvalues = substr($content,$more_meta_tag,$endpos-$more_meta_tag);
-		$debugs[] = "metatag: ".$tagvalues;
-		
-		//$xml = simplexml_load_string($tagvalues.'>');
-		//array_push($debugs, print_r($xml, true));
-		//$arr[$xml['name']] =  $xml['content'];
-
-		if (strpos($tagvalues, 'content=')) {
-			$parts = explode('"', $tagvalues);
-			$arr[str_replace(':','',$parts[1])] =  $parts[3];
-		}
-		$more_meta_tag = strpos($content, '<meta', $endpos++);
-		$debugs[] = "Next meta tag is at ".$more_meta_tag." position";
+	if (!$doc->loadHTML($content)) {
+	    foreach (libxml_get_errors() as $error) {
+	        // handle errors here
+					$debugs[] = "Error:".print_r($error, true);
+	    }
+	    libxml_clear_errors();
+	} else {
+		$tags = $doc->getElementsByTagName('meta');
+		$debugs[] = "There are ".count($tags)." tags";
+		$debugs[] = print_r($tags, true);
+		foreach ($tags as $tag) {
+						
+			if ($tag->hasAttributes())  { 
+				$attrs = Array();
+			        foreach ($tag->attributes as $attr) 
+								{ 
+									//if ($attr->nodeName === 'content') { $debugs[] = $attr->nodeValue; } else { continue; }
+			            $attrs[$attr->nodeName] = $attr->nodeValue;
+			        } 
+							
+							$fieldName = 'nothing';
+							if (isset($attrs['name'])) {
+								$fieldName = $attrs['name'];
+							} else {
+								if (isset($attrs['property'])) {
+									$fieldName = $attrs['property'];
+								} else {
+									if (isset($attrs['itemprop'])) {
+										$fieldName = $attrs['itemprop'];
+									} else {
+										$fieldName = 'unknown_'.print_r($attrs, true);
+									}
+								}
+							}
+							//$debugs[] = print_r($attrs, true);
+							$metaTags[str_replace('-','_', str_replace(':','_', $fieldName))] = (isset($attrs['content'])?$attrs['content']:'n/a');
+			    } else {
+				$debugs[] = "No attributes ".$tag->nodeName;
+			}
+			} 
 	}
 	$debugs[] = "findMetaTags() Finished.";
-	return $arr;
+	return $metaTags;
 }
 
 if (isset($_REQUEST['method'])) {
@@ -101,7 +126,7 @@ if (isset($_REQUEST['method'])) {
 				'<small>'.$link->getErrorListFormatted().'</small>';
 		}
 	} else if ($_REQUEST['method']==='delcuratelink') {
-		$sql = "DELETE FROM tobecurated WHERE link LIKE '".$_REQUEST['link']."%';";
+		$sql = "DELETE FROM tobecurated WHERE id = ".$_REQUEST['id'];
 		
 		$mysqli = new mysqli(DB_HOST.(defined('DB_PORT')?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
 		if ($mysqli->connect_errno) {
@@ -111,10 +136,10 @@ if (isset($_REQUEST['method'])) {
 			$mysqli->autocommit(true);
 			if ($mysqli->query($sql) === TRUE) {
 				$resp['status'] = "ok";
-				$resp['message'] = "Link `".$_REQUEST['link']."` has been deleted.";
+				$resp['message'] = "Link `".$_REQUEST['id']."` has been deleted.";
 			} else {
 				$resp['status'] = "error";
-				$resp['message'] = "Could not delete link `".$_REQUEST['link']."`.". $mysqli->errno . "/" .$mysqli->error;
+				$resp['message'] = "Could not delete link `".$_REQUEST['id']."`.". $mysqli->errno . "/" .$mysqli->error;
 			}
 			$mysqli->close();
 		}
@@ -257,14 +282,18 @@ if (isset($_REQUEST['method'])) {
 
 	} else if ($_REQUEST['method']==='getheader') {
 		$link = new Link($_REQUEST['id']);
+		$resp['status'] = 'ok';
+		$resp['message'] = 'Meta tags parsing';
+		
 		$RESTresponse = curlGET(trim($link->link));
-		$debugs[] = print_r($RESTresponse, true);
+		//$debugs[] = print_r($RESTresponse, true);
 		
 		$debugs[] = 'About to parse '.strlen($RESTresponse['content'])." bytes.";
 		$resp['meta'] = findMetaTags($RESTresponse['content']);
-		$resp['info'] = $RESTresponse['info'];
+		//$resp['info'] = $RESTresponse['info'];
 		$resp['status'] = 'ok';
 		$resp['message'] = 'URL Headers for '.$link->link;
+		
 		
 	} else if ($_REQUEST['method']==='curate_done') {
 		$newLink = new Link();
