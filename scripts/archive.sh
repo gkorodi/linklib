@@ -6,7 +6,7 @@ log() {
 }
 log "Starting"
 
-mysqldump -u root --password=Kaposvar-16 links > /tmp/links_dbdump.sql
+mysqldump -u root --password=<DONTPUBLISHINSOURCECONTROL> links > /tmp/links_dbdump.sql
 aws s3 cp /tmp/links_dbdump.sql s3://www.gaborkorodi.com/
 RC=$?
 
