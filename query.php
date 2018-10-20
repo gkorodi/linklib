@@ -1,6 +1,5 @@
 <?php
 require_once('_includes.php');
-
 ?><!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,16 +14,6 @@ require_once('_includes.php');
 	<!-- Custom styles for this template -->
 	<link href="assets/css/style.css" rel="stylesheet">
 	<link href="assets/css/font-awesome.min.css" rel="stylesheet">
-
-
-	<!-- Just for debugging purposes. Don't actually copy this line! -->
-	<!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-
-	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-	<!--[if lt IE 9]>
-	<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-	<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-	<![endif]-->
 
 	<script src="assets/js/modernizr.js"></script>
 </head>
@@ -74,7 +63,7 @@ require_once('_includes.php');
 								<input type="text" id="tags<?php echo $row[0];?>"
 									onChange="repairLink(<?php echo $row[0];?>, $(this).val());"
 										value="<?php echo $row[5];?>" />
-
+											repairlink:<?php echo $row[0];?>
 							<?php } else { ?>
 								<input type="text" id="tags<?php echo $row[0];?>"
 									onChange="tagLink(<?php echo $row[0];?>, $(this).val());"
@@ -119,21 +108,22 @@ require_once('_includes.php');
 	<!-- Placed at the end of the document so the pages load faster -->
 	<?php require_once('_scripts.php'); ?>
 	<script>
-	
+
 	function repairlink(linkid) {
 		$('#title-'+linkid).html('...');
+
 		console.log("js.repairlink() Calling `repairlink` back-end process...");
 		
 		$.getJSON('_functions.php?method=repairlink&id='+linkid, function(data) {
 			console.log("js.repairlink() returned values are:");
 			console.log(data);
-			
+
 			if (data.status == 'ok') {
-				
+
 				$('#title-'+linkid).html(data.meta.og_title);
 				var tagsVar = $('#tags'+linkid).val();
 				var dateVar = getDateMetaTag(data.meta);
-				
+
 				$('#date-'+linkid).html(dateVar);
 
 				if (data.meta.news_keywords) {

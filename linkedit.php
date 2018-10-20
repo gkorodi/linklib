@@ -17,6 +17,18 @@ if (!isset($_REQUEST['id']) || $_REQUEST['id'] == '') {
 	$link = new Link($randomid);
 } else {
 	$link = new Link($_REQUEST['id']);
+	if (isset($_POST['id'])) {
+		$link->title = $_POST['title'];
+		$link->link = $_POST['link'];
+		$link->tags = str_replace(' ','', strtolower($_POST['tags']));
+		$link->status = $_POST['status'];
+		$link->last_updated = date('Y-m-d H:i', strtotime($_POST['last_updated']));
+		$linktags_before = $link->tags;
+		if (!$link->update()) {
+			$errorMessage = 'Could not updates link!'.'<br />'.implode('<br />', $link->debugs);
+		}
+		$linktags_after = $link->tags;
+	}
 }
 
 if (!$link->id) {
@@ -28,19 +40,6 @@ $nextid_res = query($nextidSQLQuery);
 $nextid = $nextid_res['rows'][rand(0,$nextid_res['rowcount']-1)][0];
 
 $errorMessage = null;
-if (isset($_POST['id'])) {
-	$link->title = $_POST['title'];
-	$link->link = $_POST['link'];
-	$link->tags = str_replace(' ','', strtolower($_POST['tags']));
-	$link->status = $_POST['status'];
-	$link->last_updated = date('Y-m-d H:i', strtotime($_POST['last_updated']));
-	$linktags_before = $link->tags;
-	if (!$link->update()) {
-		$errorMessage = 'Could not updates link!'.'<br />'.implode('<br />', $link->debugs);
-	}
-	$linktags_after = $link->tags;
-}
-
 ?><!DOCTYPE html>
 <html lang="en">
 <head>
@@ -77,13 +76,12 @@ if (isset($_POST['id'])) {
         <div class="row">
           <h3 id="lblTitle"><?php echo $link->title; ?>.</h3>
         </div><!-- /row -->
-	  <?php
-	  $info = $link->getURLInfo();
-	  if ($errorMessage != null) {
-		  echo '<div style="color:red">'.$errorMessage.'</div>';
-	  }
-
-	  ?>
+			  <?php
+			  //$info = $link->getURLInfo();
+			  if ($errorMessage != null) {
+				  echo '<div style="color:red">'.$errorMessage.'</div>';
+			  }
+			  ?>
       </div> <!-- /container -->
     </div><!-- /blue -->
 
@@ -101,10 +99,17 @@ if (isset($_POST['id'])) {
 	    <input type="text" class="form-control" id="tags" name="tags" value="<?php echo $link->tags;?>" />
 	  </div>
 
+	  <div class="form-group" id="fldLastUpdated">
+	    <label for="last_updated">Last Update:</label><br />
+	    <input type="text" class="form-controlx" style="padding: 3px"
+	    	id="last_updated" name="last_updated" value="<?php echo date('Y-m-d', strtotime($link->row['last_updated']));?>" size="12" />
+	  </div>
+
+
 	<a class="btn btn-info" href="linkedit.php?id=<?php echo $nextid;?>" accesskey="N" id="btnNext"><u>N</u>ext</a>
 
 	<?php
-	$url = $info['url'];
+	/*$url = $info['url'];
 	if ($info['http_code'] == 200 && $info['redirect_count'] > 0) {
 		if (strpos($info['url'],'?')) {
 		$url = substr($info['url'],0,strpos($info['url'],'?'));
@@ -114,8 +119,23 @@ if (isset($_POST['id'])) {
 		'Status <sup>'.$info['http_code'].'/'.$info['redirect_count'].'</sup></a>';
 	} else {
 				echo '  <a class="btn disabled" href="#">Status <sup>-1</sup></a>';
-	}
-	?><br />
+	}*/
+	?>
+
+	<a class="btn btn-warning"
+		id="btnHeader" href="#">Hdr</a>
+
+		<input type="submit" name="btnUpdate"
+		  	id="btnUpdateId" class="btn btn-info" value="Update" />
+
+	<a class="btn btn-warning" href="<?php echo $link->link;?>" target="_newWindow">Show</a>
+
+	<a class="btn btn-warning"
+		href="https://duckduckgo.com/?q=<?php echo urlencode($link->title);?>&t=ffsb&ia=web"
+		target="_srchWindow">Duck</a>
+
+
+			<br />
 	<br />
 
 	  <div class="form-group">
@@ -129,29 +149,15 @@ if (isset($_POST['id'])) {
 	    <input type="text" class="form-controlx" style="padding: 3px"
 	    	id="status" name="status" value="<?php echo $link->status;?>" size="5"/>
 	  </div>
-
-	  <div class="form-group">
-	    <label for="last_updated">Last Update:</label><br />
-	    <input type="text" class="form-controlx" style="padding: 3px"
-	    	id="last_updated" name="last_updated" value="<?php echo date('Y-m-d', strtotime($link->row['last_updated']));?>" size="12" />
-	  </div>
-
 	  <input type="hidden" id="id" name="id" value="<?php echo $link->id;?>" />
 
-	  <input type="submit" name="btnUpdate"
-	  	id="btnUpdateId" class="btn btn-info pull-right" value="Update" />
+
 	</form>
 	<button id="btnDelete" class="btn btn-danger">Delete</button><br />
 	<br />
+	<br />
 
-  	<a class="btn btn-warning"
-  		id="btnHeader" href="#">Hdr</a>
-	<br />
-	<br />
-  	<a class="btn btn-warning" href="<?php echo $link->link;?>" target="_newWindow">Show</a>
-  	<a class="btn btn-warning"
-  		href="https://duckduckgo.com/?q=<?php echo urlencode($link->title);?>&t=ffsb&ia=web"
-  		target="_srchWindow">Duck</a>
+
 	<br />
 	<br />
 	</div>
@@ -203,16 +209,16 @@ if (isset($_POST['id'])) {
 		console.log(event);
 
 		var getHeaderURL = '_functions.php?method=getheader&id=<?php echo $link->id;?>';
+		$('#fldLastUpdated').css('background-color','pink');
 		$.get(getHeaderURL, function(data) {
 			console.log(data);
 			$('#title').val(data.meta.og_title?data.meta.og_title:$('#title').val());
-			$('#last_updated').css('background-color','pink');
 			$('#last_updated').val(getDateMetaTag(data.meta));
-			$('#last_updated').css('background-color','orange');
+			$('#fldLastUpdated').css('background-color','lightGreen');
 			if (data.status == 'ok') {
 				$('#status').val('200');
 			}
-			$('#last_updated').css('background-color','white');
+			$('#fldLastUpdated').css('background-color','white');
 		});
 	});
 	</script>

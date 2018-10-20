@@ -100,6 +100,7 @@
 
 	function tagLink(linkId, value) {
 		var originalBgColor = $('#blue').css('background-color');
+		
 		$('#blue').css('background-color','lightGreen');
 		$.ajax({
 			type: 'GET',
@@ -109,14 +110,14 @@
 				if (respObj.status == 'ok') {
 					$('#row'+linkId).css('display','none');
 				} else {
+					console.log(respObj);
 					alert(respObj.message);
 				}
 				$('#blue').css('background-color', originalBgColor);
 			},
 			data: {
-				"method":"updatelink",
+				"method":"updateTag",
 				"id":linkId,
-				"column":"tags",
 				"value":value
 			}
 		});

@@ -86,7 +86,9 @@ if (isset($_REQUEST['id']) && $_REQUEST['id']!='' ) {
 		<form id="frmEditLink" method="POST">
 
 		        <div class="form-group">
-		        <a href="<?php echo $link->link;?>" target="_newWindow"><h3><?php echo $link->title;?></h3></a>
+		        <a href="<?php echo $link->link;?>" target="_newWindow">
+							<h3><?php echo $link->title;?></h3>
+						</a>
 		        </div>
 
 						<input type="hidden" name="id" value="<?php echo $link->id;?>" />

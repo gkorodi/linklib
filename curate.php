@@ -38,9 +38,9 @@ function getLinkTitle($linkURL) {
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-    
+
     <script src="assets/js/modernizr.js"></script>
-	    
+
 	    <style>
 	    TR.stat500 {
 		    background-color: red;
@@ -62,12 +62,17 @@ function getLinkTitle($linkURL) {
 	<div id="blue">
 	    <div class="container">
 			<div class="row">
-				<h3>To Be Curated</h3>
+				<div class="col-md-8">
+					<h3>To Be Curated</h3>
+				</div>
+				<div class="col-md-4 text-right">
+					<form>Oldest first? <input type="checkbox" value="true" name="older_first" onClick="submit();" <?=(isset($_REQUEST['older_first'])?"checked":"")?>/></form>
+				</div>
 			</div><!-- /row -->
 	    </div> <!-- /container -->
 	</div><!-- /blue -->
 
-	 
+
 	<!-- *****************************************************************************************************************
 	 BLOG CONTENT
 	 ***************************************************************************************************************** -->
@@ -78,7 +83,9 @@ function getLinkTitle($linkURL) {
 	 		<div class="col-md-12">
 				<table class="table">
 				<?php
-				$sql="SELECT * FROM tobecurated ".(isset($_REQUEST['link'])?' WHERE link LIKE '."'%".$_REQUEST['link']."%'":'')." LIMIT 100";
+				$linktag = (isset($_REQUEST['link'])?' link LIKE '."'%".$_REQUEST['link']."%' AND ":'');
+				$orderby = (isset($_REQUEST['older_first'])?'ORDER BY timestamp':'ORDER BY timestamp DESC');
+				$sql="SELECT * FROM tobecurated WHERE ".$linktag." tags IS NULL ".$orderby." LIMIT 100";
 				$query_response = query($sql);
 				$idx = 1;
 				foreach ($query_response['rows'] AS $row) {
@@ -88,6 +95,7 @@ function getLinkTitle($linkURL) {
 					<tr id="row<?=$row[0]?>">
 						<td><b><a href="<?=$row[1]?>" target="_newWin"><?=$row[2]?></a></b><br /><?=$tags?><small><?=$hn[2]?> - <?=date("Y-m-d", strtotime($row[3]))?></small></td>
 						<td><button class="btn btn-sm btn-success" onClick="linkMaintenance('sav', '<?=$row[1]?>', '<?=$row[2]?>', <?=$row[0]?>);">Save</button></td>
+						<td><button class="btn btn-sm btn-warning" onClick="linkMaintenance('curate', '', '', <?=$row[0]?>);">Curate</button></td>
 						<td><button class="btn btn-sm btn-danger" onClick="linkMaintenance('del', '<?=$row[1]?>', '', <?=$row[0]?>);">Delete</button></td>
 					</tr>
 					<?php
@@ -101,7 +109,7 @@ function getLinkTitle($linkURL) {
 
 	 <?php require_once('_footer.php'); ?>
 
-	 
+
 	<!-- Bootstrap core JavaScript
 	================================================== -->
 	<!-- Placed at the end of the document so the pages load faster -->
@@ -113,17 +121,17 @@ function getLinkTitle($linkURL) {
 	<script src="assets/js/jquery.prettyPhoto.js"></script>
 	<script src="assets/js/jquery.isotope.min.js"></script>
 	<script src="assets/js/custom.js"></script>
-		
+
 		<script>
 			function linkMaintenance(func, lnk, ttl, id) {
-				
+
 				if (func == 'sav') {
 					console.log("saving link "+lnk);
 					$.getJSON( '_functions.php?method=delcuratelink&id='+id, function( data ) {
 					  if (data.status == "ok") {
 							console.log("deleted link");
 							$('#row'+id).hide();
-							
+
 							if (lnk.indexOf("#")>=0) {
 							  lnk = lnk.substring(0,lnk.indexOf('#'));
 							}
@@ -134,9 +142,22 @@ function getLinkTitle($linkURL) {
 						}
 					});
 				}
-				
+
 				if (func == 'del') {
 					$.getJSON( '_functions.php?method=delcuratelink&id='+id, function( data ) {
+					  if (data.status == "ok") {
+							console.log(data.message);
+							$('#row'+id).hide();
+						} else {
+							alert(data.message);
+						}
+					});
+				}
+
+				if (func == 'curate') {
+					$.getJSON( '_functions.php?method=curatelink&id='+id, function( data ) {
+						console.log(data);
+
 					  if (data.status == "ok") {
 							console.log(data.message);
 							$('#row'+id).hide();

@@ -146,15 +146,18 @@ function query($sql) {
 		if($rs === false) {
 		  trigger_error('Wrong SQL: ' . $sql . ' Error: ' . $conn->error, E_USER_ERROR);
 		} else {
-		  $response['rowcount'] = $rs->num_rows;
+			if (is_bool($rs)) {
+				$response['status'] = ($rs?'ok':'error');
+			} else {
+				$response['rows'] = Array();
+				$response['rowcount'] = $rs->num_rows;
+				$rs->data_seek(0);
+				while($row = $rs->fetch_row()){
+					array_push($response['rows'], $row);
+				}
+				$rs->free();
+			}
 		}
-
-		$response['rows'] = Array();
-		$rs->data_seek(0);
-		while($row = $rs->fetch_row()){
-			array_push($response['rows'], $row);
-		}
-		$rs->free();
 		$conn->close();
 	}
 	if (count($errors)>0) {
@@ -320,6 +323,7 @@ class Link {
 	var $row = Array();
 
 	function __construct($id = null) {
+		
 		if ($id == null) {
 			array_push($this->debugs, "Create an empty object. No 'id' has been specified in constructor.");
 		} else {
@@ -337,11 +341,11 @@ class Link {
 				if ($result = $mysqli->query($query)) {
 				    /* fetch associative array */
 				    while ($row = $result->fetch_assoc()) {
-				        $this->link = $row['link'];
-					$this->title = $row['title'];
-					$this->status = $row['status'];
-					$this->tags = $row['tags'];
-					$this->row = $row;
+							$this->link = $row['link'];
+							$this->title = $row['title'];
+							$this->status = $row['status'];
+							$this->tags = $row['tags'];
+							$this->row = $row;
 				    }
 				    /* free result set */
 				    $result->free();

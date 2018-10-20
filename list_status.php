@@ -30,11 +30,10 @@ require_once('_includes.php');
 			</div><!-- /row -->
 	    </div> <!-- /container -->
 	</div><!-- /blue -->
-
-
+	
 	 <div class="container mtb">
 	 	<div class="row">
-	 		<div id="randomlist" class="col-lg-8">
+	 		<div class="col-lg-8">
 				<?php
 				$extra_criteria = (isset($_REQUEST['status'])?' AND status='.$_REQUEST['status']:'');
 				if (isset($_REQUEST['notags'])) { $extra_criteria .= ' AND tags IS NULL '; }
@@ -65,12 +64,12 @@ require_once('_includes.php');
 
 							<td>
 								<a href="<?php echo $row[1];?>" target="_newWindow"><?php echo $row[2];?></a><br />
-								<small><?php echo $row[1];?></small><br />
-								<?php echo $row[5];?>
+								<!-- <small><?php echo $row[1];?></small><br /> -->
+								<?php echo (isset($row[5]) && !empty($row[5])?$row[5]:(empty($row[5])?'empty':'n/a'));?>
 							</td>
 
 							<td>
-								<small><?=$row[4]?></small>
+								<small><?=date('Y-m-d', strtotime($row[4]))?></small>
 							</td>
 
 							<td>
@@ -145,7 +144,6 @@ require_once('_includes.php');
 	$(document).ready(function(obj) {
 		$('.btn.btn-danger').on('click', function(btnobj) {
 			var linkid = $(this).parent().parent().attr('id');
-
 			$.getJSON('_functions.php?method=deletelink&id='+linkid, function( data ) {
 				if (data.status == 'ok') {
 					console.log(data.info.redirect_count);

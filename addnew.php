@@ -7,8 +7,8 @@ if (isset($_POST['link'])) {
 	$link = new Link();
 	$link->title = $_POST['title'];
 	$link->link = $_POST['link'];
-	$link->status = $_POST['status'];
-	$link->last_updated = $_POST['last_updated'];
+	$link->status = (isset($_POST['status'])?$_POST['status']:-1);
+	$link->last_updated = (isset($_POST['last_updated'])?$_POST['last_updated']:date('c'));
 	
 	$link->tags = $_POST['tags'];
 	if ($link->save()) {
@@ -112,14 +112,7 @@ if (isset($_POST['link'])) {
 
 			<! -- SIDEBAR -->
 			<div class="col-md-4">
-				<h4>Extras</h4>
-				<div class="hline"></div>
-
-				<br />
-				<a class="btn btn-success pull-right" id="btnTest">Test</a>
-
-		 		<div class="spacing"></div>
-		 		<h4>Analysis</h4>
+		 		<h4>Analysis</h4><a class="btn btn-success pull-right" id="btnTest">Test</a>
 		 		<div class="hline"></div>
 		 		<div id="areaTestResults">
 				</div>
@@ -140,7 +133,7 @@ if (isset($_POST['link'])) {
 			$.getJSON('_functions.php?method=testlink&link='+$('input[name="link"]').val(), function(obj) {
 				var debugText = 'Debugs:';
 				$.each(obj.debugs, function(idx,e) {
-					debugText += e;
+					debugText += e+'<br />';
 				});
 				
 				$('#areaTestResults').html('<div style="color: '+(obj.status && obj.status == 'ok'?'green':'red')+'">'+obj.message+'</div>'+

@@ -6,7 +6,7 @@ require_once('_includes.php');
 	  <?php require_once('_metatags.php');?>
     <link rel="shortcut icon" href="assets/ico/favicon.ico">
 
-    <title><?php echo APP_TITLE;?></title>
+    <title><?php echo APP_TITLE;?> - FixDuplicates</title>
 
     <!-- Bootstrap core CSS -->
     <link href="assets/css/bootstrap.css" rel="stylesheet">
@@ -38,79 +38,44 @@ require_once('_includes.php');
 	<div id="blue">
 	    <div class="container">
 			<div class="row">
-				<!-- <h3>Search Results for <b><?php echo $_REQUEST['q'];?></b>.</h3> -->
 
-				 <form id="frmSearchQuery" class="form-inline" method="GET">
-				  <div class="form-group">
-				    <label for="fldQ">Results for: </label>
-				    <input type="text" class="form-control" id="fldQ" name="q" value="<?php echo (isset($_REQUEST['q'])?$_REQUEST['q']:'');?>" />
-				  </div>
-
-				</form>
 			</div><!-- /row -->
 	    </div> <!-- /container -->
 	</div><!-- /blue -->
 
 	 <div class="container">
 	 	<div class="row">
-			<div class="col-lg-8">
-      <br />
+
+			<div class="col-lg-12">
 				<table class="table" id="tableLinks">
-          <thead>
-              <tr>
-                <th>Host</th>
-                <th>Link</th>
-                <th>Date</th>
-								<th> </th>
-              </tr>
-          </thead>
 					<tbody>
 						<?php
-						if (isset($_REQUEST['q'])) {
-							$sql="SELECT * FROM links WHERE UCASE(title) LIKE '%".$_REQUEST['q']."%' ".
-								(isset($_REQUEST['fldNoTags'])?" AND tags = ''":"").
-								" ORDER BY last_updated ".(isset($_REQUEST['fldOldestFirst'])?'ASC':'DESC')." LIMIT 1000";
+							$sql="select * from import2 WHERE status != 666 order by last_updated LIMIT 200 ";
 							$searchresults = query($sql);
-
 							foreach($searchresults['rows'] AS $row) {
+                if ($row[0] < 2) { continue; }
                   ?>
-                  <tr id="row<?php echo $row[0];?>">
+                  <tr id="row<?=$row[0]?>">
+                    <td><button class="btn btn-danger" onClick="dellink(<?=$row[0]?>);"/>Del</button></td>
+                    <td><button class="btn btn-info" onClick="savelink(<?=$row[0]?>);"/>Save</button></td>
                     <td>
-                      <?php echo justHostName($row[1]);?>
+                      <a href="<?=$row[1]?>" target="newWin"><?=$row[2]?></a><br />
+                      <?php
+                      $a = explode('/', $row[1]);
+                      echo $a[2];
+                      ?>
                     </td>
                     <td>
-                      <b><a href="<?php echo $row[1];?>" 
-												target="_newWindow"><?php echo urldecode($row[2]);?></a></b><br />
-												<small>
-		                      <?php
-		                      foreach(explode(',', $row[5]) AS $tag) { echo '<span class="badge">'.$tag.'</span> ';}
-		                      ?>
-												</small>
+                      <?=$row[4]?>
                     </td>
-                    <td>
-                      <?php echo date('Y-m-d', strtotime($row[4]));?>
-                    </td>
-										<td>
-											<a href="linkedit.php?id=<?=$row[0]?>" target="newTab">...</a></td>
-										</td>
                   </tr>
                   <?php
-                }
-						}
+              }
 						?>
 					</tbody>
 				</table>
        </div>
-			 
-			 <div class="col-lg-4">
-		 		<h4>Tags</h4>
-		 		<div class="hline"></div>
-				
-				<div class="spacing"></div>
-				
-		 		<h4>Dates</h4>
-		 		<div class="hline"></div>
-			 </div>
+
 	 	</div><!--/row -->
 	 </div><!--/container -->
 
@@ -120,11 +85,28 @@ require_once('_includes.php');
 	================================================== -->
 	<!-- Placed at the end of the document so the pages load faster -->
 	<?php require_once('_scripts.php'); ?>
+  <script>
+  $('#countOfLinks').html(<?=count($searchresults['rows'])?>);
 
-	<script>
-  	$(document).ready(function() {
-      $('#tableLinks').DataTable();
-  	});
-	</script>
+  function dellink(linkid) {
+    $.getJSON( "_dellink.php?table=import2&id="+linkid, function( data ) {
+      if (data.status == 'ok') {
+        $('#row'+linkid).hide();
+      } else {
+        alert(data.message);
+      }
+    });
+  }
+
+  function savelink(linkid) {
+    $.getJSON( "_savelink.php?table=import2&id="+linkid, function( data ) {
+      if (data.status == 'ok') {
+        $('#row'+linkid).hide();
+      } else {
+        alert(data.message);
+      }
+    });
+  }
+  </script>
   </body>
 </html>

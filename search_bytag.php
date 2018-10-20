@@ -93,7 +93,7 @@ if (isset($_REQUEST['tag'])) {
 					<table id="tableLinks">
 					<thead>
 						<tr>
-							<td>Host</td>
+							<td>Host</th>
 							<td>Link</td>
 							<td>Timestamp</td>
 							<?php
@@ -109,12 +109,10 @@ if (isset($_REQUEST['tag'])) {
 						$lst = explode('/',  $row[0]);
 						?>
 						<tr id="row<?php echo $row[0];?>">
+							<td><?php echo justHostName($row[1]); ?></small></td>
 							<td>
-								<?php echo justHostName($row[1]); ?></small>
-							</td>
-							<td>
-								<h3><a href="<?php echo $row[1];?>" target="_newWindow"><?php echo urldecode($row[2]);?></a></h3>
-								<small><?php
+								<b><a href="<?php echo $row[1];?>" target="_newWindow"><?php echo urldecode($row[2]);?></a></b><br />
+								<?php
 								foreach(explode(',', $row[5]) AS $tag) { ?>
 									<span class="badge"><?php echo $tag;?></span>
 								<?php
@@ -153,6 +151,7 @@ if (isset($_REQUEST['tag'])) {
 	 <script>
 		$(document).ready(function() {
 			$('#tableLinks').DataTable({
+				"order": [[ 2, 'asc' ]],
 				"columns": [
 					null,
 					null,

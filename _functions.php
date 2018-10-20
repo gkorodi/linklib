@@ -65,6 +65,10 @@ function findMetaTags($content) {
 	// load the document
 	$doc = new DOMDocument;
 
+	if (!isset($content) || empty($content)) {
+		return $metaTags;
+	}
+	
 	if (!$doc->loadHTML($content)) {
 	    foreach (libxml_get_errors() as $error) {
 	        // handle errors here
@@ -125,6 +129,26 @@ if (isset($_REQUEST['method'])) {
 			$resp['message'] = 'Could not delete link, with id <b>'.$_REQUEST['id'].'</b><br />'.
 				'<small>'.$link->getErrorListFormatted().'</small>';
 		}
+	} else if ($_REQUEST['method']==='curatelink') {
+		$sqlQueryString = "UPDATE tobecurated SET tags = 'curate' WHERE id = ".$_REQUEST['id'];
+		
+		// Create connection
+		$conn = new mysqli(DB_HOST.(defined('DB_PORT')?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
+		// Check connection
+		if ($conn->connect_error) {
+			$resp['status'] = 'error';
+			$resp['message'] = "Error connecting to the datasource: " . $conn->connect_error;
+		} else {
+			if ($conn->query($sqlQueryString) === TRUE) {
+			    $resp['status'] = 'ok';
+					$resp['message'] = "Link <b>".$_REQUEST['id']."</b> has been updated.";
+			} else {
+				$resp['status'] = 'error';
+				$resp['message'] = "Error updating record: " . $conn->error.' as '.$sqlQueryString;
+			}
+		}
+		$conn->close();
+
 	} else if ($_REQUEST['method']==='delcuratelink') {
 		$sql = "DELETE FROM tobecurated WHERE id = ".$_REQUEST['id'];
 		
@@ -569,6 +593,10 @@ if (isset($_REQUEST['method'])) {
 				$resp['message'] = 'Could not save link.';
 			}
 		}
+	} else if ($_REQUEST['method']==='updateTag') {
+		
+		$sql = "UPDATE links SET tags = '".$_REQUEST['value']."' WHERE id = ".$_REQUEST['id'];
+		$resp = query($sql);
 
 	} else if ($_REQUEST['method']==='updatelink') {
 		$link = new Link($_REQUEST['id']);

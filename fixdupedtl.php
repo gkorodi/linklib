@@ -1,5 +1,28 @@
 <?php
 require_once('_includes.php');
+
+if (!isset($_REQUEST['link'])) {
+  $debugs = Array();
+  $errors = Array();
+
+  $mysqli = new mysqli(DB_HOST.(defined('DB_PORT')?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
+  if ($mysqli->connect_errno) {
+      $errors[] = "Failed to connect to MySQL: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error;
+  } else {
+    $mysqli->autocommit(true);
+    if ($mysqli->query("DELETE FROM links WHERE id IN (".implode(',', $_REQUEST['id']).")") === TRUE) {
+    } else {
+      $errors[] = "Could not execute delete statement: (" . $mysqli->errno . ") " .$mysqli->error;
+    }
+    $mysqli->close();
+  }
+  if (count($errors) > 0) {
+    echo '<div style="color: red">'.implode('<br />', $errors).'</div>';
+    exit();
+  }
+  header('Location: fixdupes.php');
+}
+
 ?><!DOCTYPE html>
 <html lang="en">
   <head>
@@ -38,78 +61,45 @@ require_once('_includes.php');
 	<div id="blue">
 	    <div class="container">
 			<div class="row">
-				<!-- <h3>Search Results for <b><?php echo $_REQUEST['q'];?></b>.</h3> -->
-
-				 <form id="frmSearchQuery" class="form-inline" method="GET">
-				  <div class="form-group">
-				    <label for="fldQ">Results for: </label>
-				    <input type="text" class="form-control" id="fldQ" name="q" value="<?php echo (isset($_REQUEST['q'])?$_REQUEST['q']:'');?>" />
-				  </div>
-
-				</form>
+        <h3><?=$_REQUEST['link']?></h3>
 			</div><!-- /row -->
 	    </div> <!-- /container -->
 	</div><!-- /blue -->
 
 	 <div class="container">
 	 	<div class="row">
+
 			<div class="col-lg-8">
-      <br />
+        <form>
 				<table class="table" id="tableLinks">
-          <thead>
-              <tr>
-                <th>Host</th>
-                <th>Link</th>
-                <th>Date</th>
-								<th> </th>
-              </tr>
-          </thead>
 					<tbody>
 						<?php
-						if (isset($_REQUEST['q'])) {
-							$sql="SELECT * FROM links WHERE UCASE(title) LIKE '%".$_REQUEST['q']."%' ".
-								(isset($_REQUEST['fldNoTags'])?" AND tags = ''":"").
-								" ORDER BY last_updated ".(isset($_REQUEST['fldOldestFirst'])?'ASC':'DESC')." LIMIT 1000";
+							$sql="select * from links where link = '".$_REQUEST['link']."' ORDER BY last_updated";
 							$searchresults = query($sql);
-
 							foreach($searchresults['rows'] AS $row) {
-                  ?>
-                  <tr id="row<?php echo $row[0];?>">
-                    <td>
-                      <?php echo justHostName($row[1]);?>
-                    </td>
-                    <td>
-                      <b><a href="<?php echo $row[1];?>" 
-												target="_newWindow"><?php echo urldecode($row[2]);?></a></b><br />
-												<small>
-		                      <?php
-		                      foreach(explode(',', $row[5]) AS $tag) { echo '<span class="badge">'.$tag.'</span> ';}
-		                      ?>
-												</small>
-                    </td>
-                    <td>
-                      <?php echo date('Y-m-d', strtotime($row[4]));?>
-                    </td>
-										<td>
-											<a href="linkedit.php?id=<?=$row[0]?>" target="newTab">...</a></td>
-										</td>
-                  </tr>
-                  <?php
+                ?>
+                <tr>
+                  <td><input type="checkbox" name="id[]" value="<?=$row[0]?>" /> <a href="linkedit.php?id=<?=$row[0]?>" target="newWindow"><?=$row[0]?></a></td>
+                  <td>
+                    <b><?=$row[2]?></b>
+                  </td>
+                  <td>
+                    <?=$row[4]?>
+                  </td>
+                  <td>
+                    <?=$row[5]?>
+                  </td>
+                </tr>
+                <?php
                 }
-						}
 						?>
 					</tbody>
 				</table>
+        <input class="btn btn-danger" type="Submit" value="Del" /><br /><br />
+      </form>
        </div>
-			 
+
 			 <div class="col-lg-4">
-		 		<h4>Tags</h4>
-		 		<div class="hline"></div>
-				
-				<div class="spacing"></div>
-				
-		 		<h4>Dates</h4>
-		 		<div class="hline"></div>
 			 </div>
 	 	</div><!--/row -->
 	 </div><!--/container -->
@@ -120,11 +110,5 @@ require_once('_includes.php');
 	================================================== -->
 	<!-- Placed at the end of the document so the pages load faster -->
 	<?php require_once('_scripts.php'); ?>
-
-	<script>
-  	$(document).ready(function() {
-      $('#tableLinks').DataTable();
-  	});
-	</script>
   </body>
 </html>

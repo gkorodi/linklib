@@ -6,7 +6,7 @@ require_once('_includes.php');
 	  <?php require_once('_metatags.php');?>
     <link rel="shortcut icon" href="assets/ico/favicon.ico">
 
-    <title><?php echo APP_TITLE;?></title>
+    <title><?php echo APP_TITLE;?> - FixDuplicates</title>
 
     <!-- Bootstrap core CSS -->
     <link href="assets/css/bootstrap.css" rel="stylesheet">
@@ -38,79 +38,59 @@ require_once('_includes.php');
 	<div id="blue">
 	    <div class="container">
 			<div class="row">
-				<!-- <h3>Search Results for <b><?php echo $_REQUEST['q'];?></b>.</h3> -->
 
-				 <form id="frmSearchQuery" class="form-inline" method="GET">
-				  <div class="form-group">
-				    <label for="fldQ">Results for: </label>
-				    <input type="text" class="form-control" id="fldQ" name="q" value="<?php echo (isset($_REQUEST['q'])?$_REQUEST['q']:'');?>" />
-				  </div>
-
-				</form>
 			</div><!-- /row -->
 	    </div> <!-- /container -->
 	</div><!-- /blue -->
 
 	 <div class="container">
-	 	<div class="row">
+	 	<div class="row"> Counter:<div id="countOfLinks"></div><br />
+
+<form method="GET" action="fixdupedtl.php">
+  <input type="submit" class="btn btn-danger" value="Del" /><br />
+<br />
 			<div class="col-lg-8">
-      <br />
 				<table class="table" id="tableLinks">
-          <thead>
-              <tr>
-                <th>Host</th>
-                <th>Link</th>
-                <th>Date</th>
-								<th> </th>
-              </tr>
-          </thead>
 					<tbody>
 						<?php
-						if (isset($_REQUEST['q'])) {
-							$sql="SELECT * FROM links WHERE UCASE(title) LIKE '%".$_REQUEST['q']."%' ".
-								(isset($_REQUEST['fldNoTags'])?" AND tags = ''":"").
-								" ORDER BY last_updated ".(isset($_REQUEST['fldOldestFirst'])?'ASC':'DESC')." LIMIT 1000";
+							$sql="select count(*) as counter, link from links group by link order by counter desc LIMIT 200";
 							$searchresults = query($sql);
 
 							foreach($searchresults['rows'] AS $row) {
+                if ($row[0] < 2) { continue; }
+                  $sqll="select * from links WHERE link LIKE '".$row[1]."%' ORDER BY last_updated";
+                  $linkresults = query($sqll);
                   ?>
-                  <tr id="row<?php echo $row[0];?>">
+                  <tr>
+                    <td><?=$row[0]?></td>
                     <td>
-                      <?php echo justHostName($row[1]);?>
+                      <a href="fixdupedtl.php?link=<?=$row[1]?>"><?=$row[1]?></a>
                     </td>
-                    <td>
-                      <b><a href="<?php echo $row[1];?>" 
-												target="_newWindow"><?php echo urldecode($row[2]);?></a></b><br />
-												<small>
-		                      <?php
-		                      foreach(explode(',', $row[5]) AS $tag) { echo '<span class="badge">'.$tag.'</span> ';}
-		                      ?>
-												</small>
-                    </td>
-                    <td>
-                      <?php echo date('Y-m-d', strtotime($row[4]));?>
-                    </td>
-										<td>
-											<a href="linkedit.php?id=<?=$row[0]?>" target="newTab">...</a></td>
-										</td>
                   </tr>
                   <?php
+                  foreach($linkresults['rows'] as $r) {
+                    ?>
+                    <tr>
+                      <td><input type="checkbox" name="id[]" value="<?=$r[0]?>" /></td>
+                      <td>
+                        <a href="linkedit.php?id=<?=$r[0]?>" target="newWindow"><?=$r[0]?></a>
+                        [<i><?=$r[4]?></i>]
+                        <?=$r[2]?>
+                        <small><b><?=$r[5]?></b></small>
+                      </td>
+                    </tr>
+                    <?php
+                  }
                 }
-						}
 						?>
 					</tbody>
 				</table>
        </div>
-			 
+
 			 <div class="col-lg-4">
-		 		<h4>Tags</h4>
-		 		<div class="hline"></div>
-				
-				<div class="spacing"></div>
-				
-		 		<h4>Dates</h4>
-		 		<div class="hline"></div>
 			 </div>
+     </form>
+
 	 	</div><!--/row -->
 	 </div><!--/container -->
 
@@ -120,11 +100,8 @@ require_once('_includes.php');
 	================================================== -->
 	<!-- Placed at the end of the document so the pages load faster -->
 	<?php require_once('_scripts.php'); ?>
-
-	<script>
-  	$(document).ready(function() {
-      $('#tableLinks').DataTable();
-  	});
-	</script>
+  <script>
+  $('#countOfLinks').html(<?=count($searchresults['rows'])?>);
+  </script>
   </body>
 </html>
