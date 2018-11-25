@@ -55,40 +55,51 @@ function curlGET($url) {
 	return $resp;
 }
 
+function getContentByLinkId($linkId) {
+	global $debugs;
+	$resp = query('SELECT * FROM tobecurated WHERE id = '.$linkId.' LIMIT 1');
+	$content = '';
+	try {
+		$content = file_get_contents($resp['rows'][0][1]);
+	} catch (Exception $ex) {
+		$debugs[] = 'getContentByLinkId() ERROR reading link content:'.$ex->getMessage();
+	}
+	return $content;
+}
+
 
 function findMetaTags($content) {
 	global $debugs;
-	$debugs[] = "findMetaTags() Starting.";
+	$debugs[] = "findMetaTags() Starting. content-length:".strlen($content);
+
 	libxml_use_internal_errors(true);
 	$metaTags = Array();
-	
-	// load the document
 	$doc = new DOMDocument;
 
 	if (!isset($content) || empty($content)) {
 		return $metaTags;
 	}
-	
+
 	if (!$doc->loadHTML($content)) {
 	    foreach (libxml_get_errors() as $error) {
 	        // handle errors here
-					$debugs[] = "Error:".print_r($error, true);
+					$debugs[] = "findMetaTags() Error:".print_r($error, true);
 	    }
 	    libxml_clear_errors();
 	} else {
 		$tags = $doc->getElementsByTagName('meta');
-		$debugs[] = "There are ".count($tags)." tags";
-		$debugs[] = print_r($tags, true);
+		$debugs[] = "findMetaTags() There are ".count($tags)." tags";
+		$debugs[] = "findMetaTags() tags:".print_r($tags, true);
 		foreach ($tags as $tag) {
-						
-			if ($tag->hasAttributes())  { 
+
+			if ($tag->hasAttributes())  {
 				$attrs = Array();
-			        foreach ($tag->attributes as $attr) 
-								{ 
+			        foreach ($tag->attributes as $attr)
+								{
 									//if ($attr->nodeName === 'content') { $debugs[] = $attr->nodeValue; } else { continue; }
 			            $attrs[$attr->nodeName] = $attr->nodeValue;
-			        } 
-							
+			        }
+
 							$fieldName = 'nothing';
 							if (isset($attrs['name'])) {
 								$fieldName = $attrs['name'];
@@ -106,9 +117,9 @@ function findMetaTags($content) {
 							//$debugs[] = print_r($attrs, true);
 							$metaTags[str_replace('-','_', str_replace(':','_', $fieldName))] = (isset($attrs['content'])?$attrs['content']:'n/a');
 			    } else {
-				$debugs[] = "No attributes ".$tag->nodeName;
+				$debugs[] = "findMetaTags() No attributes ".$tag->nodeName;
 			}
-			} 
+			}
 	}
 	$debugs[] = "findMetaTags() Finished.";
 	return $metaTags;
@@ -130,8 +141,39 @@ if (isset($_REQUEST['method'])) {
 				'<small>'.$link->getErrorListFormatted().'</small>';
 		}
 	} else if ($_REQUEST['method']==='curatelink') {
-		$sqlQueryString = "UPDATE tobecurated SET tags = 'curate' WHERE id = ".$_REQUEST['id'];
-		
+		$debugs[] = '/curatelink starting '.json_encode($_REQUEST);
+		$tagList = findMetaTags(getContentByLinkId($_REQUEST['id']));
+		$debugs[] = '/curatelink found '.count($tagList).' tags';
+
+		$timestamp = '';
+    $tags = 'curate';
+		$skippTags = Array('parsely_link','twitter_site','twitter_image','twitter_image_src');
+    if (gettype($tagList)==='string') { $debugs[] = print_r($tagList, true);}
+		if (isset($tagList) && !empty($tagList) && gettype($tagList)==='array') {
+      foreach($tagList AS $tag=>$tagValue) {
+			     if (in_array($tag, $skippTags)) { continue; $debugs[] = '/curatelink skipp '.$tag.' tag'; }
+
+           switch($tag) {
+             case 'REVISION_DATE':
+             case 'analyticsAttributes.articleDate':
+             case 'og_article_published_time':
+             case 'article_published_time':
+              $timestamp = date("Y-m-d H:i:s",strtotime($tagValue));
+              break;
+             case 'keywords':
+              $tags = $tagValue;
+              break;
+             default:
+           }
+			     $debugs[] = 'tag:'.$tag.' = '.(gettype($tagValue)==='string'?$tagValue:gettype($tagValue));
+		  }
+    }
+		$tags = str_replace("'",",", $tags);
+		$sqlQueryString = "UPDATE tobecurated SET tags = '".$tags."' ".
+      (!empty($timestamp)?', timestamp = "'.$timestamp.'"':'').
+      " WHERE id = ".$_REQUEST['id'];
+		$debugs[] = '/curatelink SQL:'.$sqlQueryString;
+
 		// Create connection
 		$conn = new mysqli(DB_HOST.(defined('DB_PORT')?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
 		// Check connection
@@ -141,7 +183,7 @@ if (isset($_REQUEST['method'])) {
 		} else {
 			if ($conn->query($sqlQueryString) === TRUE) {
 			    $resp['status'] = 'ok';
-					$resp['message'] = "Link <b>".$_REQUEST['id']."</b> has been updated.";
+					$resp['message'] = "Link ".$_REQUEST['id']." has been updated with tags `".$tags."`.";
 			} else {
 				$resp['status'] = 'error';
 				$resp['message'] = "Error updating record: " . $conn->error.' as '.$sqlQueryString;
@@ -149,24 +191,38 @@ if (isset($_REQUEST['method'])) {
 		}
 		$conn->close();
 
-	} else if ($_REQUEST['method']==='delcuratelink') {
-		$sql = "DELETE FROM tobecurated WHERE id = ".$_REQUEST['id'];
-		
-		$mysqli = new mysqli(DB_HOST.(defined('DB_PORT')?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
-		if ($mysqli->connect_errno) {
-			$resp['status'] = "ok";
-			$resp['message'] = "Failed to connect to MySQL: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error;
-		} else {
-			$mysqli->autocommit(true);
-			if ($mysqli->query($sql) === TRUE) {
-				$resp['status'] = "ok";
-				$resp['message'] = "Link `".$_REQUEST['id']."` has been deleted.";
-			} else {
-				$resp['status'] = "error";
-				$resp['message'] = "Could not delete link `".$_REQUEST['id']."`.". $mysqli->errno . "/" .$mysqli->error;
-			}
-			$mysqli->close();
-		}
+  } else if ($_REQUEST['method']==='delcuratelink') {
+
+    $sql = "DELETE FROM tobecurated WHERE id = ".$_REQUEST['id'];
+    $resultset = query($sql);
+    $debugs[] = "Resultset:".print_r($resultset, true);
+    if (isset($resultset['status']) && $resultset['status'] === 'ok') {
+      $resp['status'] = 'ok'; $resp['message'] = 'Deleted link '.$_REQUEST['id'];
+    } else {
+      $resp['status'] = 'error'; $resp['message'] = 'Could not delete link '.$_REQUEST['id'];
+    }
+
+  } else if ($_REQUEST['method']==='savcuratelink') {
+
+    $sql = "INSERT INTO `links` (`link`, `title`, `last_updated`, `tags`)
+    	SELECT `link`, `title`, `timestamp`,`tags` FROM tobecurated WHERE id = ".$_REQUEST['id'];
+    $resultset = query($sql);
+    $debugs[] = print_r($resultset, true);
+    if (isset($resultset['status']) && $resultset['status'] === 'ok') {
+
+      $resultset = Array();
+      $sql = "DELETE FROM tobecurated WHERE id = ".$_REQUEST['id'];
+      $resultset = query($sql);
+      $debugs[] = print_r($resultset, true);
+      if (isset($resultset['status']) && $resultset['status'] === 'ok') {
+        $resp['status'] = 'ok'; $resp['message'] = 'Moved link from `tobecurated` table to `links` table.';
+      } else {
+        $resp['status'] = 'error'; $resp['message'] = 'Could not delete link from `tobecurated` table.';
+      }
+    } else {
+      $resp['status'] = 'error'; $resp['message'] = 'Could not insert link details to `links` table.';
+    }
+
 	} else if ($_REQUEST['method']==='delfile') {
 		$resp['status'] = 'error';
 		if (file_exists($_REQUEST['filename'])) {
@@ -305,20 +361,20 @@ if (isset($_REQUEST['method'])) {
 		$resp['message'] = implode("\n",$logmessages);
 
 	} else if ($_REQUEST['method']==='getheader') {
-		$link = new Link($_REQUEST['id']);
-		$resp['status'] = 'ok';
-		$resp['message'] = 'Meta tags parsing';
-		
-		$RESTresponse = curlGET(trim($link->link));
-		//$debugs[] = print_r($RESTresponse, true);
-		
-		$debugs[] = 'About to parse '.strlen($RESTresponse['content'])." bytes.";
-		$resp['meta'] = findMetaTags($RESTresponse['content']);
-		//$resp['info'] = $RESTresponse['info'];
-		$resp['status'] = 'ok';
-		$resp['message'] = 'URL Headers for '.$link->link;
-		
-		
+			$link = new Link($_REQUEST['id']);
+			$resp['status'] = 'ok';
+			$resp['message'] = 'Meta tags parsing';
+
+			$RESTresponse = curlGET(trim($link->link));
+			//$debugs[] = print_r($RESTresponse, true);
+
+			$debugs[] = 'About to parse '.strlen($RESTresponse['content'])." bytes.";
+			$resp['meta'] = findMetaTags($RESTresponse['content']);
+			//$resp['info'] = $RESTresponse['info'];
+			$resp['status'] = 'ok';
+			$resp['message'] = 'URL Headers for '.$link->link;
+
+
 	} else if ($_REQUEST['method']==='curate_done') {
 		$newLink = new Link();
 
@@ -337,10 +393,10 @@ if (isset($_REQUEST['method'])) {
 		}
 	} else if ($_REQUEST['method']==='repairlink') {
 		array_push($debugs, 'repairlink() id:'.$_REQUEST['id']);
-		
+
 		$link = new Link($_REQUEST['id']);
 		$resp['message'] = 'Repair options for link '.$link->id;
-		
+
 		$resp['id'] = $link->id;
 		$resp['title'] = $link->title;
 		$resp['link'] = $link->link;
@@ -351,8 +407,8 @@ if (isset($_REQUEST['method'])) {
 		$ch = curl_init($link->link);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT ,5); 
-		
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT ,5);
+
 		$content = curl_exec($ch);
 		$resp['info'] = curl_getinfo($ch);
 		curl_close($ch);
@@ -366,7 +422,7 @@ if (isset($_REQUEST['method'])) {
 
 		$link = new Link($_REQUEST['id']);
 		$resp['message'] = 'Repair options for link '.$link->id;
-		
+
 		$resp['id'] = $_REQUEST['id'];
 		$resp['title'] = $link->title;
 		$resp['link'] = $link->link;
@@ -376,8 +432,8 @@ if (isset($_REQUEST['method'])) {
 		$ch = curl_init($link->link);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT ,5); 
-		
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT ,5);
+
 		$content = curl_exec($ch);
 		$resp['info'] = curl_getinfo($ch);
 		curl_close($ch);
@@ -539,14 +595,13 @@ if (isset($_REQUEST['method'])) {
 
 	} else if ($_REQUEST['method']==='testlink') {
 		// ***** Test a possible new link ******
-		array_push($debugs, 'The current link is <pre>'.$_REQUEST['link'].'</pre>');
 
 		$ch = curl_init($_REQUEST['link']);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT ,5); 
-		
-		$json = curl_exec($ch);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT ,5);
+
+		$content = curl_exec($ch);
 		$info = curl_getinfo($ch);
 		curl_close($ch);
 
@@ -557,7 +612,26 @@ if (isset($_REQUEST['method'])) {
 			$resp['status'] = 'error';
 			$resp['message'] = 'Invalid link.';
 		}
-		array_push($debugs, print_r($info, true));
+
+
+		$tags = findMetaTags($content);
+		$skipTags = explode(',', 'viewport,');
+		foreach($tags AS $k => $v) {
+			if (in_array($k, $skipTags)) { continue;}
+
+			switch($k) {
+				case 'keywords':
+					$resp['keywords'] = $v;
+					break;
+				case 'article_published_time':
+					$resp['timestamp'] = $v;
+					break;
+				default:
+					array_push($debugs, print_r('tag:'.$k.' = '.(gettype($v)==='string'?$v:'type:'.gettype($v)), true));
+			}
+		}
+		//array_push($debugs, 'metatags:'.print_r($metatags, true));
+
 		// ***** End of new link test ******
 
 	} else if ($_REQUEST['method']==='insertlink') {
@@ -594,7 +668,7 @@ if (isset($_REQUEST['method'])) {
 			}
 		}
 	} else if ($_REQUEST['method']==='updateTag') {
-		
+
 		$sql = "UPDATE links SET tags = '".$_REQUEST['value']."' WHERE id = ".$_REQUEST['id'];
 		$resp = query($sql);
 
@@ -622,11 +696,11 @@ if (isset($_REQUEST['method'])) {
 			if ($col == 'tags') {
 				$link->tags = $_REQUEST['value'];
 			}
-			
+
 			if ($col == 'last_updated') {
 				$link->last_updated = $_REQUEST['value'];
 			}
-			
+
 			if ($link->update()) {
 				$resp['status'] = 'ok';
 				$resp['message'] = 'Updated link, with id <b>'.$_REQUEST['id'].'</b> and column <b>'.$col.'</b>';

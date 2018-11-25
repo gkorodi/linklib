@@ -9,7 +9,7 @@ if (isset($_POST['link'])) {
 	$link->link = $_POST['link'];
 	$link->status = (isset($_POST['status'])?$_POST['status']:-1);
 	$link->last_updated = (isset($_POST['last_updated'])?$_POST['last_updated']:date('c'));
-	
+
 	$link->tags = $_POST['tags'];
 	if ($link->save()) {
 		header("Location: linkedit.php?id=".$link->id);
@@ -84,7 +84,6 @@ if (isset($_POST['link'])) {
 			}
 			?>
 
-	 		<! -- SINGLE POST -->
 	 		<div class="col-md-8">
 				<form role="form" id="frmAddLink" method="POST">
 				        <div class="row">
@@ -103,16 +102,23 @@ if (isset($_POST['link'])) {
 				        <div class="row">
 				            <div class="form-group col-lg-12">
 				                <label for="code">Tags</label>
-				                <input type="text" class="form-control input-normal" name="tags" />
+				                <input type="text" class="form-control input-normal" name="tags"/>
 				            </div>
 				        </div>
-					<button class="btn" id="btnAdd">Add</button>
+				        <div class="row">
+				            <div class="form-group col-lg-12">
+				                <label for="code">Timestamp</label>
+				                <input type="text" class="form-control input-normal" name="timestamp" />
+				            </div>
+				        </div>
+					<button class="btn btn-info" id="btnAdd">Add</button>
 				</form>
 			</div>
 
 			<! -- SIDEBAR -->
 			<div class="col-md-4">
-		 		<h4>Analysis</h4><a class="btn btn-success pull-right" id="btnTest">Test</a>
+				<a class="btn btn-success pull-right" id="btnTest">Test</a>
+		 		<h4>Analysis</h4>
 		 		<div class="hline"></div>
 		 		<div id="areaTestResults">
 				</div>
@@ -129,17 +135,36 @@ if (isset($_POST['link'])) {
 	<?php require_once('_scripts.php'); ?>
 
 	<script>
-		$('#btnTest').on('click', function(e,o) {
+		function getTestResult() {
+			$('#areaTestResults').html('Loading ...');
 			$.getJSON('_functions.php?method=testlink&link='+$('input[name="link"]').val(), function(obj) {
-				var debugText = 'Debugs:';
-				$.each(obj.debugs, function(idx,e) {
-					debugText += e+'<br />';
-				});
-				
-				$('#areaTestResults').html('<div style="color: '+(obj.status && obj.status == 'ok'?'green':'red')+'">'+obj.message+'</div>'+
-					'<small>'+debugText+'</small>');
+				console.log(obj);
+
+				if (typeof obj.keywords !== 'undefined') {
+				  $('input[name="tags"]').val(obj.keywords);
+				}
+
+				if (typeof obj.timestamp !== 'undefined') {
+				  $('input[name="timestamp"]').val(obj.timestamp);
+				} else {
+					$('input[name="timestamp"]').val((new Date()).toISOString());
+				}
+
+				$('#areaTestResults').html(
+					'<div style="color: '+(obj.status && obj.status == 'ok'?'green':'red')+'">'+obj.message+'</div>'+
+					'<small>'+obj.debugs+'</small>'
+				);
 			});
+		}
+
+		$(document).ready(function() {
+			getTestResult();
 		});
+
+		$('#btnTest').on('click', function() {
+			getTestResult();
+		});
+
 	</script>
 </body>
 </html>

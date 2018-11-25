@@ -89,14 +89,15 @@ function getLinkTitle($linkURL) {
 				$query_response = query($sql);
 				$idx = 1;
 				foreach ($query_response['rows'] AS $row) {
-					$hn = explode('/', $row[1]);
-					$tags = (empty($row[4])?'':strtolower($row[4]).'<br />');
+					$hn = explode('/', $row[2]);
+					$tags = (empty($row[5])?'':strtolower($row[5]).'<br />');
 					?>
 					<tr id="row<?=$row[0]?>">
-						<td><b><a href="<?=$row[1]?>" target="_newWin"><?=$row[2]?></a></b><br /><?=$tags?><small><?=$hn[2]?> - <?=date("Y-m-d", strtotime($row[3]))?></small></td>
-						<td><button class="btn btn-sm btn-success" onClick="linkMaintenance('sav', '<?=$row[1]?>', '<?=$row[2]?>', <?=$row[0]?>);">Save</button></td>
-						<td><button class="btn btn-sm btn-warning" onClick="linkMaintenance('curate', '', '', <?=$row[0]?>);">Curate</button></td>
-						<td><button class="btn btn-sm btn-danger" onClick="linkMaintenance('del', '<?=$row[1]?>', '', <?=$row[0]?>);">Delete</button></td>
+						<td><b><a href="<?=$row[2]?>" target="_newWin"><?=$row[3]?></a></b> <sup><?=$row[1]?></sup><br />
+							<?=$tags?><small><?=$hn[2]?> - <?=date("Y-m-d", strtotime($row[4]))?></small></td>
+						<td><button class="btn btn-sm btn-success" onClick="linkMaintenance('sav', <?=$row[0]?>);">Save</button></td>
+						<td><button class="btn btn-sm btn-warning" onClick="linkMaintenance('curate', <?=$row[0]?>);">Curate</button></td>
+						<td><button class="btn btn-sm btn-danger" onClick="linkMaintenance('del', <?=$row[0]?>);">Delete</button></td>
 					</tr>
 					<?php
 					$idx++;
@@ -123,31 +124,23 @@ function getLinkTitle($linkURL) {
 	<script src="assets/js/custom.js"></script>
 
 		<script>
-			function linkMaintenance(func, lnk, ttl, id) {
+			function linkMaintenance(func, linkId) {
+				console.log("Function:"+func+" LinkId:"+linkId);
 
 				if (func == 'sav') {
-					console.log("saving link "+lnk);
-					$.getJSON( '_functions.php?method=delcuratelink&id='+id, function( data ) {
-					  if (data.status == "ok") {
-							console.log("deleted link");
-							$('#row'+id).hide();
-
-							if (lnk.indexOf("#")>=0) {
-							  lnk = lnk.substring(0,lnk.indexOf('#'));
-							}
-							console.log("Link:"+lnk);
-							window.location = 'addnew.php?link='+lnk+'&title='+ttl;
-						} else {
-							alert(data.message);
-						}
+					$.getJSON( '_functions.php?method=savcuratelink&id='+linkId, function( data ) {
+					  console.log(data);
+						if (data.status == 'ok') { $('#row'+linkId).hide();} else { $('#row'+linkId).css('background-color', 'pink');}
 					});
 				}
 
 				if (func == 'del') {
-					$.getJSON( '_functions.php?method=delcuratelink&id='+id, function( data ) {
+					$.getJSON( '_functions.php?method=delcuratelink&id='+linkId, function( data ) {
+						console.log(data);
+
 					  if (data.status == "ok") {
 							console.log(data.message);
-							$('#row'+id).hide();
+							$('#row'+linkId).hide();
 						} else {
 							alert(data.message);
 						}
@@ -155,12 +148,13 @@ function getLinkTitle($linkURL) {
 				}
 
 				if (func == 'curate') {
-					$.getJSON( '_functions.php?method=curatelink&id='+id, function( data ) {
+					$('#row'+linkId).css('background-color','lightBlue');
+					$.getJSON( '_functions.php', {'method':'curatelink','id':linkId}, function( data ) {
 						console.log(data);
 
 					  if (data.status == "ok") {
 							console.log(data.message);
-							$('#row'+id).hide();
+							$('#row'+linkId).hide();
 						} else {
 							alert(data.message);
 						}
@@ -168,7 +162,6 @@ function getLinkTitle($linkURL) {
 				}
 			}
 			</script>
-
 
   </body>
 </html>

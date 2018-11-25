@@ -138,7 +138,8 @@ function query($sql) {
 	$errors = Array();
 	$response['sql'] = $sql;
 
-	$conn = new mysqli(DB_HOST.(array_key_exists('DB_PORT', get_defined_vars())?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
+	$connectionString = DB_HOST.(array_key_exists('DB_PORT', get_defined_vars())?':'.DB_PORT:'');
+	$conn = new mysqli($connectionString, DB_USER, DB_PASSWORD, DB_NAME);
 	if ($conn->connect_errno) {
 		array_push($errors, "Connect failed: %s\n", $mysqli->connect_error);
 	} else {
@@ -323,7 +324,7 @@ class Link {
 	var $row = Array();
 
 	function __construct($id = null) {
-		
+
 		if ($id == null) {
 			array_push($this->debugs, "Create an empty object. No 'id' has been specified in constructor.");
 		} else {
@@ -576,7 +577,7 @@ class Link {
 				$sqlString .= ", tags = '".$fieldmap['tags']."'";
 			}
 			$sqlString .= ' WHERE id = '.$this->id;
-			
+
 			foreach(explode(',', $sqlString) AS $sstr) {
 				array_push($this->debugs, "Link.updateByMap() SQL: ".$sstr);
 			}

@@ -18,13 +18,7 @@ if (!isset($_REQUEST['id']) || $_REQUEST['id'] == '') {
 } else {
 	$link = new Link($_REQUEST['id']);
 	if (isset($_POST['id'])) {
-		$link->title = $_POST['title'];
-		$link->link = $_POST['link'];
-		$link->tags = str_replace(' ','', strtolower($_POST['tags']));
-		$link->status = $_POST['status'];
-		$link->last_updated = date('Y-m-d H:i', strtotime($_POST['last_updated']));
-		$linktags_before = $link->tags;
-		if (!$link->update()) {
+		if (!$link->updateByMap($_POST)) {
 			$errorMessage = 'Could not updates link!'.'<br />'.implode('<br />', $link->debugs);
 		}
 		$linktags_after = $link->tags;
@@ -35,7 +29,7 @@ if (!$link->id) {
 	throw new Exception('There is no link->id field!'.print_r($debug, true));
 }
 
-$nextidSQLQuery = "SELECT id FROM links WHERE id != ".$link->id;
+$nextidSQLQuery = "SELECT * FROM `links` ORDER BY RAND() LIMIT 100";
 $nextid_res = query($nextidSQLQuery);
 $nextid = $nextid_res['rows'][rand(0,$nextid_res['rowcount']-1)][0];
 
@@ -205,15 +199,15 @@ $errorMessage = null;
 	});
 
 	$('#btnHeader').on('click', function(event) {
-		console.log("btnHeader");
-		console.log(event);
-
 		var getHeaderURL = '_functions.php?method=getheader&id=<?php echo $link->id;?>';
 		$('#fldLastUpdated').css('background-color','pink');
 		$.get(getHeaderURL, function(data) {
-			console.log(data);
+
 			$('#title').val(data.meta.og_title?data.meta.og_title:$('#title').val());
-			$('#last_updated').val(getDateMetaTag(data.meta));
+			var newDate = getDateMetaTag(data.meta);
+			if (newDate != '') {
+				$('#last_updated').val(newDate);
+			}
 			$('#fldLastUpdated').css('background-color','lightGreen');
 			if (data.status == 'ok') {
 				$('#status').val('200');

@@ -56,8 +56,7 @@ require_once('_includes.php');
 								</b><br />
 								<small><?php echo $row[1];?></small><br />
 								<small id="date-<?php echo $row[0];?>"><?php echo date('Y-m-d', strtotime($row[4]));?></small>
-							</td>
-							<td>
+							<br />
 							<?php
 							if (isset($modified) && $modified != null && $modified == 'repair') {?>
 								<input type="text" id="tags<?php echo $row[0];?>"
@@ -70,21 +69,19 @@ require_once('_includes.php');
 										value="<?php echo $row[5];?>" />
 
 							<?php } ?>
-							</td>
-							<td>
-								<button class="btn btn-sm btn-danger" onClick="deleteLink(<?php echo $row[0];?>);">
-									<span class="glyphicon glyphicon-trash"> </span>
-								</button>
-							</td>
-							<td>
-								<a class="btn btn-sm btn-info" href="linkedit.php?id=<?php echo $row[0];?>" target="_winEditLink">
-									<span class="glyphicon glyphicon-ok"> </span>
-								</a>
-							</td>
-							<td>
-								<a class="btn btn-sm btn-warning" onclick="repairlink('<?php echo $row[0];?>');">
-										<span class="glyphicon glyphicon-check"> </span>
-								</a>
+							<br /><br />
+							<button class="btn btn-sm btn-danger" onClick="deleteLink(<?php echo $row[0];?>);">
+								<span class="glyphicon glyphicon-trash"> </span>
+							</button>
+							
+							<a class="btn btn-sm btn-info" href="linkedit.php?id=<?php echo $row[0];?>" target="_winEditLink">
+								<span class="glyphicon glyphicon-ok"> </span>
+							</a>
+							
+							<a class="btn btn-sm btn-warning" onclick="repairlink('<?php echo $row[0];?>');">
+									<span class="glyphicon glyphicon-check"> </span>
+							</a>
+							
 							</td>
 						</tr>
 						<?php

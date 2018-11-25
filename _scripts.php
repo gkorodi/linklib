@@ -34,6 +34,11 @@
 			}
 			
 			if (metadata.article_published_time) {
+				console.log("getDateMetaTag() picking field article_published_time")
+				return metadata.article_published_time;
+			}
+			
+			if (metadata.article_published_time) {
 				return metadata.article_published_time;
 			}
 			
@@ -48,7 +53,7 @@
 				return metadata.articlepublished_time;
 			}
 			
-			return yyyy+'-'+mm+'-'+dd;
+			return '';
 		}
 		
 	function repairLink(linkId, value) {
