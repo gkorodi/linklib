@@ -6,7 +6,8 @@ if (isset($_REQUEST['host'])) {
 	  	(isset($_REQUEST['notags'])?" AND (tags IS NULL OR tags = '')":'').
 		(isset($_REQUEST['nostatus'])?' AND status != '.$_REQUEST['nostatus']:'').
 		(isset($_REQUEST['status'])?' AND status = '.$_REQUEST['status']:'').
-		' ORDER BY last_updated '.(isset($_REQUEST['olderfirst'])?' ASC':' DESC');
+		' ORDER BY last_updated '.(isset($_REQUEST['olderfirst'])?' ASC':' DESC').
+				', link, title';
   $resultset = query($sql);
 }
 
@@ -45,7 +46,6 @@ if (isset($_REQUEST['host'])) {
 				<h3>Search Results by host <a href="http://<?php echo $_REQUEST['host'];?>" target="_newWindow"><?php echo $_REQUEST['host'];?></a>
 				</h3>
 				<form method="GET" id="frmRefine">
-					<input type="checkbox" id="fldNoTags" name="notags" <?php echo (isset($_REQUEST['notags'])?'checked':'');?>/> NoTagsOnly
 					<input type="checkbox" id="fldOlderFirst" name="olderfirst" <?php echo (isset($_REQUEST['olderfirst'])?'checked':'');?>/> OlderFirst
 					<input type="hidden" id="fldHost" name="host" value="<?php echo $_REQUEST['host'];?>" />
 				</form>
@@ -56,7 +56,7 @@ if (isset($_REQUEST['host'])) {
 
 	 <div class="container mtb">
      <div class="row">
-     <div class="col-md-12">
+	     <div class="col-lg-12">
 			<?php
 			if (!isset($_REQUEST['host'])) {
 				?>
@@ -68,10 +68,25 @@ if (isset($_REQUEST['host'])) {
 				</form>
 				<?php
 			} else {
-        			echo '<table class="table">';
+        			
+							?>
+							<table class="table">
+								<thead>
+									<th></th>
+									<th></th>
+									<th></th>
+									<th></th>
+								</thead>
+								<tbody>
+							<?php
 				foreach($resultset['rows'] AS $row) {
           ?>
           <tr id="row<?php echo $row[0];?>">
+            <td>
+              <button class="btn btn-sm btn-danger pull-right" onClick="deleteLink(<?php echo $row[0];?>);">
+                <span class="glyphicon glyphicon-remove"> </span>
+              </button>
+            </td>
             <td>
               <b><a href="<?php echo $row[1];?>" target="_newWindow"><?php echo urldecode($row[2]);?></a></b><br />
               <small><?php
@@ -86,27 +101,22 @@ if (isset($_REQUEST['host'])) {
               }
               ?>
 	      
-	      </small>
+	      			</small>
             </td>
             <td>
-		    <small><?php echo date('Y-m-d', strtotime($row[4]));?></small>
+		    			<small><?php echo date('Y-m-d', strtotime($row[4]));?></small>
             </td>
-            <td>
-              <button class="btn btn-sm btn-danger pull-right" onClick="deleteLink(<?php echo $row[0];?>);">
-                <span class="glyphicon glyphicon-remove"> </span>
-              </button>
-            </td>
+
             <td>
 
               <a class="btn btn-sm btn-info" href="linkedit.php?id=<?php echo $row[0];?>" target="_winEditLink">
                 <span class="glyphicon glyphicon-ok"> </span>
               </a>
             </td>
-
           </tr>
           <?php
 				}
-        echo '</table>';
+        echo '</tbody></table>';
 			}
 			?>
     </div>

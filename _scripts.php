@@ -9,6 +9,16 @@
 	
 	<script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"> </script>
 
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-64712928-2"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag(){dataLayer.push(arguments);}
+		gtag('js', new Date());
+		gtag('config', 'UA-64712928-2');
+	</script>
+
+
 	<script>
 	function repairLink(linkId, value) {
 		$.ajax({
@@ -26,7 +36,7 @@
 				"method":"updatelink",
 				"id":linkId,
 				"column":"tags",
-				"value":'repair'
+				"value":value
 			}
 		});
 	}
@@ -36,6 +46,8 @@
 
 		var originalBgColor = $('#blue').css('background-color');
 		$('#blue').css('background-color','orange');
+		
+		$('#row'+linkId).css('background-color','pink');
 		$.ajax({
 			type: 'GET',
 			url: '_functions.php',

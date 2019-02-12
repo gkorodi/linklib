@@ -17,9 +17,16 @@
             <?php if (isset($_SESSION['uid']) && isset($_SESSION['role']) && $_SESSION['role'] === 'ADMIN') {
               ?>
               <li><a href="search.php">SEARCH</a></li>
-              <li><a href="query.php">QUERY</a></li>
-              <li><a href="addnew.php">NEWLINK</a></li>
-              <li><a href="curate_files.php">CURATE</a></li>
+              <li><a href="linkedit.php">RANDOMLINK</a></li>
+							<li><a href="addnew.php">NEWLINK</a></li>
+							
+							
+              <li><a href="list_hosts.php">By HOSTS</a></li>
+              <li><a href="list_tags.php">By TAGS</a></li>
+              <li><a href="list_status.php">By STATUS</a></li>
+							
+							
+							
               <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo strtoupper($_SESSION['uid']).' '.($_SESSION['role']?$_SESSION['role']:'anonymous');?> <b class="caret"></b></a>
               <ul class="dropdown-menu">
@@ -42,10 +49,9 @@
               <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo strtoupper($_SESSION['uid']);?> <b class="caret"></b></a>
               <ul class="dropdown-menu">
                 <li><a href="random.php">RANDOM100</a></li>
-                <li><a href="linkedit.php">RANDOMLINK</a></li>
-                <li><a href="list_hosts.php">LIST HOSTS</a></li>
-                <li><a href="list_tags.php">LIST TAGS</a></li>
-                <li><a href="list_status.php">LIST STATUS</a></li>
+                
+								<li><a href="query.php">QUERY</a></li>
+                
                 <li>---</li>
                 <li><a href="about.php">ABOUT</a></li>
                 <li><a href="contact.php">CONTACT</a></li>

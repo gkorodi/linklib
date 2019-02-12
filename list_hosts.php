@@ -44,7 +44,7 @@ require_once('_includes.php');
     <div class="container mtb">
       <div class="row">
 
-        <div class="col-lg-8">
+        <div class="col-lg-8 col-md-6">
 
 			<?php
 			$keys = Array();
@@ -87,7 +87,7 @@ require_once('_includes.php');
 		</div>
 
 		<! -- SIDEBAR -->
-		<div class="col-lg-4">
+		<div class="col-lg-4 col-md-2">
 			<h4>Search</h4>
 			<div class="hline"></div>
 			<p>

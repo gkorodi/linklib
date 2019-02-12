@@ -45,16 +45,6 @@ require_once('_includes.php');
 				    <label for="fldQ"> Search for: </label>
 				    <input type="text" class="form-control" id="fldQ" name="q" value="<?php echo (isset($_REQUEST['q'])?$_REQUEST['q']:'');?>" />
 				  </div>
-
-          <div class="form-group">
-				    <label for="fldNoTags"> NoTags: </label>
-				    <input type="checkbox" class="form-control" id="fldNoTags" name="fldNoTags" <?php echo (isset($_REQUEST['fldNoTags'])?'checked':'');?> />
-				  </div>
-
-          <div class="form-group">
-				    <label for="fldOldestFirst"> OldestFirst: </label>
-				    <input type="checkbox" class="form-control" id="fldOldestFirst" name="fldOldestFirst" <?php echo (isset($_REQUEST['fldOldestFirst'])?'checked':'');?> />
-				  </div>
 				</form>
 			</div><!-- /row -->
 	    </div> <!-- /container -->
@@ -62,31 +52,16 @@ require_once('_includes.php');
 
 	 <div class="container">
 	 	<div class="row">
-      <br />
+      <div class="col-lg-8">
 				<table class="table" id="tableLinks">
           <thead>
-            <?php
-            if ($_SESSION['role'] == 'USER') {
-              ?>
               <tr>
                 <th>Host</th>
                 <th>Link</th>
-                <th>Tags</th>
                 <th>Date</th>
+								<th> </th>
+								<th> </th>
               </tr>
-              <?php
-            } else {
-              ?>
-              <tr>
-                <th>Link</th>
-                <th>Tags</th>
-                <th>Date</th>
-                <th> </th>
-                <th> </th>
-              </tr>
-              <?php
-            }
-             ?>
           </thead>
 					<tbody>
 						<?php
@@ -95,80 +70,39 @@ require_once('_includes.php');
 								(isset($_REQUEST['fldNoTags'])?" AND tags = ''":"").
 								" ORDER BY last_updated ".(isset($_REQUEST['fldOldestFirst'])?'ASC':'DESC')." LIMIT 1000";
 							$searchresults = query($sql);
-
 							foreach($searchresults['rows'] AS $row) {
-							/*?>
-							<tr id="row<?php echo $row[0]; ?>">
-								<td>
-									<a href="<?php echo $row[1]; ?>" target="_winLinkURL"><?php echo $row[2]; ?></a><br />
-									<small>host: <b><?php echo justHostName($row[1]);?></b><br />
-									update: <b><?php echo $row[4];?></b></small>
-								</td>
-								<td>
-									<input class="fldTags" type="text"
-										data-ref="<?php echo $row[0]; ?>" name="tags"
-											value="<?php echo $row[5];?>" />
-								</td>
-								<td>
-									<button class="btn btn-sm btn-danger" onClick="dellink(<?php echo $row[0]; ?>);">Del</button>
-									<a class="btn btn-sm btn-info"
-										href="linkedit.php?id=<?php echo $row[0]; ?>" target="_newWin">...</a>
-								</td>
-							</tr>
-							<?php*/
-                if ($_SESSION['role'] == 'USER') {
                   ?>
                   <tr id="row<?php echo $row[0];?>">
                     <td>
                       <?php echo justHostName($row[1]);?>
                     </td>
                     <td>
-                      <a href="<?php echo $row[1];?>" target="_newWindow"><?php echo urldecode($row[2]);?></a>
-                    </td>
-                    <td>
-                      <?php
-                      foreach(explode(',', $row[5]) AS $tag) { echo '<span class="badge">'.$tag.'</span> ';}
-                      ?>
+                      <a href="<?php echo $row[1];?>"
+												target="_newWindow"><?php echo urldecode($row[2]);?></a><br />
+	                      <small><?php
+	                      foreach(explode(',', $row[5]) AS $tag) {
+													echo '<span class="badge">'.$tag.'</span> ';
+												}
+	                      ?></small>
                     </td>
                     <td>
                       <?php echo date('Y-m-d', strtotime($row[4]));?>
                     </td>
+										<td>
+											<button class="btn btn-sm btn-danger" onClick="deleteLink(<?=$row[0]?>)"><i class="fa fa-times" aria-hidden="true"></i></button>
+										</td>
+										<td>
+											<a class="btn btn-sm btn-success" href="linkedit.php?id=<?=$row[0]?>"><i class="fa fa-check" aria-hidden="true"></i></a>
+										</td>
                   </tr>
                   <?php
-                } else {
-
-                  ?>
-                  <tr id="row<?php echo $row[0];?>">
-                    <td>
-                      <a href="<?php echo $row[1];?>" target="_newWindow"><?php echo urldecode($row[2]);?></a><br />
-                      <small><?php echo justHostName($row[1]);?></small>
-                    </td>
-                    <td>
-                      <input type="text" id="tags<?php echo $row[0];?>" onChange="repairLink(<?php echo $row[0];?>, $(this).val());" value="<?php echo $row[5];?>" />
-                  </td>
-                  <td>
-                    <?php echo date('Y-m-d', strtotime($row[4]));?>
-                  </td>
-                  <td>
-                      <button class="btn btn-sm btn-danger pull-right" onClick="deleteLink(<?php echo $row[0];?>);">
-                        <span class="glyphicon glyphicon-remove"> </span>
-                      </button>
-                </td><td>
-                      <a class="btn btn-sm btn-info" href="linkedit.php?id=<?php echo $row[0];?>" target="_winEditLink">
-                        <span class="glyphicon glyphicon-ok"> </span>
-                      </a>
-                    </td>
-
-                  </tr>
-                  <?php
-
                 }
-							}
 						}
 						?>
 					</tbody>
 				</table>
         <br />
+      </div>
 	 	</div><!--/row -->
 	 </div><!--/container -->
 
@@ -182,14 +116,8 @@ require_once('_includes.php');
 	<script>
   	$(document).ready(function() {
       $('#tableLinks').DataTable();
-
-      $('input[name=fldNoTags]').on('change', function() {
-        $('#frmSearchQuery').submit();
-      });
-      $('input[name=fldOldestFirst]').on('change', function() {
-        $('#frmSearchQuery').submit();
-      });
   	});
+		
 	</script>
   </body>
 </html>

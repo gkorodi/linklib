@@ -1,31 +1,38 @@
 <?php
 require_once('_includes.php');
 
+if (!isset($_SESSION['uid'])) { header("Location: login.php"); exit(1); }
+
 $resp['status'] = 'error';
 $resp['message'] = 'No method has been specified';
 $debugs = $_REQUEST;
 
 function findMetaTags($content) {
 	global $debugs;
-
-	$endpos = null;
+	
 	$arr = Array();
-
-	$more_meta_tag = strpos($content, '<meta');
-	while ($more_meta_tag) {
-		$endpos = strpos($content, '>', $more_meta_tag);
-		$tagvalues = substr($content,$more_meta_tag,$endpos-$more_meta_tag);
-
-		//$xml = simplexml_load_string($tagvalues.'>');
-		//array_push($debugs, print_r($xml, true));
-		//$arr[$xml['name']] =  $xml['content'];
-
-		if (strpos($tagvalues, 'content=')) {
-			$parts = explode('"', $tagvalues);
-			$arr[str_replace(':','',$parts[1])] =  $parts[3];
-		}
-		$more_meta_tag = strpos($content, '<meta', $endpos++);
+	$doc = new DOMDocument();
+	libxml_use_internal_errors(true);
+	@$doc->loadHTML($content); // loads your HTML
+	
+	foreach($doc->getElementsByTagName('title') as $tag) {
+		$debugs[] = 'got title';
+		$arr['pagetitle'] = $tag->nodeValue;
 	}
+	
+	foreach($doc->getElementsByTagName('meta') as $metatag) {
+		$debugs[] = 'got a tag';
+		if ($metatag->getAttribute('name') != null) {
+			$tn = $metatag->getAttribute('name');
+		}
+		
+		if ($metatag->getAttribute('property') != null) {
+			$tn = $metatag->getAttribute('property');
+		}
+		$debugs[] = 'tagname '.$tn;
+		$arr[$tn] = $metatag->getAttribute('content');
+	}
+	$debugs[] = 'Added '.count($arr).' tags';
 	return $arr;
 }
 
@@ -42,6 +49,7 @@ if (isset($_REQUEST['method'])) {
 			$resp['status'] = 'error';
 			$resp['message'] = 'Could not delete link, with id <b>'.$_REQUEST['id'].'</b><br />'.
 				'<small>'.$link->getErrorListFormatted().'</small>';
+			array_push($debugs, $link->debugs);
 		}
 	} else if ($_REQUEST['method']==='delfile') {
 		$resp['status'] = 'error';
@@ -181,20 +189,29 @@ if (isset($_REQUEST['method'])) {
 		$resp['message'] = implode("\n",$logmessages);
 
 	} else if ($_REQUEST['method']==='getheader') {
+		
 		$link = new Link($_REQUEST['id']);
 
 		$ch = curl_init($link->link);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT ,5); 
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT ,5);
 		$content = curl_exec($ch);
+		$info = curl_getinfo($ch);
+		curl_close($ch);
 
-		$resp['meta'] = findMetaTags($content);
-
+		$details = findMetaTags($content);
+		
+		$resp['meta'] = $details;
+		
+		$resp['details']['status'] = $info['http_code'];
+		$resp['details']['title'] = $details['pagetitle'];
+		if ($details['parsely-pub-date']) { 
+			$resp['details']['last_updated'] = date('Y-m-d', strtotime($details['parsely-pub-date']));
+		}
+		
 		$resp['status'] = 'ok';
 		$resp['message'] = 'URL Headers for '.$link->link;
-		//$resp['info'] = curl_getinfo($ch);
-		curl_close($ch);
 
 	} else if ($_REQUEST['method']==='curate_done') {
 		$newLink = new Link();
@@ -214,36 +231,52 @@ if (isset($_REQUEST['method'])) {
 		}
 	} else if ($_REQUEST['method']==='repairlink') {
 		array_push($debugs, 'repairlink() id:'.$_REQUEST['id']);
-		
+
 		$link = new Link($_REQUEST['id']);
 		$resp['message'] = 'Repair options for link '.$link->id;
-		
-		$resp['id'] = $link->id;
-		$resp['title'] = $link->title;
-		$resp['link'] = $link->link;
-		$resp['state'] = $link->status;
-		$resp['last_updated'] = $link->last_updated;
-		$resp['tags'] = $link->tags;
+
+		$resp['details']['id'] = $link->id;
+		$resp['details']['title'] = $link->title;
+		$resp['details']['link'] = $link->link;
+		$resp['details']['status'] = $link->status;
+		$resp['details']['last_updated'] = $link->last_updated;
+		$resp['details']['tags'] = $link->tags;
 
 		$ch = curl_init($link->link);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT ,5); 
-		
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT ,5);
 		$content = curl_exec($ch);
 		$resp['info'] = curl_getinfo($ch);
 		curl_close($ch);
+		
+		$resp['details']['status'] = $link->status;
 		if ($resp['info']['http_code'] == '200') {
 			$resp['status'] = 'ok';
+			$details = findMetaTags($content);
+			$resp['meta'] = $details;
+			
+			$resp['details']['title'] = $details['pagetitle'];
+			
+			if (isset($details['article:modified_time'])) {
+				$resp['details']['last_updated'] = date('Y-m-d', strtotime($details['article:modified_time']));
+			}
+			
+			if ($resp['details']['last_updated'] == null) {
+				$resp['details']['last_updated'] = date('Y-m-d');
+			}
+			
+		} else {
+			$resp['status'] = 'error';
 		}
-		$resp['meta'] = findMetaTags($content);
+		
 
 	} else if ($_REQUEST['method']==='repair') {
 		$resp['status'] = 'ok';
 
 		$link = new Link($_REQUEST['id']);
 		$resp['message'] = 'Repair options for link '.$link->id;
-		
+
 		$resp['id'] = $_REQUEST['id'];
 		$resp['title'] = $link->title;
 		$resp['link'] = $link->link;
@@ -253,8 +286,8 @@ if (isset($_REQUEST['method'])) {
 		$ch = curl_init($link->link);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT ,5); 
-		
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT ,5);
+
 		$content = curl_exec($ch);
 		$resp['info'] = curl_getinfo($ch);
 		curl_close($ch);
@@ -421,8 +454,8 @@ if (isset($_REQUEST['method'])) {
 		$ch = curl_init($_REQUEST['link']);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT ,5); 
-		
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT ,5);
+
 		$json = curl_exec($ch);
 		$info = curl_getinfo($ch);
 		curl_close($ch);
@@ -495,11 +528,11 @@ if (isset($_REQUEST['method'])) {
 			if ($col == 'tags') {
 				$link->tags = $_REQUEST['value'];
 			}
-			
+
 			if ($col == 'last_updated') {
 				$link->last_updated = $_REQUEST['value'];
 			}
-			
+
 			if ($link->update()) {
 				$resp['status'] = 'ok';
 				$resp['message'] = 'Updated link, with id <b>'.$_REQUEST['id'].'</b> and column <b>'.$col.'</b>';

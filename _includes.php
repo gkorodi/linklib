@@ -1,6 +1,5 @@
 <?php
 session_start();
-
 date_default_timezone_set('US/Eastern');
 
 define('APP_ROOT','/linklib/');
@@ -33,6 +32,8 @@ function getLinkStatus($url) {
 	$ch = curl_init($url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 2);
+	curl_setopt($ch, CURLOPT_TIMEOUT, 5);
 	$json = curl_exec($ch);
 	$info = curl_getinfo($ch);
 	curl_close($ch);
@@ -176,7 +177,7 @@ class DBQueryService {
 	}
 
 	function DBQueryService() {
-		$this->conn = new mysqli(DB_HOST.(defined(DB_PORT)?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
+		$this->conn = new mysqli(DB_HOST.(defined('DB_PORT')?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
 		$this->logger("Connected to ".DB_NAME." database.");
 
 		if (!($this->stmtUpdate = $this->conn->prepare("UPDATE links SET link = ?, title = ?, status = ?, tags = ? WHERE id = ?"))) {
@@ -406,6 +407,9 @@ class Link {
 		$ch = curl_init($this->link);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 2);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+		
 		$json = curl_exec($ch);
 		$info = curl_getinfo($ch);
 		curl_close($ch);
@@ -431,6 +435,8 @@ class Link {
 		$ch = curl_init($this->link);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 2);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 5);
 		$this->content = curl_exec($ch);
 		$info = curl_getinfo($ch);
 		curl_close($ch);

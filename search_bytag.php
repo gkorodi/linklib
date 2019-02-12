@@ -82,7 +82,8 @@ if (isset($_REQUEST['tag'])) {
 
 	 <div class="container mtb">
 	 	<div class="row">
-	 		<div class="col-md-12">
+			
+	 		<div class="col-12">
 				<?php
 				if (!isset($_REQUEST['tag'])) {
 					?>
@@ -98,15 +99,12 @@ if (isset($_REQUEST['tag'])) {
 					<table id="tableLinks">
 					<thead>
 						<tr>
-							<td>Host</td>
 							<td>Link</td>
 							<td>Timestamp</td>
 							<?php
-                                                        if ($_SESSION['role'] === 'ADMIN') {
-                                                                echo "<td> </td><td> </td>";
-                                                        }
-                                                        ?>
-                                                </tr>
+              if ($_SESSION['role'] === 'ADMIN') {echo "<td> </td><td> </td>";}
+              ?>
+						</tr>
 					</thead>
 					<tbody>
 					<?php
@@ -115,16 +113,14 @@ if (isset($_REQUEST['tag'])) {
 						?>
 						<tr id="row<?php echo $row[0];?>">
 							<td>
-								<?php echo justHostName($row[1]); ?></small>
-							</td>
-							<td>
-								<h3><a href="<?php echo $row[1];?>" target="_newWindow"><?php echo urldecode($row[2]);?></a></h3>
-								<small><?php
+								<b><a href="<?php echo $row[1];?>" target="_newWindow"><?php echo urldecode($row[2]);?></a></b><br />
+								<?php
 								foreach(explode(',', $row[5]) AS $tag) { ?>
 									<span class="badge"><?php echo $tag;?></span>
 								<?php
 								}
-								?>
+								?><br />
+								<?php echo justHostName($row[1]); ?>
 							</td>
 							<td>
 								<small><?php echo date('Y-m-d', strtotime($row[4]));?></small>
@@ -132,7 +128,7 @@ if (isset($_REQUEST['tag'])) {
 							<?php
 							if ($_SESSION['role'] === 'ADMIN') {
 								?><td>
-									<button class="btn btn-danger pull-right" onClick="deleteLink(<?php echo $row[0];?>);">
+									<button class="btn btn-danger pull-right" onClick="deleteLink(<?=$row[0]?>);">
 										<span class="glyphicon glyphicon-remove"> </span>
 									</button>
 								</td>
@@ -151,21 +147,18 @@ if (isset($_REQUEST['tag'])) {
 				}
 				?>
 			</div>
+
 	 	</div>
 	 </div>
 	 <?php require_once('_footer.php'); ?>
+	 
 	 <?php require_once('_scripts.php'); ?>
+	 
 	 <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
 	 <script>
-	 $(document).ready(function() {
-    	$('#tableLinks').DataTable({"columns": [
-	null,
-	null,
-	null,
-    { "orderable": false },
-	{ "orderable": false }
-  ]});
-		} );
+		 $(document).ready(function() {
+	    	$('#tableLinks').DataTable({"columns": [null,null,{ "orderable": false },{ "orderable": false }]});
+			});
 	 </script>
   </body>
 </html>
