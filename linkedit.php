@@ -3,20 +3,20 @@ require_once('_includes.php');
 
 $handed = "right";
 
+$getRandomIdSQL = 'SELECT r1.id FROM links AS r1 JOIN (SELECT CEIL(RAND() * (SELECT MAX(id) FROM links)) as id) AS r2 WHERE r1.id >= r2.id AND r1.tags IS NULL LIMIT 1';
+
 if (!isset($_REQUEST['id']) || $_REQUEST['id'] == '') {
+	$links = Array();
 	try {
-		$queryString = "SELECT id FROM links WHERE tags IS NULL";
-		$links = query($queryString);
+		$links = query($getRandomIdSQL);
 	} catch (Exception $e) {
-		throw new Exception('Could not run SQL query:'+$queryString);
+		throw new Exception('Could not run SQL query:'+$getRandomIdSQL);
 	}
 
 	if (count($links['rows']) == 0) {
-		throw new Exception('There is no link available.'+$queryString);
+		throw new Exception('There is no link available.'+$getRandomIdSQL);
 	}
-	$guessid = rand(1,count($links['rows']));
-	$randomid = $links['rows'][$guessid][0];
-	$link = new Link($randomid);
+	$link = new Link($links['rows'][0][0]);
 } else {
 	$link = new Link($_REQUEST['id']);
 }
@@ -27,16 +27,17 @@ if (!$link->id) {
 
 $errorMessage = null;
 if (isset($_POST['id'])) {
+	
 	$link->title = $_POST['title'];
 	$link->link = $_POST['link'];
-	$link->tags = str_replace(' ','', strtolower($_POST['tags']));
-	$link->status = (isset($_POST['status']) && !empty($_POST['status'])?$_POST['status']:-2);
-	$link->last_updated = date('Y-m-d H:i', strtotime($_POST['last_updated']));
-	$linktags_before = $link->tags;
+	$link->tags = implode(',', explode(',', str_replace(' ','', strtolower($_POST['tags']))));
+	$link->status = $_POST['status'];
+	
+	$link->updated_at = date('Y-m-d', strtotime($_POST['updated_at']));
+	$link->created_at = date('Y-m-d', strtotime($_POST['created_at']));
 	if (!$link->update()) {
 		$errorMessage = 'Could not updates link!'.'<br />'.implode('<br />', $link->debugs);
 	}
-	$linktags_after = $link->tags;
 }
 
 ?><!DOCTYPE html>
@@ -62,33 +63,7 @@ if (isset($_POST['id'])) {
     <div id="blue">
       <div class="container">
         <div class="row">
-					
-          <h3 id="lblTitle"><?=$link->title?>.<br />
-						<small style="color: yellow" id="last_updated">
-							<?=date('Y-m-d', strtotime($link->row['last_updated']))?>
-						</small>
-					</h3>
-
-					<?php
-					$info = $link->getURLInfo();
-					$url = $info['url'];
-
-					$btnStatusClass = '';
-					$btnStatusAction = '';
-					$btnStatusCount = 0;
-					
-					if ($info['http_code'] == 200 && $info['redirect_count'] > 0) {
-						if (strpos($info['url'],'?')) {
-							$url = substr($info['url'],0,strpos($info['url'],'?'));
-							
-						}
-						$btnStatusAction = 'onClick="updateLink(\''.$url.'\', '.$info['http_code'].');"';
-						
-					} else {
-						$btnStatusCount = $info['redirect_count'];
-						if ($btnStatusCount==0) { $btnStatusClass = 'disabled';}
-					}
-					?>
+          <h3 id="lblTitle"><?=$link->title?></h3>
         </div><!-- /row -->
 				<div style="color:red"><?=(isset($errorMessage) && !empty($errorMessage))?$errorMessage:''?></div>
       </div> <!-- /container -->
@@ -97,7 +72,7 @@ if (isset($_POST['id'])) {
     	<div class="container">
       	<div class="row">
 
-					<a class="btn btn-info pull-<?=$handed?>" href="linkedit.php" accesskey="N" id="btnNext"><u>N</u>ext</a>
+					<a class="btn btn-info pull-<?=$handed?>" href="linkedit.php" id="btnNext" accessKey="n"><u>N</u>ext</a>
 
 					<a style="margin-right: 10px" class="btn btn-warning"
 						href="https://duckduckgo.com/?q=<?php echo urlencode($link->title);?>&t=ffsb&ia=web"
@@ -105,9 +80,7 @@ if (isset($_POST['id'])) {
 
 					<a style="margin-right: 10px" class="btn btn-warning" href="<?php echo $link->link;?>" target="_newWindow">Show</a>
 
-					<a style="margin-right: 10px" class="btn btn-warning" id="btnFix">Fix</a>
-					
-					<a class="btn btn-warning <?=$btnStatusClass?>" href="#" <?=$btnStatusAction?>>Status <sup><?=$btnStatusCount?></sup></a>
+					<a style="margin-right: 10px" class="btn btn-warning" id="btnFix" accesskey="x">Fi<u>x</u></a>
 
 					<br/>
 					<br />
@@ -120,16 +93,29 @@ if (isset($_POST['id'])) {
 
 							<div class="form-group">
 								<label for="link">Link:</label>
-								<input type="text" class="form-control" id="link" name="link" value="<?php echo $link->link;?>" />
+								<input type="text" class="form-control" id="link" name="link" value="<?=$link->link?>" />
 							</div>
 
 							<div class="form-group">
 								<label for="tags">Tags:</label>
-								<input type="text" class="form-control" id="tags" name="tags" value="<?php echo $link->tags;?>" />
+								<input type="text" class="form-control" id="tags" name="tags" value="<?=$link->tags?>" />
 							</div>
 
-							<input type="hidden" id="id" name="id" value="<?php echo $link->id;?>" />
-							<input type="hidden" id="created_at" name="last_updated" value="<?php echo isset($link->last_update)?$link->last_updated:date('Y-m-d');?>" />
+							<div class="form-group">
+								<label for="status">Status:</label>
+								<input type="text" class="form-control" id="status" name="status" value="<?=empty($link->status)?'200':$link->status?>" />
+							</div>
+
+							<div class="form-group">
+								<label for="created_at">Created At:</label>
+								<input type="text" class="form-control" id="created_at" name="created_at" value="<?=empty($link->created_at)?date('Y-m-d'):$link->created_at?>" />
+							</div>
+
+							<div class="form-group">
+								<label for="updated_at">Updated At:</label>
+								<input type="text" class="form-control" id="updated_at" name="updated_at" value="<?=empty($link->updated_at)?date('Y-m-d'):$link->updated_at?>" />
+							</div>
+							<input type="hidden" id="id" name="id" value="<?=$link->id?>" />
 							
 							<a class="btn btn-lg btn-danger pull-><?=$handed?>" accesskey="D" id="btnDelete"><u>D</u>elete</a>
 							<input type="submit" name="btnUpdate" id="btnUpdateId" class="btn btn-lg btn-info" value="Update" /><br />
@@ -148,14 +134,6 @@ if (isset($_POST['id'])) {
 	<?php require_once('_scripts.php'); ?>
 
 	<script>
-
-	function updateLink(newurl, newstatus) {
-		$('#link').val(newurl);
-		$('#status').val(newstatus);
-		$('#lblTitle').html("Loading ...");
-		$('#frmEditLink').submit();
-	}
-
 	$('#btnNext').on('click', function() {
 		$('#blue').css('background-color','gray');
 	});
@@ -183,40 +161,30 @@ if (isset($_POST['id'])) {
 
 
 	$('#btnFix').on('click', function(event) {
-		var getHeaderURL = '_functions.php?method=getheader&id=<?=$link->id?>';
+		console.log("Fixing link <?=$link->id?>");
 		
-		$.get(getHeaderURL, function(data) {
+		var baseColor = $('#blue').css('background-color');
+		$('#blue').css('background-color','#f0f0f0');
+		
+		console.log("Calling URL:"+'_functions.php?method=getheader&id=<?=$link->id?>');
+		$.get('_functions.php?method=getheader&id=<?=$link->id?>', function(data) {
 			console.log(data);
-			$('#last_updated').css('color','orange');
-			if (data.status == 'ok') {
-				$('#status').val('200');
-			}
+			$('#blue').css('background-color','lightGreen');
 
 			// This is just for example
 			//for (var key in data.meta){
 			//  console.log('Key:' + key + " -> Value:" + data.meta[key]);   
 			//}
-
-			if (data.meta['og:title']) {
-				$('#title').val(data.meta['og:title']);
-			}
-
-			var TagsField = $('#tags').val();
-			if (data.meta.keywords) { TagsField = data.meta.keywords; }
-			if (data.meta.news_keywords) { TagsField = data.meta.news_keywords; }
-			$('#tags').val(TagsField);
-
-			var CreatedAtDate = $('#created_at').val();
-			if (data.meta.datePublished) { CreatedAtDate = data.meta.datePublished; }
-			if (data.meta.date) { CreatedAtDate = data.meta.date; }
-			if (data.meta.published_at) { CreatedAtDate = data.meta.published_at; }
-			if (data.meta['article:published_time']) { CreatedAtDate = data.meta['article:published_time']; }
-			
-			$('#last_updated').html(CreatedAtDate);
-			$('#created_at').val(CreatedAtDate);
-			
-			$('#last_updated').css('color', 'white');
+			$('#link').val(data.link);
+			$('#title').val(data.title);
+			$('#lblTitle').html(data.title);
+			$('#tags').val(data.tags);
+			$('#created_at').val(data.created_at);
+			$('#updated_at').val(data.updated_at);
+			$('#status').val(data.status);
 		});
+		
+		$('#blue').css('background-color',baseColor);
 	});
 	</script>
 </body>

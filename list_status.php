@@ -83,14 +83,13 @@ require_once('_includes.php');
 			</div>
 
 	 		<div class="col-lg-4">
-		 		
 				<h4>Search</h4>
 		 		<div class="hline"></div>
-		 			<p>
-		 				<br/><form action="search.php">
-		 				<input type="text" class="form-control" name="q" placeholder="Search something">
+	 			<p>
+	 				<form action="search.php">
+	 					<input type="text" class="form-control" name="q" placeholder="Search something">
 					</form>
-		 			</p>
+	 			</p>
 
 		 		<div class="spacing"></div>
 
@@ -98,7 +97,6 @@ require_once('_includes.php');
 		 		<div class="hline"></div>
 				<table class="table">
 				<?php
-
 				$resultset = query("SELECT status, count(*) FROM links GROUP BY status");
 				foreach($resultset['rows'] AS $row) {
 					?>
@@ -109,11 +107,6 @@ require_once('_includes.php');
 				}
 				?>
 				</table>
-
-		 		<div class="spacing"></div>
-
-				<div id="recent_posts">
-				</div>
 
 		 		<div class="spacing"></div>
 

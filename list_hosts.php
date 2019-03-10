@@ -50,8 +50,14 @@ require_once('_includes.php');
 			$keys = Array();
 			$linklist = query("SELECT link, status, tags FROM links");
 			foreach($linklist['rows'] AS $row) {
+
 				$urlarr = explode('/', $row[0]);
-				$hostname = $urlarr[2];
+				if (substr($row[0],0,1) == '/') {
+					$hostname = $urlarr[1];
+				} else {
+					$hostname = $urlarr[2];
+				}
+				
 				if (isset($hostlist[$hostname])) {
 					$hostlist[$hostname]++;
 				} else {

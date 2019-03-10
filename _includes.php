@@ -21,6 +21,22 @@ define('FEED_DIR','data');
 
 require_once('/opt/config/vars');
 
+function validToken($token) {
+	return true;
+}
+
+foreach (getallheaders() as $name => $value) {
+    switch($name) {
+    	case 'Authorization':
+				$a = explode(' ', $value);
+				if (validToken($a[1])) {
+					$_SESSION['uid'] = $a[1];
+				}
+				break;
+			default:
+    }
+}
+
 if (in_array(basename($_SERVER['PHP_SELF']), explode(',','login,stats,index'))) {
 	if (!isset($_SESSION['uid'])) {
 		header("Location: login.php");
@@ -315,6 +331,8 @@ class Link {
 	var $title = '';
 	var $status = '';
 	var $last_updated = '';
+	var $created_at = '';
+	var $updated_at = '';
 	var $tags = '';
 	var $content = '';
 
@@ -386,14 +404,18 @@ class Link {
 		  $response['rowcount'] = $rs->num_rows;
 		}
 		$rs->data_seek(0);
+		
 		$row = $rs->fetch_row();
 
 		$this->id = $row[0];
 		$this->link = $row[1];
 		$this->title = $row[2];
 		$this->status = $row[3];
-		$this->last_updated = $row[4];
+		#$this->last_updated = $row[4];
 		$this->tags = $row[5];
+		$this->created_at = $row[6];
+		$this->updated_at = $row[7];
+		
 		$rs->free();
 		$conn->close();
 
@@ -450,8 +472,8 @@ class Link {
 		array_push($this->debugs, "link.update()   link        :".$this->link);
 		array_push($this->debugs, "link.update()   title       :".$this->title);
 		array_push($this->debugs, "link.update()   tags        :".$this->tags);
-		array_push($this->debugs, "link.update()   status      :".$this->status);
-		array_push($this->debugs, "link.update()   last_updated:".$this->last_updated);
+		array_push($this->debugs, "link.update()   status     :".$this->status);
+		array_push($this->debugs, "link.update()   updated_at :".$this->updated_at);
 
 		// Default to error, just in case.
 		$status = false;
@@ -465,7 +487,8 @@ class Link {
 			$sqlString .= ", title = '".$mysqli->real_escape_string($this->title)."'";
 			$sqlString .= ", tags = '".$mysqli->real_escape_string($this->tags)."'";
 			$sqlString .= ", status = ".$mysqli->real_escape_string($this->status);
-			$sqlString .= ", last_updated = '".$mysqli->real_escape_string(date('Y-m-d H:i:s', strtotime(substr($this->last_updated,0,19))))."'";
+			$sqlString .= ", created_at = '".$mysqli->real_escape_string(date('Y-m-d', strtotime($this->created_at)))."'";
+			$sqlString .= ", updated_at = '".$mysqli->real_escape_string(date('Y-m-d', strtotime($this->updated_at)))."'";
 			$sqlString .= ' WHERE id = '.$this->id;
 
 			foreach(explode(',', $sqlString) AS $sstr) {
@@ -498,6 +521,8 @@ class Link {
 		$raw_data['title'] = $this->title;
 		$raw_data['status'] = $this->status;
 		$raw_data['last_updated'] = $this->last_updated;
+		$raw_data['created_at'] = $this->created_at;
+		$raw_data['updated_at'] = $this->updated_at;
 		$raw_data['tags'] = $this->tags;
 		foreach($raw_data AS $k=>$v) {
 			array_push($this->debugs, "Link.addLink() field ${k} is [${v}]");

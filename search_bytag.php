@@ -12,7 +12,7 @@ if (isset($_REQUEST['tag'])) {
 	        $sql = "SELECT * FROM links WHERE UPPER(tags) LIKE '%".strtoupper($_REQUEST['tag'])."%' ".
 	      	  	(isset($_REQUEST['notstatus'])?' AND status != '.$_REQUEST['notstatus']:'').
 	      		(isset($_REQUEST['status'])?' AND status = '.$_REQUEST['status']:'').
-						' ORDER BY last_updated '.(isset($_REQUEST['dateorder'])?'ASC':'DESC');
+						' ORDER BY updated_at '.(isset($_REQUEST['dateorder'])?'ASC':'DESC');
 	}
   $resultset = query($sql);
 }
@@ -83,7 +83,7 @@ if (isset($_REQUEST['tag'])) {
 	 <div class="container mtb">
 	 	<div class="row">
 			
-	 		<div class="col-12">
+	 		<div class="col-lg-8">
 				<?php
 				if (!isset($_REQUEST['tag'])) {
 					?>
@@ -99,6 +99,7 @@ if (isset($_REQUEST['tag'])) {
 					<table id="tableLinks">
 					<thead>
 						<tr>
+							<td> </td>
 							<td>Link</td>
 							<td>Timestamp</td>
 							<?php
@@ -110,8 +111,23 @@ if (isset($_REQUEST['tag'])) {
 					<?php
 					foreach($resultset['rows'] AS $row) {
 						$lst = explode('/',  $row[0]);
+						$link = new Link($row[0]);
 						?>
 						<tr id="row<?php echo $row[0];?>">
+							
+							
+							<td>
+								<?php
+									if ($_SESSION['role'] === 'ADMIN') {
+								?>
+																<button class="btn btn-danger btn-sm" onClick="deleteLink(<?=$row[0]?>);">
+																	<span class="glyphicon glyphicon-remove"> </span>
+																</button>
+																<?php
+															}
+																?>
+							</td>
+															
 							<td>
 								<b><a href="<?php echo $row[1];?>" target="_newWindow"><?php echo urldecode($row[2]);?></a></b><br />
 								<?php
@@ -123,15 +139,11 @@ if (isset($_REQUEST['tag'])) {
 								<?php echo justHostName($row[1]); ?>
 							</td>
 							<td>
-								<small><?php echo date('Y-m-d', strtotime($row[4]));?></small>
+								<small><?=(empty($link->updated_at)?'empty':$link->updated_at)?></small>
 							</td>
 							<?php
 							if ($_SESSION['role'] === 'ADMIN') {
-								?><td>
-									<button class="btn btn-danger pull-right" onClick="deleteLink(<?=$row[0]?>);">
-										<span class="glyphicon glyphicon-remove"> </span>
-									</button>
-								</td>
+								?>
 								<td>
 									<a class="btn btn-info" href="linkedit.php?id=<?php echo $row[0];?>" target="_winEditLink">
 										<span class="glyphicon glyphicon-ok"> </span>

@@ -7,8 +7,27 @@ $resp['status'] = 'error';
 $resp['message'] = 'No method has been specified';
 $debugs = $_REQUEST;
 
+$skiptagList = Array(
+	'og:image:height',
+	'og:image:width',
+	'msapplication-TileColor',
+	'fb:app_id',
+	'fb:pages',
+	'og:locale',
+	'og:site_name',
+	'og:image:secure_url',
+	'og:image',
+	'twitter:site',
+	'twitter:card',
+	'og:type',
+	'twitter:image',
+	'rating',
+	'apple-mobile-web-app-title'
+);
+
 function findMetaTags($content) {
 	global $debugs;
+	global $skiptagList;
 	
 	$arr = Array();
 	$doc = new DOMDocument();
@@ -21,7 +40,7 @@ function findMetaTags($content) {
 	}
 	
 	foreach($doc->getElementsByTagName('meta') as $metatag) {
-		$debugs[] = 'got a tag';
+
 		if ($metatag->getAttribute('name') != null) {
 			$tn = $metatag->getAttribute('name');
 		}
@@ -29,8 +48,10 @@ function findMetaTags($content) {
 		if ($metatag->getAttribute('property') != null) {
 			$tn = $metatag->getAttribute('property');
 		}
-		$debugs[] = 'tagname '.$tn;
-		$arr[$tn] = $metatag->getAttribute('content');
+		
+		if (isset($tn)) {
+			if (!in_array($tn,$skiptagList)) { $arr[$tn] = $metatag->getAttribute('content'); }
+		}
 	}
 	$debugs[] = 'Added '.count($arr).' tags';
 	return $arr;
@@ -80,7 +101,7 @@ if (isset($_REQUEST['method'])) {
 		$link = new Link();
 		$link->title = $_REQUEST['title'];
 		$link->link = $_REQUEST['link'];
-		$link->last_updated = $_REQUEST['last_updated'];
+		$link->updated_at = $_REQUEST['updated_at'];
 
 		if ($link->addLink()) {
 			$resp['status'] = 'ok';
@@ -108,13 +129,13 @@ if (isset($_REQUEST['method'])) {
 				$newLink->link = $obj->link.'';
 				$newLink->title = $obj->title;
 				$newLink->status = getLinkStatus($newLink->link);
-				$newLink->last_updated = $obj->last_updated.''; //date('c', strtotime(str_replace(' at ',' ', $obj->published)));
+				$newLink->updated_at = $obj->updated_at.''; //date('c', strtotime(str_replace(' at ',' ', $obj->published)));
 				$newLink->tags = $obj->tags;
 
 				$debugs[] = 'savefile() link         :'.$newLink->link;
 				$debugs[] = 'savefile() title        :'.$newLink->title;
 				$debugs[] = 'savefile() status       :'.$newLink->status;
-				$debugs[] = 'savefile() last_updated :'.$newLink->last_updated;
+				$debugs[] = 'savefile() updated_at :'.$newLink->updated_at;
 				$debugs[] = 'savefile() tags         :'.$newLink->tags;
 
 				if ($newLink->addLink()) {
@@ -191,6 +212,13 @@ if (isset($_REQUEST['method'])) {
 	} else if ($_REQUEST['method']==='getheader') {
 		
 		$link = new Link($_REQUEST['id']);
+		
+		$resp['link'] = $link->link;
+		$resp['title'] = $link->title;
+		$resp['tags'] = $link->tags;
+		$resp['updated_at'] = $link->updated_at;
+		$resp['created_at'] = $link->created_at;
+		$resp['status'] = $link->status;
 
 		$ch = curl_init($link->link);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -204,13 +232,41 @@ if (isset($_REQUEST['method'])) {
 		
 		$resp['meta'] = $details;
 		
-		$resp['details']['status'] = $info['http_code'];
-		$resp['details']['title'] = $details['pagetitle'];
-		if ($details['parsely-pub-date']) { 
-			$resp['details']['last_updated'] = date('Y-m-d', strtotime($details['parsely-pub-date']));
+		$resp['status'] = $info['http_code'];
+		$resp['title'] = (empty($details['pagetitle'])?$link->title:$details['pagetitle']);
+
+		foreach($details AS $tag=>$val) {
+			switch($tag) {
+				case 'twitter:title':
+				case 'og:title':
+					$resp['title'] = $val;
+					break;
+				case 'og:url':
+					$resp['link'] = $val;
+					break;
+				case 'article:tag':
+				case 'keywords':
+					$resp['tags'] = $val;
+					break;
+				case 'article:modified_time':
+				case 'og:updated_time':
+					$resp['updated_at'] = empty($val)?date('Y-m-d'):date('Y-m-d', strtotime($val));
+					break;
+				case 'article:published_time':
+				case 'parsely-pub-date':
+				case 'DC.date.issued':
+				case 'date':
+					$resp['created_at'] = empty($val)?date('Y-m-d'):date('Y-m-d', strtotime($val));
+					break;
+			}
 		}
-		
-		$resp['status'] = 'ok';
+		if ($resp['created_at'] == null || empty($resp['created_at'])) {
+			$resp['created_at'] = date('Y-m-d');
+		}
+		if ($resp['updated_at'] == null || empty($resp['updated_at'])) {
+			$resp['updated_at'] = date('Y-m-d');
+		}
+		$resp['description'] = (isset($details['description']) && !empty($details['description'])?$details['description']:'no description');
 		$resp['message'] = 'URL Headers for '.$link->link;
 
 	} else if ($_REQUEST['method']==='curate_done') {
@@ -219,7 +275,7 @@ if (isset($_REQUEST['method'])) {
 		$newLink->link = $_REQUEST['link'];
 		$newLink->title = $_REQUEST['title'];
 		$newLink->status = getLinkStatus($_REQUEST['link']);
-		$newLink->last_updated = $_REQUEST['published'];
+		$newLink->updated_at = $_REQUEST['published'];
 		$newLink->tags = $_REQUEST['tags'];
 
 		if ($newLink->addLink()) {
@@ -230,17 +286,11 @@ if (isset($_REQUEST['method'])) {
 			$resp['message'] = $newLink->message;
 		}
 	} else if ($_REQUEST['method']==='repairlink') {
-		array_push($debugs, 'repairlink() id:'.$_REQUEST['id']);
 
 		$link = new Link($_REQUEST['id']);
 		$resp['message'] = 'Repair options for link '.$link->id;
-
-		$resp['details']['id'] = $link->id;
-		$resp['details']['title'] = $link->title;
-		$resp['details']['link'] = $link->link;
-		$resp['details']['status'] = $link->status;
-		$resp['details']['last_updated'] = $link->last_updated;
-		$resp['details']['tags'] = $link->tags;
+		
+		$resp['details'] = $link->row;
 
 		$ch = curl_init($link->link);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -250,90 +300,45 @@ if (isset($_REQUEST['method'])) {
 		$resp['info'] = curl_getinfo($ch);
 		curl_close($ch);
 		
-		$resp['details']['status'] = $link->status;
+		$resp['details']['status'] = $resp['info']['http_code'];
+		
 		if ($resp['info']['http_code'] == '200') {
 			$resp['status'] = 'ok';
+			
 			$details = findMetaTags($content);
 			$resp['meta'] = $details;
 			
 			$resp['details']['title'] = $details['pagetitle'];
 			
-			if (isset($details['article:modified_time'])) {
-				$resp['details']['last_updated'] = date('Y-m-d', strtotime($details['article:modified_time']));
+			foreach($details AS $tag => $val) {
+				switch ($tag) {
+					case 'og:url':
+						$resp['details']['link'] = $val;
+						break;
+					case 'og:title':
+						$resp['details']['title'] = $val;
+						break;
+					case 'article:modified_time':
+						$resp['details']['updated_at'] = date('Y-m-d', strtotime($val));
+						break;
+					case 'article:published_time':
+						$resp['details']['created_at'] = date('Y-m-d', strtotime($val));
+						break;
+					default:
+						array_push($debugs, 'repairlink() not processing value from tag:'.$tag);
+						# \Log::debug("")
+				}
 			}
 			
-			if ($resp['details']['last_updated'] == null) {
-				$resp['details']['last_updated'] = date('Y-m-d');
+			if ($resp['details']['updated_at'] == null || empty($resp['details']['updated_at'])) {
+				$resp['details']['updated_at'] = date('Y-m-d');
 			}
 			
 		} else {
 			$resp['status'] = 'error';
 		}
-		
-
-	} else if ($_REQUEST['method']==='repair') {
-		$resp['status'] = 'ok';
-
-		$link = new Link($_REQUEST['id']);
-		$resp['message'] = 'Repair options for link '.$link->id;
-
-		$resp['id'] = $_REQUEST['id'];
-		$resp['title'] = $link->title;
-		$resp['link'] = $link->link;
-		$resp['last_updated'] = date('Y-m-d H:i:s');
-		$resp['tags'] = '';
-
-		$ch = curl_init($link->link);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT ,5);
-
-		$content = curl_exec($ch);
-		$resp['info'] = curl_getinfo($ch);
-		curl_close($ch);
-
-		if ($resp['info']['http_code']!=200) {
-			$resp['status'] = 'error';
-			$resp['message'] = 'Could not get the expected webpage!'.print_r($resp['info'], true);
-		} else {
-
-			$startpos = strpos($content, '>', strpos($content, '<title'));
-			$endpos = strpos($content, '</title', $startpos);
-			$resp['title'] = substr($content, $startpos+1, $endpos-$startpos-1);
-
-			$editorLink = '<div class="form-group">'.
-			'<label for="link">Link</label>'.
-			'<input type="text" class="form-control" id="link" name="link" placeholder="URL for the link " value="'.$resp['link'].'">'.
-			'</div>';
-
-			$editorTitle = '<div class="form-group">'.
-			'<label for="title">Title</label>'.
-			'<input type="title" class="form-control" id="title" name="title" '.
-				'placeholder="Enter the title of the link" value="'.$resp['title'].'">'.
-			'</div>';
-
-			$editorTags = '<div class="form-group">'.
-			'<label for="tags">Tags</label>'.
-			'<input type="text" class="form-control" id="tags" name="tags" placeholder="Comma separated list of tags." value="'.$resp['tags'].'">'.
-			'</div>';
-
-			$editorDate = '<div class="form-group">'.
-			'<label for="last_updated">Last Updated</label>'.
-			'<input type="text" class="form-control" id="last_updated" name="last_updated" placeholder="Last time updated" value="'.$resp['last_updated'].'">'.
-			'</div>';
-
-			$resp['body'] = '<form method="POST" action="linkedit.php?id='.$_REQUEST['id'].'">'.
-				'<input type="hidden" name="id" value="'.$_REQUEST['id'].'" />'.
-				$editorTitle.
-				$editorLink.
-				$editorTags.
-				$editorDate.
-				'<button type="submit" class="btn btn-default">Submit</button>'.
-			'</form>';
-		}
-
 	} else if ($_REQUEST['method']==='getRandomTotal') {
-		$sql="SELECT count(*)  FROM links WHERE tags IS NULL OR last_updated IS NULL OR tags = '' OR last_updated = ''";
+		$sql="SELECT count(*)  FROM links WHERE tags IS NULL OR updated_at IS NULL OR tags = '' OR updated_at = ''";
 		$raw_rs = query($sql);
 		$resp['status'] = 'ok';
 		$resp['count'] = 123;
@@ -382,7 +387,7 @@ if (isset($_REQUEST['method'])) {
 
 
 	} else if ($_REQUEST['method']==='getRecentPosts') {
-		$r = query("SELECT * FROM links ORDER BY last_updated LIMIT 10");
+		$r = query("SELECT * FROM links ORDER BY updated_at LIMIT 10");
 		$resp['status'] = 'ok';
 		$resp['message'] = 'recent posts are not available.';
 
@@ -486,7 +491,7 @@ if (isset($_REQUEST['method'])) {
 			$newlink->title = (isset($_REQUEST['title'])?$_REQUEST['title']:'');
 			$newlink->tags = (isset($_REQUEST['tags'])?$_REQUEST['tags']:'');
 			$newlink->status = (isset($_REQUEST['status'])?$_REQUEST['status']:-1);
-			$newlink->last_updated = (isset($_REQUEST['last_updated'])?$_REQUEST['last_updated']:-1);
+			$newlink->updated_at = (isset($_REQUEST['updated_at'])?$_REQUEST['updated_at']:-1);
 			$debugs << 'Updated fields of object.';
 
 			if ($newlink->save()) {
@@ -529,8 +534,8 @@ if (isset($_REQUEST['method'])) {
 				$link->tags = $_REQUEST['value'];
 			}
 
-			if ($col == 'last_updated') {
-				$link->last_updated = $_REQUEST['value'];
+			if ($col == 'updated_at') {
+				$link->updated_at = $_REQUEST['value'];
 			}
 
 			if ($link->update()) {

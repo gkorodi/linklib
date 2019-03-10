@@ -9,14 +9,14 @@
 	
 	<script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"> </script>
 
-	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<!-- Global site tag (gtag.js) - Google Analytics 
 	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-64712928-2"></script>
 	<script>
 		window.dataLayer = window.dataLayer || [];
 		function gtag(){dataLayer.push(arguments);}
 		gtag('js', new Date());
 		gtag('config', 'UA-64712928-2');
-	</script>
+	</script>-->
 
 
 	<script>
