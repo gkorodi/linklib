@@ -3,7 +3,16 @@ require_once('_includes.php');
 
 $handed = "right";
 
-$getRandomIdSQL = 'SELECT r1.id FROM links AS r1 JOIN (SELECT CEIL(RAND() * (SELECT MAX(id) FROM links)) as id) AS r2 WHERE r1.id >= r2.id AND r1.tags IS NULL LIMIT 1';
+$getRandomIdSQL = 'SELECT r1.id FROM links AS r1 '.
+	'JOIN '.
+	'(SELECT CEIL(RAND() * '.
+			'(SELECT MAX(id) FROM links)'.
+		') as id) AS r2 '.
+	'WHERE '.
+		'r1.id >= r2.id '.
+	'AND '.
+		'r1.tags IS NULL '.
+	'LIMIT 1';
 
 if (!isset($_REQUEST['id']) || $_REQUEST['id'] == '') {
 	$links = Array();
@@ -159,9 +168,7 @@ if (isset($_POST['id'])) {
 	        }
 	});
 
-
 	$('#btnFix').on('click', function(event) {
-		console.log("Fixing link <?=$link->id?>");
 		
 		var baseColor = $('#blue').css('background-color');
 		$('#blue').css('background-color','#f0f0f0');
