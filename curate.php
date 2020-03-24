@@ -1,14 +1,17 @@
 <?php
 require_once('_includes.php');
-$sql="SELECT * FROM links WHERE tags = 'curate'";
+$sql="SELECT * FROM links WHERE tags = 'curate' ORDER BY updated_at DESC LIMIT 200";
 $raw = query($sql);
+
 ?><!DOCTYPE html>
 <html lang="en">
   <head>
 	  <?php require_once('_metatags.php');?>
+		
     <link rel="shortcut icon" href="assets/ico/favicon.ico">
-    <title><?php echo APP_TITLE;?></title>
-    <!-- Bootstrap core CSS -->
+    <title><?php echo APP_TITLE;?> - Curate List</title>
+    
+		<!-- Bootstrap core CSS -->
     <link href="assets/css/bootstrap.css" rel="stylesheet">
     <!-- Custom styles for this template -->
     <link href="assets/css/style.css" rel="stylesheet">
@@ -30,7 +33,7 @@ $raw = query($sql);
 	<div id="blue">
 		<div class="container">
 			<div class="row">
-				<h3>Curate <?php echo count($raw['rows']);?></h3>
+				<h3>Curate <?=count($raw['rows'])?> rows</h3>
 			</div><!-- /row -->
 		</div> <!-- /container -->
 	</div><!-- /blue -->
@@ -41,33 +44,32 @@ $raw = query($sql);
 			<div id="randomlist" class="col-lg-12">
 				<table class="table">
 				<?php
-				$idx = 1;
+				$idx = 0;
 				foreach ($raw['rows'] AS $row) {
+					$idx++;
 					?>
-					<tr id="row<?php echo $row[0];?>" >
-						<td> </td>
+					<tr id="row<?=$row[ROW_ID]?>" >
 						<td>
-							<a href="<?php echo $row[1];?>" target="_newWindow"><?php echo urldecode($row[2]);?></a><br />
-							<small><?php echo justHostName($row[1]);?></small><br />
-							<small><?php echo $row[4];?></small>
-						</td>
-						<td>
-							<input type="text" id="tags<?php echo $idx;?>"
-								value="<?php echo $row[5];?>" onchange="tagLink('<?php echo $idx;?>');" />
-							<input type="hidden" id="link<?php echo $idx;?>"
-								value="<?php echo $row[1];?>" />
-							<input type="hidden" id="title<?php echo $idx;?>"
-								value="<?php echo $row[2];?>" />
-							<input type="hidden" id="published<?php echo $idx;?>"
-								value="<?php echo $row[4];?>" />
-						</td>
-						<td>
-							<button class="btn btn-sm btn-danger" onClick="deleteLink('<?php echo $row[0];?>');">
+							<button class="btn btn-sm btn-danger" onClick="deleteLink('<?=$row[ROW_ID]?>');">
 								<span class="glyphicon glyphicon-remove"> </span>
 							</button>
 						</td>
+						
 						<td>
-							<a class="btn btn-sm btn-info" href="linkedit.php?id=<?php echo $row[0];?>" target="_newWin">
+							<a href="<?=$row[ROW_LINK]?>" target="_newWindow"><?=urldecode($row[ROW_TITLE])?></a><br />
+							<small>host: <strong><?=justHostName($row[ROW_LINK])?></strong></small><br />
+							<small>created: <?=$row[ROW_CREATED_AT]?></small>
+						</td>
+						
+						<td>
+							
+
+							<button class="btn btn-sm btn-warning" onClick="hideLink('<?=$row[ROW_ID]?>');">
+								<span class="glyphicon glyphicon-cog"> </span>
+							</button>
+						</td>
+						<td>
+							<a class="btn btn-sm btn-info" href="linkedit.php?id=<?=$row[ROW_ID]?>" target="_newWin">
 								<span class="glyphicon glyphicon-ok"> </span>
 							</a>
 						</td>

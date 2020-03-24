@@ -1,6 +1,18 @@
+<style>
+	TR.link-301 {
+		background-color: lightGray;
+	}
+	TR.link--2 {
+		background-color: Purple; color: white;
+	}
+	TR.link-2 {
+		background-color: Pink; color: white;
+	}
+</style>
+
 <div class="container mtb">
 	<div class="row">
-		<div class="col-lg-12">
+		<div class="col-sm-12">
 			<?php
 			if (!isset($_REQUEST['host'])) {
 			?>
@@ -12,46 +24,48 @@
 			</form>
 			<?php
 			} else {
+				$id = 0;
+				$link = 1;
+				$title = 2;
+				$status = 3;
+				$tags = 4;
+				$created_at = 5;
+				$updated_at = 6;
+				
 				?>
 				<table class="table">
-				<thead>
-				<th></th>
-				<th></th>
-				<th>UpdatedAt</th>
-				<th></th>
-				</thead>
+					<thead>
+						<th></th>
+						<th></th>
+						<th>UpdatedAt</th>
+						<th></th>
+					</thead>
 				<tbody>
 					<?php
 					foreach($resultset['rows'] AS $row) {
+						//$link = new Link($row);
 					?>
-						<tr id="row<?php echo $row[0];?>">
+						<tr class="link-<?=$row[$status]?>" id="row<?=$row[$id]?>">
 						<td>
-							<button class="btn btn-sm btn-danger pull-right" onClick="deleteLink(<?php echo $row[0];?>);">
+							<button class="btn btn-sm btn-danger pull-right" onClick="deleteLink(<?=$row[$id]?>);">
 							<span class="glyphicon glyphicon-remove"> </span>
-							</button>
+							</button><small><?=($row[$status]==200?'':$row[$status])?></small>
 						</td>
 						<td>
-							<b><a href="<?=$row[1]?>" target="_newWindow"><?=urldecode($row[2])?></a></b><br />
-							<small><?php
-							if (strpos(strtolower($row[5]), 'repair')>-1 || isset($_REQUEST['fullurl'])) {
-							echo $row[1];
-							}
-							?>
-
+							<b><a href="<?=$row[$link]?>" target="_newWindow"><?=urldecode(empty($row[$title])?'No Title :(':$row[$title])?></a></b><br />
+							<small><?=$row[$link]?><br />
 							<?php
-							foreach(explode(',', $row[5]) AS $tag) {
+							foreach(explode(',', $row[$tags]) AS $tag) {
 								echo '<span class="badge">'.$tag.'</span>';
 							}
 							?>
-
 							</small>
 						</td>
 						<td>
-							<small><?php echo date('Y-m-d', strtotime($row[7]));?></small>
+							<small><?=date('Y-m-d', strtotime($row[$created_at]))?></small>
 						</td>
-
 						<td>
-							<a class="btn btn-sm btn-info" href="linkedit.php?id=<?php echo $row[0];?>" target="_winEditLink">
+							<a class="btn btn-sm btn-info" href="linkedit.php?id=<?=$row[$id]?>" target="_winEditLink">
 							<span class="glyphicon glyphicon-ok"> </span>
 							</a>
 						</td>

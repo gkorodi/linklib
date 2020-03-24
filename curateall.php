@@ -1,27 +1,30 @@
 <?php
-require_once('_includes.php');
-foreach (glob(FEED_DIR.'/*.json') as $inputFileName) {
-    echo "Processing file ${inputFileName}".PHP_EOL;
-    try {
-        $raw = file_get_contents($inputFileName);
-        $newLink = new Link();
+require_once('_includes_cli.php');
 
-        $obj = json_decode($raw);
-        $newLink->link = $obj->link.'';
-        $newLink->title = $obj->title;
-        $newLink->status = getLinkStatus($newLink->link);
-        $newLink->last_updated = $obj->last_updated.'';
-        $newLink->tags = $obj->tags;
+$rows = query('SELECT * FROM links WHERE tags = "curate" ORDER BY updated_at ASC LIMIT 10');
+echo "<h2>CurateList</h2>";
 
-        if ($newLink->addLink()) {
-            if (!unlink($inputFileName)) {
-                echo "ERROR: could not delete file ${inputFileName}".PHP_EOL;
-            }
-        } else {
-            echo "Could not import file for curation!!!!".PHP_EOL;
-        }
-    } catch (Exception $e) {
-        echo "Could not import file!!!! ".print_r($e, true).PHP_EOL;
-    }
+foreach(range(0,9) AS $idx) {
+	$link = $rows['rows'][$idx];
+	
+	$linkDetails = getDetails($link);
+	
+	$description = getDescription($linkDetails);
+	
+	if (getNewStatus($linkDetails)!=200) {
+		echo 'ALERT! Status has changed from previous! '.
+			'Past:'.print_r($link[ROW_STATUS], true).' '.
+			'Current:'.print_r(getNewStatus($linkDetails), true).PHP_EOL;
+		continue;
+	}
+	
+	?>
+	<div class="entryItem">
+		<b><?=$link[ROW_TITLE]?></b><br />
+		<small><?=$description?></small>
+		<hr />
+	</div>
+	<br />
+	<?php
 }
 ?>

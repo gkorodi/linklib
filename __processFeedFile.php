@@ -6,7 +6,7 @@ $dbservice = new DBQueryService();
 $processed = 0;
 $failed = 0;
 
-function processFile($filename) {
+function processFeedFile($filename) {
 
 	if (pathinfo($filename, PATHINFO_EXTENSION) == 'webloc') {
 	} else {
@@ -36,5 +36,5 @@ if ($dbservice->addRow($raw_data)) {
 
 $dbservice->close();
 
-foreach(glob(getenv('FEED_DIR').'/*.*') AS $fn) { processFile($fn); }
+foreach(glob(getenv('FEED_DIR').'/*.*') AS $fn) { processFeedFile($fn); }
 ?>

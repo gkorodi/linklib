@@ -3,10 +3,10 @@ require_once('_includes.php');
 ?><!DOCTYPE html>
 <html lang="en">
   <head>
-	  <?php require_once('_metatags.php');?>
-    <link rel="shortcut icon" href="assets/ico/favicon.ico">
+  <?php require_once('_metatags.php');?>
+  <link rel="shortcut icon" href="assets/ico/favicon.ico">
 
-    <title><?php echo APP_TITLE;?></title>
+  <title><?php echo APP_TITLE;?></title>
 
     <!-- Bootstrap core CSS -->
     <link href="assets/css/bootstrap.css" rel="stylesheet">

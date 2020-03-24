@@ -8,5 +8,6 @@ ExpiresByType text/css A86400
 ExpiresByType text/javascript A86400
 #
 <FilesMatch "\.(gif¦jpe?g¦png¦ico¦css¦js)$">
-Header set Cache-Control "public"
+	Header set Cache-Control "public"
 </FilesMatch>
+

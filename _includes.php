@@ -2,6 +2,12 @@
 session_start();
 date_default_timezone_set('US/Eastern');
 
+if (!in_array(basename($_SERVER['PHP_SELF']), explode(',','login.php,index.php')) && !isset($_SESSION['uid'])) {
+		header("Location: login.php");
+		exit;
+}
+
+
 define('APP_ROOT','/linklib/');
 define('APP_TITLE','linkLIB');
 define('APP_ADDRESS', '<h4>Our Bunker</h4>'.
@@ -19,7 +25,36 @@ define('APP_SOCIAL_LINKS','<h4>Social Links</h4><div class="hline-w"></div>'.
 '</p>');
 define('FEED_DIR','data');
 
+define('ROW_ID',0);
+define('ROW_LINK',1);
+define('ROW_TITLE',2);
+define('ROW_STATUS',3);
+define('ROW_TAGS',4);
+define('ROW_CREATED_AT',5);
+define('ROW_UPDATED_AT',6);
+define('ROW_DESCRIPTION',7);
+
 require_once('/opt/config/vars');
+
+$skiptagList = Array(
+	'og:image:height',
+	'og:image:width',
+	'msapplication-TileColor',
+	'fb:app_id',
+	'fb:pages',
+	'og:locale',
+	'og:site_name',
+	'og:image:secure_url',
+	'og:image',
+	'twitter:site',
+	'twitter:card',
+	'og:type',
+	'twitter:image',
+	'rating',
+	'apple-mobile-web-app-title',
+	'bt:body'
+);
+
 
 function validToken($token) {
 	return true;
@@ -28,19 +63,20 @@ function validToken($token) {
 foreach (getallheaders() as $name => $value) {
     switch($name) {
     	case 'Authorization':
-				$a = explode(' ', $value);
-				if (validToken($a[1])) {
-					$_SESSION['uid'] = $a[1];
-				}
-				break;
-			default:
+		$a = explode(' ', $value);
+		if (validToken($a[1])) {
+			$_SESSION['uid'] = $a[1];
+		}
+		break;
+	default:
     }
 }
 
-if (in_array(basename($_SERVER['PHP_SELF']), explode(',','login,stats,index'))) {
-	if (!isset($_SESSION['uid'])) {
-		header("Location: login.php");
-	}
+
+function getRowDescription($record) {
+	$obj = json_decode($record[ROW_DESCRIPTION]);
+	if (isset($obj->{'og:description'})) return $obj->{'og:description'};
+	return 'No Description';
 }
 
 function getLinkStatus($url) {
@@ -187,6 +223,7 @@ class DBQueryService {
 	var $lastAffectedRow;
 
 	var $debugs = Array();
+	var $errorMessage = '';
 
 	function logger($msg) {
 		array_push($this->debugs, date('c')." ".$msg);
@@ -200,12 +237,13 @@ class DBQueryService {
 		    $this->logger("Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error);
 		}
 
-		if (!($this->stmtInsert = $this->conn->prepare("INSERT links (link,title,status,tags,last_updated) VALUES (?,?,?,?,?)"))) {
+		if (!($this->stmtInsert = $this->conn->prepare("INSERT links (link,title,status,tags,updated_at) VALUES (?,?,?,?,?)"))) {
 			$this->logger("Prepare INSERT failed: (". $mysqli->errno. ") " . $mysqli->error);
 		}
 
 		if (!($this->stmtAddExtraDetails = $this->conn->prepare("INSERT raw_extras (linkid, details, type) VALUES (?,?,?)"))) {
 			$this->logger("Prepare INSERT failed: (". $mysqli->errno. ") " . $mysqli->error);
+			$this->error = "Prepare INSERT failed: (". $mysqli->errno. "/" . $mysqli->error;
 		}
 	}
 
@@ -243,15 +281,17 @@ class DBQueryService {
 			$rowTitle,
 			$row['status'],
 			$row['tags'],
-			$row['last_updated']
+			$row['updated_at']
 			)
 		) {
 			$this->logger("Binding parameters ".json_encode($row)." failed: (" . $this->stmtInsert->errno . ") " . $this->stmtInsert->error);
 		}
 
 		if (!$this->stmtInsert->execute()) {
-		    $this->logger("Execute failed: (" . $this->stmtInsert->errno . ") " . $this->stmtInsert->error);
-
+			$this->error = "Execute failed: (" . $this->stmtInsert->errno . "/" . $this->stmtInsert->error;
+			$this->errorMessage = $this->stmtInsert->errno . "/" . $this->stmtInsert->error;
+			
+		  $this->logger($this->error);
 		} else {
 			$this->lastAffectedRow = $this->stmtInsert->affected_rows;
 			$this->logger("Inserted ".$this->lastAffectedRow." row successfully.");
@@ -268,11 +308,13 @@ class DBQueryService {
 			$mapFielValuePairs['status'],
 			$mapFielValuePairs['tags'],
 			$mapFielValuePairs['id'])) {
-		    $this->logger("Binding parameters failed: (" . $this->stmtUpdate->errno . ") " . $this->stmtUpdate->error);
+				$this->error = "Binding parameters failed: (" . $this->stmtUpdate->errno . "/" . $this->stmtUpdate->error;
+		    $this->logger($this->error);
 		}
 
 		if (!$this->stmtUpdate->execute()) {
-		    $this->logger("Execute failed: (" . $this->stmtUpdate->errno . ") " . $this->stmtUpdate->error);
+			$this->error = "Execute failed: (" . $this->stmtUpdate->errno . "/" . $this->stmtUpdate->error;
+			$this->logger($this->error);
 		}
 
 		/* Prepared statement: repeated execution, only data transferred from client to server */
@@ -330,46 +372,192 @@ class Link {
 	var $link = '';
 	var $title = '';
 	var $status = '';
-	var $last_updated = '';
 	var $created_at = '';
 	var $updated_at = '';
 	var $tags = '';
 	var $content = '';
-
+	var $description = '';
+  var $errorMessage = '';
 	var $row = Array();
+
+	function logger($msg) {
+		array_push($this->debugs, date('c')." ".$msg);
+	}
 
 	function __construct($id = null) {
 		if ($id == null) {
-			array_push($this->debugs, "Create an empty object. No 'id' has been specified in constructor.");
+			$this->logger("Create an empty object. No 'id' has been specified in constructor.");
 		} else {
-			array_push($this->debugs, "Initialize Link object with id ".$id);
-			$this->id = $id;
-			array_push($this->debugs, "Initialized Link object with new id: ".$this->id);
-
-			$mysqli = new mysqli(DB_HOST.(defined('DB_PORT')?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
-			/* check connection */
-			if ($mysqli->connect_errno) {
-			    array_push($errors, "Connect failed: %s\n", $mysqli->connect_error);
-
-			} else {
-				$query = "SELECT * FROM links WHERE id = ${id}";
-				if ($result = $mysqli->query($query)) {
-				    /* fetch associative array */
-				    while ($row = $result->fetch_assoc()) {
-				        $this->link = $row['link'];
-					$this->title = $row['title'];
-					$this->status = $row['status'];
-					$this->tags = $row['tags'];
-					$this->row = $row;
-				    }
-				    /* free result set */
-				    $result->free();
+			if (gettype($id) == 'array') {
+				list($linkid,$link,$title,$status,$tags,$created_at,$updated_at,$description) = $id;
+				
+				if ($linkid == null || $link == null) {
+					throw new Exception('Invalid id or link value. Cannot create Link object with either of them being null!');
 				}
-				/* close connection */
-				$mysqli->close();
-			}
+				// This constructor is to find an object!
+				$this->id = $linkid;
+				$this->link = $link;
+				$this->title = $title;
+				$this->status = $status;
+				$this->tags = $tags;
+				$this->updated_at = $updated_at;
+				$this->created_at = $created_at;
+				$this->description = $description;
+				
+			} else {
+				$this->logger("Initialize Link object with id ".$id);
+				$this->id = $id;
+				$this->logger("Initialized Link object with new id: ".$this->id);
 
+				$mysqli = new mysqli(DB_HOST.(defined('DB_PORT')?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
+				/* check connection */
+				if ($mysqli->connect_errno) {
+				    $this->logger("Connect failed: %s\n", $mysqli->connect_error);
+				} else {
+					$query = "SELECT * FROM links WHERE id = ${id}";
+					if ($result = $mysqli->query($query)) {
+					    /* fetch associative array */
+					    while ($row = $result->fetch_assoc()) {
+					        $this->link = $row['link'];
+									$this->title = $row['title'];
+									$this->status = isset($row['status'])?empty($row['status'])?-1:$row['status']:0;
+									$this->tags = $row['tags'];
+									$this->updated_at = isset($row['updated_at'])?$row['updated_at']:date('Y-m-d');
+									$this->created_at = isset($row['created_at'])?$row['created_at']:date('Y-m-d');
+									$this->description = empty($row['description'])?'{}':$row['description'];
+									
+									$this->row = $row;
+					    }
+					    /* free result set */
+					    $result->free();
+					}
+					/* close connection */
+					$mysqli->close();
+				}
+			}
 		}
+	}
+	
+	function getMetaTags($content) {
+		global $skiptagList;
+		$this->logger("getMetaTags() starting");
+		
+		$arr = Array();
+		$doc = new DOMDocument();
+		libxml_use_internal_errors(true);
+		@$doc->loadHTML($content); // loads your HTML
+
+		foreach($doc->getElementsByTagName('title') as $tag) {
+			$this->logger('getMetaTags() got page title');
+			$arr['pagetitle'] = $tag->nodeValue;
+		}
+
+		foreach($doc->getElementsByTagName('meta') as $metatag) {
+			if ($metatag->getAttribute('name') != null) {
+				$tn = $metatag->getAttribute('name');
+			}
+	
+			if ($metatag->getAttribute('property') != null) {
+				$tn = $metatag->getAttribute('property');
+			}
+	
+			if (isset($tn)) {
+				if (!in_array($tn,$skiptagList)) { $arr[$tn] = $metatag->getAttribute('content'); }
+			}
+		}
+		$this->logger('getMetaTags() Added '.count($arr).' tags');
+		return $arr;
+	}
+	
+	function repair() {
+		$this->logger("repair() starting...");
+		
+		$this->logger("repair() title:".$this->title.'<br />link: '.$this->link);
+		
+		$ch = curl_init($this->link);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 2);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+		$content = curl_exec($ch);
+		$info = curl_getinfo($ch);
+		
+		$this->status = $info['http_code'];
+		if ($info['http_code']!=200) {
+			$this->errors[] = 'HTTP status is '.$info['http_code'];
+			
+			// Update `status` field with new status
+			if ($this->status != $info['http_code']) {
+				if ($this->update()) {
+					$this->errors[] = 'Status has been updated with '.$info['http_code'];
+				}
+			} else {
+				$this->errors[] = 'Status is still invalid. '.$info['http_code'];
+			}
+			return false;
+		} else {
+			$this->errors[] = 'HTTP status is OK';
+			// Remove querystring, if any
+			$newUrl = substr($info['url'],0, strpos($info['url'], '?'));
+			
+			// Check if the URL is a duplicate
+			$isDuplicate = false;
+			try {
+				$sql = 'SELECT * FROM links WHERE link = "'.$newUrl.'" AND id != '.$this->id;
+				$conn = new mysqli(DB_HOST.(defined('DB_PORT')?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
+				$rs = $conn->query($sql);
+				if($rs === false) {
+				  trigger_error('Wrong SQL: ' . $sql . ' Error: ' . $conn->error, E_USER_ERROR);
+				} else {
+					$isDuplicate = ($rs->num_rows>0);
+					$rs->data_seek(0);
+					$r = $rs->fetch_row();
+					$dupeLink = '<a href="linkedit.php?id='.$r[ROW_ID].'" target="dupelinkWin">'.$r[ROW_TITLE].'</a>';
+
+				}
+				$rs->free();
+				$conn->close();
+			} catch (Exception $ex) {
+				$this->errors[] = 'Exception '.$ex->getMessage();
+			}
+			
+			if ($isDuplicate) {
+				$this->errors[] = 'This would be a duplicate. '.$dupeLink .' Please delete';
+				return false;
+			} else {
+				
+				$this->link = $newUrl;
+				$this->errors[] = 'New URL: '.$this->link;
+				
+				$columnDescription = $this->getMetaTags($content);
+				$this->description = json_encode($columnDescription);
+				$this->logger('repair() description:'.$columnDescription);
+				
+				if (isset($this->description) && !empty($this->description)) {
+					$metaTags = json_decode($this->description);
+					if (isset($metaTags['pagetitle'])) {
+						$this->title = $metaTags['pagetitle'];
+					}
+				}
+				
+				if ($this->update()) {
+					$this->errors[] = 'Updated the whole record with new information';
+				} else {
+					$this->errors[] = 'Could not updated the whole record :(';
+				}
+			}
+			// TODOs
+			// parse metaTags for `created_at` and `tags` field
+			// Update fields if they are different from before ($this)
+			
+			return false;
+		}
+		
+		return false;
+	}
+	
+	function getLastError() {
+		return implode(',', $this->errors);
 	}
 
 	function delete() {
@@ -394,6 +582,8 @@ class Link {
 	}
 
 	function refresh() {
+		$this->debugs[] = "refresh() starting...";
+		
 		$sql = 'SELECT * FROM links WHERE id = '.$this->id;
 		$conn = new mysqli(DB_HOST.(defined('DB_PORT')?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
 
@@ -404,6 +594,7 @@ class Link {
 		  $response['rowcount'] = $rs->num_rows;
 		}
 		$rs->data_seek(0);
+		$this->debugs[] = "refresh() got first record";
 		
 		$row = $rs->fetch_row();
 
@@ -411,14 +602,14 @@ class Link {
 		$this->link = $row[1];
 		$this->title = $row[2];
 		$this->status = $row[3];
-		#$this->last_updated = $row[4];
-		$this->tags = $row[5];
-		$this->created_at = $row[6];
-		$this->updated_at = $row[7];
+		$this->tags = $row[4];
+		$this->created_at = $row[5];
+		$this->updated_at = $row[6];
+		$this->description = $row[7];
 		
 		$rs->free();
 		$conn->close();
-
+		$this->debugs[] = "refresh() finished";
 		return true;
 
 	}
@@ -466,53 +657,61 @@ class Link {
 	}
 
 	function update() {
-
-		array_push($this->debugs, "link.update() Updating link ".$this->id);
-
-		array_push($this->debugs, "link.update()   link        :".$this->link);
-		array_push($this->debugs, "link.update()   title       :".$this->title);
-		array_push($this->debugs, "link.update()   tags        :".$this->tags);
-		array_push($this->debugs, "link.update()   status     :".$this->status);
-		array_push($this->debugs, "link.update()   updated_at :".$this->updated_at);
+		$this->logger("update() starting...");
+		
+		
+		$this->logger("update() id:".$this->id);
+		$this->logger("update() link        :".$this->link);
+		$this->logger("update() title       :".$this->title);
+		$this->logger("update() tags        :".$this->tags);
+		$this->logger("update() status      :".(isset($this->status)?(empty($this->status)?-1:$this->status):0));
+		$this->logger("update() updated_at  :".(isset($this->updated_at)?$this->updated_at:date('Y-m-d')));
+		$this->logger("update() created_at  :".(isset($this->created_at)?$this->created_at:date('Y-m-d')));
+		$this->logger("update() description :".(empty($this->description)?'empty':$this->description));
 
 		// Default to error, just in case.
 		$status = false;
 		$mysqli = new mysqli(DB_HOST.(defined('DB_PORT')?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
 		if ($mysqli->connect_errno) {
-		    array_push($this->debugs, "link.update() Failed to connect to MySQL: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error);
+		    $this->logger("update() Failed to connect to MySQL: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error);
 		} else {
 			$mysqli->autocommit(true);
-
+			$this->logger("link.update()   tags        :".$this->tags);
+		
 			$sqlString = "UPDATE links SET link = '".$mysqli->real_escape_string($this->link)."'";
 			$sqlString .= ", title = '".$mysqli->real_escape_string($this->title)."'";
 			$sqlString .= ", tags = '".$mysqli->real_escape_string($this->tags)."'";
 			$sqlString .= ", status = ".$mysqli->real_escape_string($this->status);
+			if (empty($this->created_at)) {
+				$this->created_at = date('Y-m-d');
+			}
 			$sqlString .= ", created_at = '".$mysqli->real_escape_string(date('Y-m-d', strtotime($this->created_at)))."'";
-			$sqlString .= ", updated_at = '".$mysqli->real_escape_string(date('Y-m-d', strtotime($this->updated_at)))."'";
+			$sqlString .= ", description = '".$mysqli->real_escape_string($this->description)."'";
 			$sqlString .= ' WHERE id = '.$this->id;
 
-			foreach(explode(',', $sqlString) AS $sstr) {
-				array_push($this->debugs, "link.update() SQL:".$sstr);
-			}
-
 			$return_status = $mysqli->query($sqlString);
+			$this->logger("update() statement: ".$sqlString);
+				
 			if ( $return_status === TRUE) {
 				$status = true;
-				array_push($this->debugs, "link.update() Link ".$this->id." has been successfully updated. AffectedRows:".$mysqli->affected_rows);
-				array_push($this->debugs, "link.update() Statement was [".$sqlString."]");
+				$this->logger("update() Link ".$this->id." has been successfully updated. AffectedRows:".$mysqli->affected_rows);
+				
 			} else {
-				array_push($this->debugs, "link.update() Could not execute update statement [".$sqlString."]");
-				array_push($this->debugs, "link.update() (status:".print_r($return_status, true)." errno:" . $mysqli->errno . ", errmsg:" .$mysqli->error.")");
+				if ($mysqli->errno==1062) {
+					$this->errors[] = 'Duplicate link detected';
+					$this->logger("update() (status:". $mysqli->errno . "/" .$mysqli->error.")");
+				} else {
+					$this->logger("update() (status:".print_r($return_status, true)." errno:" . $mysqli->errno . ", errmsg:" .$mysqli->error.")");
+				}
+				
 			}
 			$mysqli->close();
 		}
-		$this->refresh();
-
 		return $status;
 	}
 
 	function addLink() {
-		array_push($this->debugs, "Link.addLink() Starting");
+		$this->logger("addLink() starting");
 
 		$status = false;
 		$dbservice = new DBQueryService();
@@ -520,21 +719,23 @@ class Link {
 		$raw_data['link'] = $this->link;
 		$raw_data['title'] = $this->title;
 		$raw_data['status'] = $this->status;
-		$raw_data['last_updated'] = $this->last_updated;
 		$raw_data['created_at'] = $this->created_at;
 		$raw_data['updated_at'] = $this->updated_at;
 		$raw_data['tags'] = $this->tags;
+		$raw_data['description'] = $this->description;
+		
 		foreach($raw_data AS $k=>$v) {
-			array_push($this->debugs, "Link.addLink() field ${k} is [${v}]");
+			$this->logger("addLink() field ${k} is [${v}]");
 		}
 
 		if ($dbservice->addRow($raw_data)) {
 			$linkid = $dbservice->getInsertId();
-			array_push($this->debugs, "Link.addLink() New link #".$linkid." has been inserted.");
+			$this->logger("Link.addLink() New link #".$linkid." has been inserted.");
 			$this->id = $linkid;
 			$status = true;
 		} else {
-			array_push($this->debugs, "Link.addLink() Could not save link.");
+			$this->errorMessage = $dbservice->errorMessage;
+			$this->logger("Link.addLink() Could not save link.");
 		}
 		$dbservice->close();
 
@@ -555,8 +756,10 @@ class Link {
 		$raw_data['title'] = (isset($_REQUEST['title'])?$_REQUEST['title']:'');
 		$raw_data['link'] = $_REQUEST['link'];
 		$raw_data['status'] = ($this->status!=''?$this->status:-1);
-		$raw_data['last_updated'] = date('Y-m-d H:i:s');
+		$raw_data['updated_at'] = date('Y-m-d');
+		$raw_data['created_at'] = date('Y-m-d');
 		$raw_data['tags'] = (isset($_REQUEST['tags'])?$_REQUEST['tags']:'');
+		$raw_data['description'] = $this->description;
 
 		if ($dbservice->addRow($raw_data)) {
 			$linkid = $dbservice->getInsertId();
@@ -589,7 +792,7 @@ class Link {
 		} else {
 			$mysqli->autocommit(true);
 			$sqlString = 'UPDATE links '.
-				'SET last_updated = '.(isset($fieldmap['last_updated'])?"'".date('Y-m-d H:i:s', strtotime($fieldmap['last_updated']))."'":'CURRENT_DATE')." ";
+				'SET updated_at = '.(isset($fieldmap['updated_at'])?"'".date('Y-m-d', strtotime($fieldmap['updated_at']))."'":'CURRENT_DATE')." ";
 
 			if (isset($fieldmap['link'])) {
 				$sqlString .= ", link = '".$fieldmap['link']."'";
@@ -602,6 +805,11 @@ class Link {
 			if (isset($fieldmap['tags'])) {
 				$sqlString .= ", tags = '".$fieldmap['tags']."'";
 			}
+
+			if (isset($fieldmap['description'])) {
+				$sqlString .= ", description = '".$fieldmap['description']."'";
+			}
+
 			$sqlString .= ' WHERE id = '.$this->id;
 			
 			foreach(explode(',', $sqlString) AS $sstr) {

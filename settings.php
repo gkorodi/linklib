@@ -6,7 +6,7 @@ require_once('_includes.php');
 	  <?php require_once('_metatags.php');?>
     <link rel="shortcut icon" href="assets/ico/favicon.ico">
 
-    <title><?=APP_TITLE?></title>
+    <title><?=APP_TITLE?> - Settings</title>
 
     <!-- Bootstrap core CSS -->
     <link href="assets/css/bootstrap.css" rel="stylesheet">

@@ -7,7 +7,7 @@ require_once('_includes.php');
 	<?php require_once('_metatags.php');?>
 	<link rel="shortcut icon" href="assets/ico/favicon.ico">
 
-	<title><?php echo APP_TITLE;?></title>
+	<title><?=APP_TITLE?></title>
 
 	<!-- Bootstrap core CSS -->
 	<link href="assets/css/bootstrap.css" rel="stylesheet">
@@ -15,16 +15,6 @@ require_once('_includes.php');
 	<!-- Custom styles for this template -->
 	<link href="assets/css/style.css" rel="stylesheet">
 	<link href="assets/css/font-awesome.min.css" rel="stylesheet">
-
-
-	<!-- Just for debugging purposes. Don't actually copy this line! -->
-	<!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-
-	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-	<!--[if lt IE 9]>
-	<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-	<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-	<![endif]-->
 
 	<script src="assets/js/modernizr.js"></script>
 </head>
@@ -58,38 +48,38 @@ require_once('_includes.php');
 						$searchresults['rows'] = array_slice($searchresults['rows'],0,300);
 					}
 					foreach($searchresults['rows'] AS $row) {
+						$link = new Link($row[0]);
 						?>
-						<tr id="row<?php echo $row[0];?>">
+						<tr id="row<?=$link->id?>">
 							<td>
-								<b>
-									<a href="<?=$row[1]?>" id="title-<?=$row[0]?>" target="_newWindow">
-										<?=urldecode($row[2])?></a>
-								</b><br />
-								<small><?=$row[1]?></small><br />
-								<small id="date-<?=$row[0]?>"><?=date('Y-m-d', strtotime($row[4]))?></small>
-								
-								<input type="text" id="status-<?=$row[0]?>" value="<?=$row[3]?>" /><br />
-
-								<div id="description-<?=$row[0]?>"></div>
-								
-							</td>
-							<td>
-								<input type="text" id="tags-<?=$row[0]?>"
-									onChange="tagLink(<?=$row[0]?>, $(this).val());"
-										value="<?=$row[5]?>" />
-							</td>
-							<td>
-								<button class="btn btn-sm btn-danger" onClick="deleteLink(<?=$row[0]?>);">
+								<button class="btn btn-sm btn-danger" onClick="deleteLink(<?=$link->id?>);">
 									<span class="glyphicon glyphicon-trash"> </span>
 								</button>
 							</td>
 							<td>
-								<a class="btn btn-sm btn-info" href="linkedit.php?id=<?=$row[0]?>" target="_winEditLink">
+								<b>
+									<a href="<?=$link->link?>" id="title-<?=$link->id?>" target="_newWindow">
+										<?=urldecode($link->title)?></a>
+								</b><br />
+								<p><?=json_decode($link->description)->description?></p>
+								<small><?=$link->link?></small><br />
+								<small id="cdate-<?=$link->id?>">Created: <b><?=date('Y-m-d', strtotime($link->created_at))?></b></small>
+								<small id="date-<?=$link->id?>">Updated: <b><?=date('Y-m-d', strtotime($link->updated_at))?></b></small>
+								<small id="status-<?=$link->id?>">Status: <b><?=$link->status?></b></small>
+								<div id="description-<?=$link->id?>"></div>
+							</td>
+							<td>
+								<input type="text" id="tags-<?=$link->id?>"
+									onChange="tagLink(<?=$link->id?>, $(this).val());"
+										value="<?=$link->tags?>" />
+							</td>
+							<td>
+								<a class="btn btn-sm btn-info" href="linkedit.php?id=<?=$link->id?>" target="_winEditLink">
 									<span class="glyphicon glyphicon-ok"> </span>
 								</a>
 							</td>
 							<td>
-								<a class="btn btn-sm btn-warning" onclick="repairlink('<?=$row[0]?>');">
+								<a class="btn btn-sm btn-warning" onClick="repairQueryLink('<?=$link->id?>');">
 										<span class="glyphicon glyphicon-check"> </span>
 								</a>
 							</td>
@@ -106,22 +96,34 @@ require_once('_includes.php');
 
 	<?php require_once('_footer.php'); ?>
 	<?php require_once('_scripts.php'); ?>
+	
 	<script>
-	function repairlink(linkid) {
+	function repairQueryLink(linkid) {
+		console.log('repairQueryLink() starting '+linkid);
+		
 		$('#title-'+linkid).html('...');
-		$.getJSON('_functions.php?method=repairlink&id='+linkid, function(data) {
+		
+		$.getJSON( '_functions.php?method=repairlink&id='+linkid, {
+		    format: "json"
+		  })
+    .done(function( data ) {
 			if (data.status == 'ok') {
 				console.log(data);
-				
+		
 				$('#title-'+linkid).html(data.details.title);
 				$('#tags'+linkid).val(data.details.tags);
-				$('#date-'+linkid).html(data.details.last_updated);
+				$('#date-'+linkid).html(data.details.updated_at);
 				$('#status-'+linkid).val(data.details.status);
-				
+		
 				$('#description-'+linkid).html('<b>'+data.meta['og:description']+'</b>');
 			} else {
+				console.log(data);
 				$('#row'+linkid).css('background-color','pink');
 			}
+    })
+		.fail(function(data) {
+			console.log( "repairQueryLink() error" );
+			console.log(data);
 		});
 	}
   </script>

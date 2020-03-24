@@ -3,11 +3,8 @@ require_once('_includes.php');
 
 if (isset($_REQUEST['id']) && $_REQUEST['id']!='' ) {
 	$link = new Link($_REQUEST['id']);
-
-	$link->title = str_replace('+',' ',$link->title);
-
 } else {
-	$linklist = query("SELECT * FROM links WHERE tags = '' OR last_updated IS NULL");
+	$linklist = query("SELECT * FROM links WHERE tags = '' OR created_at IS NULL");
 	$idx = rand(0,count($linklist['rows'])-1);
 	header("Location: ?id=".$linklist['rows'][$idx][0]);
 }
@@ -32,7 +29,6 @@ if (isset($_REQUEST['id']) && $_REQUEST['id']!='' ) {
 	<div class="container">
 		<?php
 		$info = $link->getURLInfo();
-
 		if (isset($_POST['id'])) {
 			$link->link = $_POST['link'];
 			$link->title = $_POST['title'];
@@ -45,21 +41,13 @@ if (isset($_REQUEST['id']) && $_REQUEST['id']!='' ) {
 			} else {
 				echo "Updated";
 			}
-
 		} else {
 			// This is just to look up the link, not to change the
 			// details on the database.
 		}
-
-		/*if ($link->refresh()) {
-			debugMessage('Refreshed link details for id '.$link->id);
-		} else {
-			errorMessage('Could not re-query the link for id '.$link->id);
-			errorMessage(implode('<br />', $link->debugs));
-		}*/
-
+		
 		if (!isset($linklist)) {
-			$linklist = query("SELECT * FROM links WHERE tags = '' OR last_updated IS NULL");
+			$linklist = query("SELECT * FROM links WHERE tags = '' OR updated_at IS NULL");
 		}
 		$nextlink = $linklist['rows'][rand ( 1 , count($linklist['rows'])-1 )];
 
@@ -73,23 +61,23 @@ if (isset($_REQUEST['id']) && $_REQUEST['id']!='' ) {
 		?>
 
 		<div class="row">
-			<a class="btn btn-info pull-right" href="edit.php?id=<?php echo $nextlink[0];?>">Next</a>
+			<a class="btn btn-info pull-right" href="edit.php?id=<?=$nextlink[0]?>">Next</a>
 
 			<a class="btn btn-info pull-right"  style="margin:3px; margin-left: 20px" onClick="repairLink();">Repair</a>
 
 			<a class="btn btn-warning pull-right" style="margin:3px"
-			href="https://duckduckgo.com/?q=<?php echo urlencode($link->title);?>&t=ffsb&ia=web" target="_srchWindow">Duck</a>
+			href="https://duckduckgo.com/?q=<?=urlencode($link->title)?>&t=ffsb&ia=web" target="_srchWindow">Duck</a>
 
-			<a class="btn btn-danger pull-right" onClick="deleteLink(<?php echo $link->id;?>);">Delete</a>
+			<a class="btn btn-danger pull-right" onClick="deleteLink(<?=$link->id?>);">Delete</a>
 		</div>
 
 		<form id="frmEditLink" method="POST">
 
 		        <div class="form-group">
-		        <a href="<?php echo $link->link;?>" target="_newWindow"><h3><?php echo $link->title;?></h3></a>
+		        <a href="<?=$link->link?>" target="_newWindow"><h3><?=$link->title?></h3></a>
 		        </div>
 
-						<input type="hidden" name="id" value="<?php echo $link->id;?>" />
+						<input type="hidden" name="id" value="<?=$link->id?>" />
 
 		        <div class="form-group">
 		          <label for="link">link</label>
@@ -114,10 +102,9 @@ if (isset($_REQUEST['id']) && $_REQUEST['id']!='' ) {
 		        </div>
 						<button class="btn btn-success pull-left">Update</button>
 		</form>
-		<?php echo $info['http_code'].'/'.$info['redirect_count'];?><br />
+		
 		<br />
 			<textarea rows=20 cols=150><?php echo str_replace("\n\n","\n", str_replace('  ',' ',$link->content)); ?></textarea>
-
 	</div>
 
 	<!-- Bootstrap core JavaScript

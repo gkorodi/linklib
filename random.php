@@ -1,24 +1,17 @@
 <?php
 require_once('_includes.php');
 
-$sql="SELECT * FROM links WHERE tags IS NULL";
+$sql = 'SELECT * FROM links AS r1 JOIN (SELECT CEIL(RAND() '.
+	'* (SELECT MAX(id) FROM links WHERE tags IS NULL)) AS id) AS r2 '.
+		'WHERE r1.id >= r2.id AND tags IS NULL ORDER BY r1.id ASC LIMIT '.(isset($_REQUEST['limit'])?$_REQUEST['limit']:'50');
 $resultset = query($sql);
-
-$idlist = Array();
-for($idx=0;$idx<(count($resultset['rows'])-1);$idx++) {
-  $randomIndex = rand(0,count($resultset['rows'])-1);
-  while (in_array($randomIndex, $idlist, TRUE)) {
-    $randomIndex = rand(0,count($resultset['rows'])-1);
-  }
-  array_push($idlist, $randomIndex);
-}
 
 ?><!DOCTYPE html>
 <html lang="en">
 <head>
 	<?php require_once('_metatags.php');?>
 	<link rel="shortcut icon" href="assets/ico/favicon.ico">
-	<title><?php echo APP_TITLE;?></title>
+	<title><?php echo APP_TITLE;?> - Random Links to Curate</title>
 	<!-- Bootstrap core CSS -->
 	<link href="assets/css/bootstrap.css" rel="stylesheet">
 	<!-- Custom styles for this template -->
@@ -40,23 +33,21 @@ for($idx=0;$idx<(count($resultset['rows'])-1);$idx++) {
 	<div id="blue">
 		<div class="container">
 			<div class="row">
-				<h3>Random 100 of <span id="totalcount"><?php echo count($raw_rs['rows']);?></span>.</h3>
+				<h3>Random <?=count($resultset['rows'])?> of <span id="totalcount"><?=count($raw_rs['rows'])?></span>.</h3>
 			</div><!-- /row -->
 		</div> <!-- /container -->
 	</div><!-- /blue -->
 	<div class="container mtb">
 		<div class="row">
 			<div id="randomlist" class="col-lg-12">
-				<?php require_once("_randomtable.php"); ?>
+				<?php
+				require_once("_randomtable2.php"); 
+				?>
+				<a href="#" onClick="document.location.reload(true);" class="btn btn-info">Reload</a>
 			</div>
 		</div>
 	</div>
 	<?php require_once('_footer.php'); ?>
 	<?php require_once('_scripts.php'); ?>
-  <script>
-  function checkDetails(linkid) {
-    alert(linkid);
-  }
-  </script>
 </body>
 </html>

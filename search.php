@@ -58,7 +58,7 @@ require_once('_includes.php');
               <tr>
                 <th>Host</th>
                 <th>Link</th>
-                <th>Date</th>
+                <th>Created At</th>
 								<th> </th>
 								<th> </th>
               </tr>
@@ -68,31 +68,32 @@ require_once('_includes.php');
 						if (isset($_REQUEST['q'])) {
 							$sql="SELECT * FROM links WHERE UCASE(title) LIKE '%".$_REQUEST['q']."%' ".
 								(isset($_REQUEST['fldNoTags'])?" AND tags = ''":"").
-								" ORDER BY last_updated ".(isset($_REQUEST['fldOldestFirst'])?'ASC':'DESC')." LIMIT 1000";
+								" ORDER BY updated_at  ".(isset($_REQUEST['fldOldestFirst'])?'ASC':'DESC')." LIMIT 1000";
 							$searchresults = query($sql);
 							foreach($searchresults['rows'] AS $row) {
+								$link = new Link($row[0]);
                   ?>
-                  <tr id="row<?php echo $row[0];?>">
+                  <tr id="row<?=$link->id?>">
                     <td>
-                      <?php echo justHostName($row[1]);?>
+                      <?php echo justHostName($link->link);?>
                     </td>
                     <td>
-                      <a href="<?php echo $row[1];?>"
-												target="_newWindow"><?php echo urldecode($row[2]);?></a><br />
+                      <a href="<?=$link->link?>"
+												target="_newWindow"><?=urldecode($link->title)?></a><br />
 	                      <small><?php
-	                      foreach(explode(',', $row[5]) AS $tag) {
+	                      foreach(explode(',', $link->tags) AS $tag) {
 													echo '<span class="badge">'.$tag.'</span> ';
 												}
 	                      ?></small>
                     </td>
                     <td>
-                      <?php echo date('Y-m-d', strtotime($row[4]));?>
+                      <?php echo date('Y-m-d', strtotime($link->created_at));?>
                     </td>
 										<td>
-											<button class="btn btn-sm btn-danger" onClick="deleteLink(<?=$row[0]?>)"><i class="fa fa-times" aria-hidden="true"></i></button>
+											<button class="btn btn-sm btn-danger" onClick="deleteLink(<?=$link->id?>)"><i class="fa fa-times" aria-hidden="true"></i></button>
 										</td>
 										<td>
-											<a class="btn btn-sm btn-success" href="linkedit.php?id=<?=$row[0]?>"><i class="fa fa-check" aria-hidden="true"></i></a>
+											<a class="btn btn-sm btn-success" href="linkedit.php?id=<?=$link->id?>" target="_newResultWindow"><i class="fa fa-check" aria-hidden="true"></i></a>
 										</td>
                   </tr>
                   <?php

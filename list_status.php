@@ -1,5 +1,6 @@
 <?php
 require_once('_includes.php');
+
 ?><!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,7 +27,7 @@ require_once('_includes.php');
 	<div id="blue">
 	    <div class="container">
 			<div class="row">
-				<h3>Status <?php echo $_REQUEST['status'];?></h3>
+				<h3>Status <?=(!isset($_REQUEST['status']) || empty($_REQUEST['status'])?' != 200 ':$_REQUEST['status'])?></h3>
 			</div><!-- /row -->
 	    </div> <!-- /container -->
 	</div><!-- /blue -->
@@ -34,7 +35,7 @@ require_once('_includes.php');
 
 	 <div class="container mtb">
 	 	<div class="row">
-	 		<div id="randomlist" class="col-lg-8">
+	 		<div id="randomlist" class="col">
 					<table class="table">
 					<?php
 					$extra_criteria = (isset($_REQUEST['status'])?' AND status='.$_REQUEST['status']:'');
@@ -45,33 +46,49 @@ require_once('_includes.php');
 					if (isset($_REQUEST['emptytags'])) {
 						$extra_criteria .= " AND tags = '' ";
 					}
+					if (isset($_REQUEST['oldestfirst'])) {
+						$extra_criteria .= " ORDER BY updated_at ASC ";
+					}
 					$sql='SELECT * FROM links WHERE '.'status != 200 '.$extra_criteria.' LIMIT 100';
 					$resultset = query($sql);
 					foreach ($resultset['rows'] AS $row) {
+						
+						$bgColor = 'white';
+						if ($row[ROW_STATUS]!=200) {
+							$bgColor = '#f0f0f0';
+						}
 						?>
-						<tr id="row<?php echo $row[0];?>">
-
-							<td><a href="<?php echo $row[1];?>" target="_newWindow"><?php echo $row[2];?></a><br />
-								<small><?php echo $row[1];?></small>
-							</td>
+						<tr id="row<?=$row[ROW_ID]?>" style="background-color: <?=$bgColor?>">
 
 							<td>
-								<input type="text" name="tags" value="<?php echo $row[5];?>" />
-							</td>
-
-							<td>
-								<small><?php echo ($row[4]==='0000-00-00 00:00:00'?'N/A':date('Y-m-d', strtotime($row[4])));?></small>
-							</td>
-
-							<td>
-								<button class="btn btn-sm btn-danger" id="btnDel"
-									onClick="deleteLink('<?php echo $row[0];?>');">
-									<span class="glyphicon glyphicon-minus"> </span>
+								<button class="btn btn-danger" id="btnDel"
+									onClick="deleteLink('<?=$row[ROW_ID]?>');">
+									<span class="glyphicon glyphicon-trash"> </span>
+								</button>
+								
+								<button class="btn btn-warning" id="btnWarn"
+									onClick="tagLink(<?=$row[ROW_ID]?>, 'later');">
+									<span class="glyphicon glyphicon-cog"> </span>
+								</button>
+								
+								<button class="btn btn-info" id="btnWarn"
+									onClick="tagLink(<?=$row[ROW_ID]?>, 'later1');">
+									<span class="glyphicon glyphicon-cog"> </span>
 								</button>
 							</td>
 
+							<td id="rowDetails<?=$row[ROW_ID]?>">
+								<a href="<?=$row[ROW_LINK]?>" target="_newWindow"><b><?=$row[ROW_TITLE]?></b></a><br />
+								<small><?=$row[ROW_LINK]?><br />
+									Status: <b><?=(!isset($row[ROW_STATUS])?'n/a':$row[ROW_STATUS])?></b> 
+									Tags: <b><?=(!isset($row[ROW_TAGS]) || empty($row[ROW_TAGS])?'EMPTY':$row[ROW_TAGS])?></b> 
+									Created: <b><?=(!isset($row[ROW_CREATED_AT]) || empty($row[ROW_CREATED_AT])?'n/a':date('Y-m-d', strtotime($row[ROW_CREATED_AT])))?></b> 
+									Updated: <b><?=(!isset($row[ROW_UPDATED_AT]) || empty($row[ROW_UPDATED_AT])?'n/a':date('Y-m-d', strtotime($row[ROW_UPDATED_AT])))?></b> <sub><?=$row[ROW_UPDATED_AT]?></sub>
+								</small>
+							</td>
+
 							<td>
-								<a class="btn btn-sm btn-info" href="linkedit.php?id=<?php echo $row[0];?>" target="_newLinkWin">
+								<a class="btn btn-info" href="linkedit.php?id=<?=$row[ROW_ID]?>" target="_newLinkWin">
 									<span class="glyphicon glyphicon-pencil"> </span>
 								</a>
 							</td>
@@ -81,40 +98,6 @@ require_once('_includes.php');
 					?>
 					</table>
 			</div>
-
-	 		<div class="col-lg-4">
-				<h4>Search</h4>
-		 		<div class="hline"></div>
-	 			<p>
-	 				<form action="search.php">
-	 					<input type="text" class="form-control" name="q" placeholder="Search something">
-					</form>
-	 			</p>
-
-		 		<div class="spacing"></div>
-
-		 		<h4>Statuses</h4>
-		 		<div class="hline"></div>
-				<table class="table">
-				<?php
-				$resultset = query("SELECT status, count(*) FROM links GROUP BY status");
-				foreach($resultset['rows'] AS $row) {
-					?>
-					<tr onClick="window.location='<?php echo $_SERVER['PHP_SELF'];?>?status=<?php echo ($row[0]==null?'NULL':$row[0]);?>';">
-						<th><?php echo ($row[0]==null?'NULL':$row[0]);?></th>
-						<td><?php echo $row[1];?></td>
-					</tr><?php
-				}
-				?>
-				</table>
-
-		 		<div class="spacing"></div>
-
-		 		<h4>Popular Tags</h4>
-		 		<div class="hline"></div>
-		 		<p id="popular_tags"></p>
-
-	 		</div>
 	 	</div><! --/row -->
 	 </div><! --/container -->
 
@@ -126,19 +109,6 @@ require_once('_includes.php');
 	<!-- Placed at the end of the document so the pages load faster -->
 	<?php require_once('_scripts.php'); ?>
 	<script>
-	$(document).ready(function(obj) {
-		$('.btn.btn-danger').on('click', function(btnobj) {
-			var linkid = $(this).parent().parent().attr('id');
-
-			$.getJSON('_functions.php?method=deletelink&id='+linkid, function( data ) {
-				if (data.status == 'ok') {
-					console.log(data.info.redirect_count);
-				} else {
-					console.log(data.message);
-				}
-			});
-		});
-	});
 
 	function test(linkid) {
 		$.getJSON('_functions.php?method=testurl&id='+linkid, function(data) {
@@ -175,6 +145,22 @@ require_once('_includes.php');
 			}
 		});
 	}
+
+	function warnLink(linkid) {
+		$('#row'+linkid).css('background-color','orange');
+		$('#rowDetails'+linkid).html('');
+		
+		$.getJSON('_functions.php?method=warnlink&id='+linkid, function(data) {
+			console.log(data);
+			
+			if (data.status == 'ok') {
+				$('#rowDetails'+linkid).html(data.content);
+			} else {
+				$('#rowDetails'+linkid).css('background-color','red').css('color','white').html(data.message);
+			}
+		});
+	}
+
 	</script>
 
   </body>

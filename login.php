@@ -1,7 +1,9 @@
 <?php
 require_once('_includes.php');
+
 $debugs = Array();
 $errors = Array();
+
 if (isset($_SESSION['uid'])) {
 	array_push($errors, 'Already logged in, as '.$_SESSION['uid']);
 } else {

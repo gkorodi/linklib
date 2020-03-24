@@ -46,13 +46,19 @@ require_once('_includes.php');
         <div class="col-lg-8">
 		<div id="alltags">
 			<?php
-			$categories['empty'] = 0;
-			$categories['NULL'] = 0;
+			#$categories['empty'] = 0;
+			#$categories['NULL'] = 0;
 			$r = query("SELECT tags FROM links");
 			foreach ($r['rows'] AS $row) {
 
-				if ($row[0]===null) { $categories['NULL']++; continue;}
-				if ($row[0]==='') { $categories['empty']++; continue;}
+				if ($row[0]===null) { 
+					#$categories['NULL']++; 
+					continue;
+				}
+				if ($row[0]==='') { 
+					#$categories['empty']++; 
+					continue;
+				}
 
 				$cats = explode(',', $row[0]);
 				foreach($cats AS $category) {
@@ -67,7 +73,9 @@ require_once('_includes.php');
 			arsort($categories);
 
 			foreach($categories AS $category => $count) {
-				echo '<a class="btn btn-theme" href="search_bytag.php?tag='.$category.'" role="button">'.$category.'<sup>'.$count.'</sup></a>';
+				?><a class="btn btn-theme" href="search_bytag.php?tag=<?=$category?>" 
+						role="button" target="_newTagWindow"><?=$category?><sup><?=$count?></sup></a>
+				<?php
 			}
 			?>
 		</div>

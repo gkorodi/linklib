@@ -55,13 +55,13 @@ require_once('_includes.php');
 		$querylist = Array(
 			"Total Link Count"=>"SELECT count(*) total_link_count FROM links;",
 			"OK Status" => "SELECT count(*) status_ok_count FROM links WHERE status = 200;",
-      "Missing Tags" => "SELECT count(*) tags_missing_count FROM links WHERE tags IS NULL;",
+      "Missing Tags <small><a href='query.php?q=".urlencode('SELECT * FROM links WHERE tags IS NULL LIMIT 100')."' target='_newQ'>(tags IS NULL)</a></small>" => "SELECT count(*) tags_missing_count FROM links WHERE tags IS NULL;",
       "Empty Tags" => "SELECT count(*) tags_missing_count FROM links WHERE tags = '';",
-      "Missing Status" => "SELECT count(*) status_missing_count FROM links WHERE status IS NULL;",
-      "Empty Status" => "SELECT count(*) status_missing_count FROM links WHERE status = '';",
-      "Missing Dates" => "SELECT count(*) date_missing_count FROM links WHERE last_updated IS NULL;",
-      "Empty Dates" => "SELECT count(*) date_missing_count FROM links WHERE last_updated = '';",
-	    "Wrong Dates" => "SELECT count(*) date_missing_count FROM links WHERE last_updated < '1969-01-01';"
+      "Missing Status <small><a href='' target=''>(status IS NULL)</a></small>" => "SELECT count(*) status_missing_count FROM links WHERE status IS NULL;",
+      "Empty Status <small><a href='query.php?q=".urlencode("SELECT * FROM links WHERE status = '' LIMIT 100")."' target='_newQ'>(status = '')</a></small>" => "SELECT count(*) status_missing_count FROM links WHERE status = '';",
+      "Missing Dates <small><a href='query.php?q=".urlencode("SELECT * FROM links WHERE updated_at IS NULL LIMIT 100")."' target='_newQ'>(updated_at IS NULL)</a></small>" => "SELECT count(*) date_missing_count FROM links WHERE updated_at IS NULL;",
+      "Empty Dates <small><a href='query.php?q=".urlencode("SELECT * FROM links WHERE updated_at = '' LIMIT 100")."' target='_newQ'>(updated_at = '')</a></small>" => "SELECT count(*) date_missing_count FROM links WHERE updated_at = '';",
+	    "Wrong Dates <small><a href='query.php?q=".urlencode("SELECT * FROM links WHERE updated_at < '2000-01-01'")."' target='_mnewQ'>(updated_at < '2000-01-01')</a></small>" => "SELECT count(*) wrong_updated_date FROM links WHERE updated_at < '2000-01-01';"
 		);
 		$tlc = -1;
 		foreach($querylist AS $k=>$query_sql) {
@@ -98,7 +98,7 @@ require_once('_includes.php');
 		<table class="table"><?php
 		$resultset = query("SELECT status,count(*) FROM links WHERE status != 200 GROUP BY status");
 		foreach ($resultset['rows'] AS $row) {
-			echo '<tr><th>'.$row[0].'</th><td>'.$row[1].'</td></tr>';
+			echo '<tr><th><a href="list_status.php?status='.$row[0].'">'.$row[0].'</a></th><td>'.$row[1].'</td></tr>';
 		}
 		?></table>
 
