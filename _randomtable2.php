@@ -42,18 +42,24 @@
 								</button>
           	  </td>
 	              <td>
-	                <button class="btn btn-warning" onClick="tagLink(<?=$row[ROW_ID]?>, 'later') ;">
+	                <button class="btn btn-primary" onClick="tagLink(<?=$row[ROW_ID]?>, 'later') ;">
 	                  <span class="glyphicon glyphicon-bookmark"> </span>
 	                </button>
-									<span style="width: 10px"> </span>
-	                <button class="btn btn-info" onClick="tagLink(<?=$row[ROW_ID]?>, 'later2') ;">
+					<span style="width: 10px"> </span>
+					
+	                <button class="btn btn-secondary" onClick="tagLink(<?=$row[ROW_ID]?>, 'later2') ;">
 	                  <span class="glyphicon glyphicon-bookmark"> </span>
 	                </button>
-									<span style="width: 10px"> </span>
-	                <button class="btn btn-success" onClick="tagLink(<?=$row[ROW_ID]?>, 'later3') ;">
+					<span style="width: 10px"> </span>
+	                
+					<button class="btn btn-info" onClick="tagLink(<?=$row[ROW_ID]?>, 'later3') ;">
 	                  <span class="glyphicon glyphicon-bookmark"> </span>
 	                </button>
-
+					<span style="width: 10px"> </span>
+	                
+					<button class="btn btn-success" onClick="tagLink(<?=$row[ROW_ID]?>, 'later4') ;">
+	                  <span class="glyphicon glyphicon-bookmark"> </span>
+	                </button>
 	              </td>
           		<td>
           			<b><a href="<?=$row[$link]?>" target="_newWindow"><?=urldecode($row[$title])?></a></b><br />

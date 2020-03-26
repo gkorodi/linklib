@@ -70,6 +70,11 @@ $raw = query($sql);
 								</button>
 						</td>
 						<td>
+							<button class="btn btn-primary" onClick="tagLink(<?=$row[ROW_ID]?>, 'later4');">
+									<span class="glyphicon glyphicon-cog"> </span>
+								</button>
+						</td>
+						<td>
 							<strong>
 								<a href="<?=$row[ROW_LINK]?>" target="_newWindow"><?=urldecode($row[ROW_TITLE])?></a><br />
 								<small><?=justHostName($row[ROW_LINK])?></small>

@@ -130,7 +130,14 @@ if (isset($_REQUEST['tag'])) {
 									</button>
 								<?php }?>
 							</td>
-							<td><?=justHostName($row[ROW_LINK])?></td>
+							<td>
+								<?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'ADMIN'){?>
+									<a href="linkedit.php?id=<?=$link->id?>" target="_NewWindow"><?=$link->id?></a>
+								<?php }?>
+							</td>
+							<td>
+								<?=justHostName($row[ROW_LINK])?>
+							</td>
 							<td>
 								<b><a href="<?=$link->link?>" target="_newWindow"><?=urldecode($link->title)?></a></b><br />
 								<!--
