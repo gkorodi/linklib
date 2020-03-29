@@ -54,30 +54,28 @@ $raw = query($sql);
 									<span class="glyphicon glyphicon-remove"> </span>
 								</button>
 						</td>
-						<td>
-							<button class="btn btn-warning" onClick="tagLink(<?=$row[ROW_ID]?>, 'later');">
-									<span class="glyphicon glyphicon-cog"> </span>
-								</button>
-						</td>
-						<td>
-							<button class="btn btn-info" onClick="tagLink(<?=$row[ROW_ID]?>, 'later2');">
-									<span class="glyphicon glyphicon-cog"> </span>
-								</button>
-						</td>
-						<td>
-							<button class="btn btn-success" onClick="tagLink(<?=$row[ROW_ID]?>, 'later3');">
-									<span class="glyphicon glyphicon-cog"> </span>
-								</button>
-						</td>
-						<td>
-							<button class="btn btn-primary" onClick="tagLink(<?=$row[ROW_ID]?>, 'later4');">
-									<span class="glyphicon glyphicon-cog"> </span>
-								</button>
-						</td>
+						
 						<td>
 							<strong>
 								<a href="<?=$row[ROW_LINK]?>" target="_newWindow"><?=urldecode($row[ROW_TITLE])?></a><br />
-								<small><?=justHostName($row[ROW_LINK])?></small>
+								<small><?=justHostName($row[ROW_LINK])?></small><br />
+								
+								
+								<button class="btn btn-warning" onClick="tagLink(<?=$row[ROW_ID]?>, 'later1');">
+										<span class="glyphicon glyphicon-cog"> </span>
+									</button>
+								<span style="width: 20px; display: inline-block"> </span>
+								<button class="btn btn-info" onClick="tagLink(<?=$row[ROW_ID]?>, 'later2');">
+										<span class="glyphicon glyphicon-cog"> </span>
+									</button>
+								<span style="width: 20px; display: inline-block"> </span>
+								<button class="btn btn-success" onClick="tagLink(<?=$row[ROW_ID]?>, 'later3');">
+										<span class="glyphicon glyphicon-cog"> </span>
+									</button>
+								<span style="width: 20px; display: inline-block"> </span>
+								<button class="btn btn-primary" onClick="tagLink(<?=$row[ROW_ID]?>, 'later4');">
+										<span class="glyphicon glyphicon-cog"> </span>
+									</button>
 							</strong>
 						</td>
 					</tr>

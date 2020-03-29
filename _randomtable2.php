@@ -41,29 +41,27 @@
 									<span class="glyphicon glyphicon-remove"> </span>
 								</button>
           	  </td>
-	              <td>
-	                <button class="btn btn-primary" onClick="tagLink(<?=$row[ROW_ID]?>, 'later') ;">
+          		<td>
+          			<b><a href="<?=$row[$link]?>" target="_newWindow"><?=urldecode($row[$title])?></a></b><br />
+          			<small><?php echo justHostName($row[$link]);?></small><br />
+	                <button class="btn btn-primary" onClick="tagLink(<?=$row[ROW_ID]?>, 'later1') ;">
 	                  <span class="glyphicon glyphicon-bookmark"> </span>
 	                </button>
-					<span style="width: 10px"> </span>
+					<span style="width: 20px;display: inline-block"> </span>
 					
 	                <button class="btn btn-secondary" onClick="tagLink(<?=$row[ROW_ID]?>, 'later2') ;">
 	                  <span class="glyphicon glyphicon-bookmark"> </span>
 	                </button>
-					<span style="width: 10px"> </span>
+					<span style="width: 20px;display: inline-block"> </span>
 	                
 					<button class="btn btn-info" onClick="tagLink(<?=$row[ROW_ID]?>, 'later3') ;">
 	                  <span class="glyphicon glyphicon-bookmark"> </span>
 	                </button>
-					<span style="width: 10px"> </span>
+					<span style="width: 20px;display: inline-block"> </span>
 	                
 					<button class="btn btn-success" onClick="tagLink(<?=$row[ROW_ID]?>, 'later4') ;">
 	                  <span class="glyphicon glyphicon-bookmark"> </span>
 	                </button>
-	              </td>
-          		<td>
-          			<b><a href="<?=$row[$link]?>" target="_newWindow"><?=urldecode($row[$title])?></a></b><br />
-          			<small><?php echo justHostName($row[$link]);?></small>
           		</td>
               <!-- 
 							
