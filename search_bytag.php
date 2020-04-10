@@ -1,27 +1,24 @@
  <?php
 require_once('_includes.php');
 
-if (isset($_REQUEST['olderfirst'])) {
-	$_SESSION['olderfirst'] = true;
-} else {
-	if (!isset($_SESSION['olderfirst'])) {
-		$_SESSION['olderfirst'] = true;
-	}
-}
-
 if (isset($_REQUEST['tag'])) {
 	if ($_REQUEST['tag'] == 'empty') {
 	        $sql = "SELECT * FROM links WHERE tags IS NULL ".
 	      	  	(isset($_REQUEST['notstatus'])?' AND status != '.$_REQUEST['notstatus']:'').
 	      		(isset($_REQUEST['status'])?' AND status = '.$_REQUEST['status']:'').
-								' ORDER BY created_at '.($_SESSION['olderfirst']?'ASC':'DESC')
+								' ORDER BY created_at '.($_REQUEST['olderfirst']?'ASC':'DESC')
 		.' LIMIT 300';
 
 	} else {
-	        $sql = "SELECT * FROM links WHERE UPPER(tags) LIKE '%".strtoupper($_REQUEST['tag'])."%' ".
+		$criteria = [];
+		foreach(explode(',', $_REQUEST['tag']) AS $t) {
+			$criteria[] = " UPPER(tags) LIKE '%".strtoupper($t)."%' ";
+		}
+	        $sql = "SELECT * FROM links WHERE ".
+				implode(' AND ', $criteria)." ".
 	      	  	(isset($_REQUEST['notstatus'])?' AND status != '.$_REQUEST['notstatus']:'').
 	      		(isset($_REQUEST['status'])?' AND status = '.$_REQUEST['status']:'').
-						' ORDER BY created_at '.($_SESSION['olderfirst']?'ASC':'DESC')
+						' ORDER BY created_at '.(isset($_REQUEST['olderfirst'])?'ASC':'DESC')
 							.' LIMIT 300'	;
 	}
   $resultset = query($sql);
@@ -86,14 +83,15 @@ if (isset($_REQUEST['tag'])) {
 	    <div class="container">
 			<div class="row">
 				<h3>Search Results by tag <b><?php echo (isset($_REQUEST['tag'])?$_REQUEST['tag']:'Not Set?! Whaaat?');?></b>.</h3>
-				<form><input type="checkbox" <?=$_SESSION['olderfirst']?'checked':''?> name="olderfirst"> Older First?
+				<form><input type="hidden" name="tag" value="<?=$_REQUEST['tag']?>"/>
+					<input type="checkbox" <?=isset($_REQUEST['olderfirst'])?'checked':''?> name="olderfirst" onChange="this.form.submit()"> Older First?</form>
 			</div><!-- /row -->
 	    </div> <!-- /container -->
 	</div><!-- /blue -->
 
-	 <div class="container mtb">
+	 <div class="container mbt">
 	 	<div class="row">
-	 		<div class="col-10">
+	 		<div class="col-lg-8">
 				<?php
 				if (!isset($_REQUEST['tag'])) {
 					?>
@@ -106,15 +104,9 @@ if (isset($_REQUEST['tag'])) {
 					<?php
 				} else {
 					?>
-					<table id="tableLinks">
+					<table id="tableLinks" class="table">
 					<thead>
-						<tr>
-							<td> </td>
-							<td>Link</td>
-							<td>Created At</td>
-							<td> </td>
-							<td> </td>
-						</tr>
+						
 					</thead>
 					<tbody>
 					<?php
@@ -130,37 +122,19 @@ if (isset($_REQUEST['tag'])) {
 									</button>
 								<?php }?>
 							</td>
+							
 							<td>
-								<?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'ADMIN'){?>
-									<a href="linkedit.php?id=<?=$link->id?>" target="_NewWindow"><?=$link->id?></a>
-								<?php }?>
-							</td>
-							<td>
-								<?=justHostName($row[ROW_LINK])?>
+								
 							</td>
 							<td>
 								<b><a href="<?=$link->link?>" target="_newWindow"><?=urldecode($link->title)?></a></b><br />
-								<!--
-									<?=empty($link->description)?'no description':json_decode($link->description)->description?><br />
-									-->
-								<small>
-									<?php 
-									/*
-									foreach(explode(',', $link->tags) AS $tag) {
-									?>
-										<a class="btn btn-theme" href="search_bytag.php?tag=<?=$tag?>" role="button" target="_newTagWindow"><?=$tag?></a>
-									<?php
-									}
-									*/
-									
-									?>
-								</small>
+								<small><?=justHostName($row[ROW_LINK])?></small>
 							</td>
 							<td>
 								<?=empty($link->created_at)?'no date':date("M, Y", strtotime($link->created_at))?>
 							</td>
 							<?php
-							if (isset($_SESSION['role2']) && $_SESSION['role2'] === 'ADMIN') {
+							if (isset($_SESSION['role']) && $_SESSION['role'] === 'ADMIN') {
 								?>
 								<td>
 									<a class="btn btn-info" href="linkedit.php?id=<?=$link->id?>" target="_winEditLink">
@@ -178,7 +152,26 @@ if (isset($_REQUEST['tag'])) {
 				}
 				?>
 			</div>
-			<div class="col-2">Sidebar</div>
+			<div class="col-lg-4">
+				<br /><a href="?tag=<?=explode(',', $_REQUEST['tag'])[0]?>">Back</a><br />
+				
+				<h2>Related Tags</h2>
+				<?php
+				$tagList = [];
+				foreach($resultset['rows'] AS $row) {
+					if (empty($row[ROW_TAGS])) { $tagList[] = 'empty'; }
+					foreach(explode(',', $row[ROW_TAGS]) AS $tag) {
+						$tagList[] = $tag;
+					}
+				}
+				$result = groupBy($tagList);
+				ksort($result);
+				foreach($result AS $k=>$v) {
+					if ($k === $_REQUEST['tag']) { continue; }
+					echo '<a href="?tag='.$_REQUEST['tag'].','.$k.'">'.$k.'</a><sup>'.$v.'</sup><br />';
+				}
+				?>
+			</div>
 	 	</div>
 	 </div>
 	 
@@ -186,16 +179,5 @@ if (isset($_REQUEST['tag'])) {
 	 <?php require_once('_scripts.php'); ?>
 	 
 	 <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
-	 <?php
-	 /*
-	 
-	 <script>
-		 $(document).ready(function() {
-	    	$('#tableLinks').DataTable({"columns": [{ "orderable": false },null,null,{ "orderable": false }]});
-			});
-	 </script>
-	 
-	 */
-	 ?>
   </body>
 </html>

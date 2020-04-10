@@ -5,7 +5,7 @@ require_once('_includes.php');
 <head>
 	<?php require_once('_metatags.php');?>
 	<link rel="shortcut icon" href="assets/ico/favicon.ico">
-	<title><?php echo APP_TITLE;?></title>
+	<title><?=APP_TITLE?> - by Status</title>
 	<link href="assets/css/bootstrap.css" rel="stylesheet">
 	<link href="assets/css/style.css" rel="stylesheet">
 
@@ -26,7 +26,7 @@ require_once('_includes.php');
 	<div id="blue">
 	    <div class="container">
 			<div class="row">
-				<h3>Status <?php echo $_REQUEST['status'];?></h3>
+				<h3>Status <?=$_REQUEST['status']?></h3>
 			</div><!-- /row -->
 	    </div> <!-- /container -->
 	</div><!-- /blue -->

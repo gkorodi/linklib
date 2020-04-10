@@ -53,7 +53,17 @@ require_once('_includes.php');
 		<table class="table">
 		<?php
 		$querylist = Array(
-			"Total Link Count"=>"SELECT count(*) total_link_count FROM links;",
+		"Total Link Count"=>"SELECT count(*) total_link_count FROM links;",
+		"Level1"=>"SELECT count(*) level_count FROM links WHERE tags LIKE '%level1%';",
+		"Level2"=>"SELECT count(*) level_count FROM links WHERE tags LIKE '%level2%';",
+		"Level3"=>"SELECT count(*) level_count FROM links WHERE tags LIKE '%level3%';",
+		"Level4"=>"SELECT count(*) level_count FROM links WHERE tags LIKE '%level4%';",
+		"Later"=>"SELECT count(*) level_count FROM links WHERE tags LIKE '%later%';",
+		"Later1"=>"SELECT count(*) later_count FROM links WHERE tags LIKE '%later1%';",
+		"Later2"=>"SELECT count(*) later_count FROM links WHERE tags LIKE '%later2%';",
+		"Later3"=>"SELECT count(*) later_count FROM links WHERE tags LIKE '%later3%';",
+		"Later4"=>"SELECT count(*) later_count FROM links WHERE tags LIKE '%later4%';",
+			
 			"OK Status" => "SELECT count(*) status_ok_count FROM links WHERE status = 200;",
       "Missing Tags <small><a href='query.php?q=".urlencode('SELECT * FROM links WHERE tags IS NULL LIMIT 100')."' target='_newQ'>(tags IS NULL)</a></small>" => "SELECT count(*) tags_missing_count FROM links WHERE tags IS NULL;",
       "Empty Tags" => "SELECT count(*) tags_missing_count FROM links WHERE tags = '';",
@@ -72,9 +82,9 @@ require_once('_includes.php');
 			}
 			?>
 			<tr>
-			<th><?php echo $k;?></th>
-			<td><?php echo $resultset['rows'][0][0];?></td>
-			<td><?php echo ($k!="Total Link Count"?' '.number_format(($resultset['rows'][0][0]/$tlc)*100,2).' %':''); ?></td>
+			<th><?=$k?></th>
+			<td><?=$resultset['rows'][0][0]?></td>
+			<td><?=($k!="Total Link Count"?' '.number_format(($resultset['rows'][0][0]/$tlc)*100,2).' %':'')?></td>
 			</tr>
 			<?php
 		}
@@ -111,7 +121,7 @@ require_once('_includes.php');
 		<h4>Popular Tags</h4>
 		<div class="hline"></div>
 		<p id="popular_tags"></p>
-	</div>
+		</div>
       </div><! --/row -->
     </div><! --/container -->
 

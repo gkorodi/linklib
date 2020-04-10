@@ -60,19 +60,8 @@ $raw = query($sql);
 						<td>
 							<a href="<?=$row[ROW_LINK]?>" target="_newWindow" class="h6"><?=urldecode($row[ROW_TITLE])?></a><br />
 							<small>
-								<strong><?=justHostName($row[ROW_LINK])?></strong> - <?=json_decode($row[ROW_DESCRIPTION])->description?></strong><br />
-								<?php
-								if (empty($row[ROW_TAGS])) { 
-									echo 'no-tags';
-								} else {
-									foreach(explode(',', $row[ROW_TAGS]) AS $tag) {
-													?><button class="btn-sm btn-theme" role="button"><?=$tag?></button>
-													<?php
-									}	
-								}
-								?><br />
-							
-								Created: <strong><?=date("Y-m-d", strtotime($row[ROW_CREATED_AT]))?></strong>
+								<strong><?=justHostName($row[ROW_LINK])?></strong> <?=json_decode($row[ROW_DESCRIPTION])->description?></strong><br />
+								
 								</small>
 						</td>
 						

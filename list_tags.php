@@ -1,4 +1,4 @@
-<?php
+ <?php
 require_once('_includes.php');
 ?><!DOCTYPE html>
 <html lang="en">
@@ -84,20 +84,20 @@ require_once('_includes.php');
 		<h4>Search</h4>
 		<div class="hline"></div>
 		<p>
-		<br/><form action="search.php">
-		<input type="text" class="form-control" name="q" placeholder="Search something">
-		</form>
+			<form action="list_selected_tags.php">
+				<input type="text" class="form-control" name="q" placeholder="Search for a specific tag">
+			</form>
 		</p>
 
 		<div class="spacing"></div>
 
 		<h4>Categories</h4>
 		<div class="hline"></div>
-    <a href="search_bytag.php?tag=business" >Business</a><br />
-    <a href="search_bytag.php?tag=technology" >Technology</a><br />
-    <a href="search_bytag.php?tag=thinking" >Thinking</a><br />
-    <a href="search_bytag.php?tag=science" >Science</a><br />
-    <a href="search_bytag.php?tag=travel" >Travel</a><br />
+	    <a href="search_bytag.php?tag=business" >Business</a><br />
+	    <a href="search_bytag.php?tag=technology" >Technology</a><br />
+	    <a href="search_bytag.php?tag=thinking" >Thinking</a><br />
+	    <a href="search_bytag.php?tag=science" >Science</a><br />
+	    <a href="search_bytag.php?tag=travel" >Travel</a><br />
 
 		<div class="spacing"></div>
 		<div id="recent_posts" ></div>
@@ -106,10 +106,13 @@ require_once('_includes.php');
 		<h4>Special Tags</h4>
 		<div class="hline"></div>
 		<p id="popular_tags">
-      <a href="search_bytag.php?tag=repair" >Repair</a><br />
-      <a href="search_bytag.php?tag=fluff" >Fluff</a><br />
-      <a href="search_bytag.php?tag=maybe" >Maybe</a><br />
-      <a href="search_bytag.php?tag=now" >now</a><br />
+	      <a href="search_bytag.php?tag=repair" >Repair</a><br />
+	      <a href="search_bytag.php?tag=fluff" >Fluff</a><br />
+	      <a href="search_bytag.php?tag=maybe" >Maybe</a><br />
+	      <a href="search_bytag.php?tag=Level1" >Level1</a><br />
+	      <a href="search_bytag.php?tag=Level2" >Level2</a><br />
+	      <a href="search_bytag.php?tag=Level3" >Level3</a><br />
+	      <a href="search_bytag.php?tag=Level4" >Level4</a><br />
 		</p>
 	</div>
 </div><! --/row -->

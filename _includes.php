@@ -79,6 +79,19 @@ function getRowDescription($record) {
 	return 'No Description';
 }
 
+
+function groupBy($arr) {
+	$ret = Array();
+	foreach($arr AS $e) {
+		if (isset($ret[$e])) {
+			$ret[$e]++;
+		} else {
+			$ret[$e] = 1;
+		}
+	}
+	return $ret;
+}
+
 function getLinkStatus($url) {
 
 	$ch = curl_init($url);

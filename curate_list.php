@@ -61,19 +61,19 @@ $raw = query($sql);
 								<small><?=justHostName($row[ROW_LINK])?></small><br />
 								
 								
-								<button class="btn btn-warning" onClick="tagLink(<?=$row[ROW_ID]?>, 'later1');">
+								<button class="btn btn-warning" onClick="tagLink(<?=$row[ROW_ID]?>, 'level1');">
 										<span class="glyphicon glyphicon-cog"> </span>
 									</button>
 								<span style="width: 20px; display: inline-block"> </span>
-								<button class="btn btn-info" onClick="tagLink(<?=$row[ROW_ID]?>, 'later2');">
+								<button class="btn btn-info" onClick="tagLink(<?=$row[ROW_ID]?>, 'level2');">
 										<span class="glyphicon glyphicon-cog"> </span>
 									</button>
 								<span style="width: 20px; display: inline-block"> </span>
-								<button class="btn btn-success" onClick="tagLink(<?=$row[ROW_ID]?>, 'later3');">
+								<button class="btn btn-success" onClick="tagLink(<?=$row[ROW_ID]?>, 'level3');">
 										<span class="glyphicon glyphicon-cog"> </span>
 									</button>
 								<span style="width: 20px; display: inline-block"> </span>
-								<button class="btn btn-primary" onClick="tagLink(<?=$row[ROW_ID]?>, 'later4');">
+								<button class="btn btn-primary" onClick="tagLink(<?=$row[ROW_ID]?>, 'level4');">
 										<span class="glyphicon glyphicon-cog"> </span>
 									</button>
 							</strong>

@@ -58,23 +58,27 @@ $raw = query($sql);
 						<td>
 							<a href="<?=$row[ROW_LINK]?>" target="_newWindow"><?=urldecode($row[ROW_TITLE])?></a><br />
 							<small>Host: <strong><?=justHostName($row[ROW_LINK])?></strong></small><br />
-							<small>Created: <strong><?=date("Y-m-d", strtotime($row[ROW_CREATED_AT]))?></strong></small>
+							<small><br />
+								<button class="btn btn-warning" onClick="hideLink('<?=$row[ROW_ID]?>');">
+									<span class="glyphicon glyphicon-cog"> </span>
+								</button>
+								
+								<a class="btn btn-info" href="linkedit.php?id=<?=$row[ROW_ID]?>" target="_newWin">
+									<span class="glyphicon glyphicon-ok"> </span>
+								</a>
+								
+							</small>
+							<?php
+							if (!empty($row[ROW_CREATED_AT])) {
+								?>
+								<small>Created: <strong><?=date("Y-m-d", strtotime($row[ROW_CREATED_AT]))?></strong></small>
+								<?php
+							}
+							?>
 						</td>
 						
 						<td>
 							<small><?=date("Y-m-d", strtotime($row[ROW_UPDATED_AT]))?></small>
-						</td>
-						
-						<td>
-							<button class="btn btn-sm btn-warning" onClick="hideLink('<?=$row[ROW_ID]?>');">
-								<span class="glyphicon glyphicon-cog"> </span>
-							</button>
-						</td>
-						
-						<td>
-							<a class="btn btn-sm btn-info" href="linkedit.php?id=<?=$row[ROW_ID]?>" target="_newWin">
-								<span class="glyphicon glyphicon-ok"> </span>
-							</a>
 						</td>
 					</tr>
 					<?php
