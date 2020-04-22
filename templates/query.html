@@ -1,0 +1,45 @@
+{% extends('fullpage.html') %}
+
+{% block blue %}
+<form method="GET"><input type="text" name="q" value={{ criteria }} size="100"/></form>
+{% endblock %}
+
+{% block content %}
+
+<table class="table">
+<tbody>
+	{% for link in links %}
+	<tr id="row{{ link.id }}">
+	<td>
+		<button class="btn btn-sm btn-danger" onClick="deleteLink({{ link.id }});">
+			<span class="glyphicon glyphicon-trash"> </span>
+		</button>
+	</td>
+	<td>
+		<b><a href="{{ link.link }}" id="title-{{ link.id }}" target="_newWindow">{{ link.title }}</a></b><br />
+		<small>{{ link.hostname }}</small><br />
+		<small id="cdate-{{ link.id }}">Created: <b>{{ link.created_at }}</b></small>
+		<small id="date-{{ link.id }}">Updated: <b>{{ link.updated_at }}</b></small>
+		<small id="status-{{ link.id }}">Status: <b>{{ link.status }}</b></small>
+		<div id="description-{{ link.id }}"></div>
+	</td>
+	<td>
+		<input type="text" id="tags-{{ link.id }}"
+			onChange="tagLink({{ link.id }}, $(this).val());"
+				value="{{ link.tags }}" />
+	</td>
+	<td>
+		<a class="btn btn-sm btn-info" href="linkedit.php?id={{ link.id }}" target="_winEditLink">
+			<span class="glyphicon glyphicon-ok"> </span>
+		</a>
+	</td>
+	<td>
+		<a class="btn btn-sm btn-warning" onClick="repairQueryLink('{{ link.id }}');">
+			<span class="glyphicon glyphicon-check"> </span>
+		</a>
+	</td>
+	</tr>
+	{% endfor %}
+</tbody>
+</table>
+{% endblock %}

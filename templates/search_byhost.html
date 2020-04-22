@@ -1,0 +1,62 @@
+{% extends "fullpage.html" %}
+
+{% block blue %}
+		
+	<form method="GET" id="frmRefine" class="pull-right">
+		<input type="checkbox" class="adjusterfield" name="olderfirst" {% if req.isOldestFirst %}checked{% endif %}/> OlderFirst<br />
+		<input type="checkbox" class="adjusterfield" name="untaggedonly" {% if req.isUntaggedOnly %}checked{% endif %}/> UntaggedOnly<br />
+		<input type="checkbox" class="adjusterfield" name="nostatus" {% if req.isNoStatus %}checked{% endif %}/> No Status<br />
+		<input type="checkbox" class="adjusterfield" name="badstatus" {% if req.isBadStatus %}checked{% endif %}/> Bad Status<br />
+		<input type="hidden" id="fldHost" name="host" value="{{ hostname }}" />
+	</form>
+
+	<h3>Search Results by host <a href="http://{{ hostname }}" target="_newWindow">{{ hostname }}</a>
+	</h3>
+	<small>There are {{ rowcount }} entries</small>
+	
+{% endblock %}
+
+{% block content %}
+<style>
+	TR.link-301 {
+		background-color: lightGray;
+	}
+	TR.link--2 {
+		background-color: Purple; color: white;
+	}
+	TR.link-2 {
+		background-color: Pink; color: white;
+	}
+</style>
+
+<table class="table">
+	<tbody>
+	{% for link in links %}
+	<tr id="row{{ link.id }}">
+		<td>
+			</td>
+		<td>
+			<b><a href="{{ link.link }}" target="_newWindow">{{ link.title }}</a></b><br />
+			<small>
+				Created: <b>{{ link.created_at }}</b> Updated: <b>{{ link.updated_at }}</b> Tags: <b>{% for tag in link.tags %}{{ tag }} {% endfor %}</b>
+			</small><br />
+			<br />
+			<button class="btn-sm btn-danger" onClick="deleteLink({{ link.id }});">
+				<span class="glyphicon glyphicon-remove"> </span>
+			</button>
+			
+			<a class="btn-sm btn-info" href="linkedit.php?id={{ link.id }}" target="_winEditLink">
+				<span class="glyphicon glyphicon-ok"> </span>
+			</a>
+			
+			&nbsp;&nbsp;&nbsp;
+			{% include('parts/buttons_taglinks.html') %}
+		</td>
+		<td>
+			
+		</td>
+	</tr>
+	{% endfor %}
+	</tbody>
+</table>
+{% endblock %}

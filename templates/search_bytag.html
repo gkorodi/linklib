@@ -1,0 +1,74 @@
+{% extends('layouts/page.html') %}
+
+{% block blue %}
+<h3>Search Results by tag <b>{{ searchTag }}</b>.</h3>
+<form><input type="hidden" name="tag" value="<?=$_REQUEST['tag']?>"/>
+	<input type="checkbox" {% if isOldestFirst %}checked{% endif %} name="olderfirst" onChange="this.form.submit()"> Older First?
+</form>
+{% endblock %}
+
+{% block content %}
+
+<style>
+tr.status200 {
+    background-color: white;
+}
+
+tr.status500 {
+    background-color: red;
+    color: white;
+}
+
+tr.status301 {
+    background-color: orange;
+}
+
+tr.status302 {
+    background-color: orange;
+}
+
+</style>
+
+<table id="tableLinks" class="table">
+<thead>
+	
+</thead>
+<tbody>
+	{% for link in links %}
+	<tr align="top" id="row{{ link.id}}">
+		<td>
+			<a class="btn btn-danger" onclick="deleteLink({{ link.id }});">
+				<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+			</a>
+		</td>
+		
+		<td>
+			
+		</td>
+		<td>
+			<b><a href="{{ link.link }}" target="_newWindow">{{ link.title }}</a></b><br />
+			<small>{{ link.hostname}}</small>
+		</td>
+		<td>
+			created: {{ link.created_at }} updated: {{ link.updated_at }}
+		</td>
+		<td>
+			<a class="btn btn-info" href="linkedit.php?id={{ link.id }}" target="_winEditLink">
+				<span class="glyphicon glyphicon-ok"> </span>
+			</a>
+		</td>
+	</tr>
+	{% endfor %}
+</tbody>
+</table>
+
+{% endblock %}
+
+{% block sidebar %}
+	<br /><a href="?tag={{ searchtag }}">Back</a><br />
+	
+	<h2>Related Tags</h2>
+	{% for rtag in relatedTags %}
+	<a href="?tag={{ searchtag }},{{ rtag.name }}">{{ rtag.name }}</a><sup>{{ rtag.count }}</sup><br />
+	{% endfor %}
+{% endblock %}

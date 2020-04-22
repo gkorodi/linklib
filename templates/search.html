@@ -1,0 +1,50 @@
+{% extends('fullpage.html') %}
+
+{% block blue %}
+	 <form id="frmSearchQuery" class="form-inline" method="GET">
+	  <div class="form-group">
+	    <label for="fldQ"> Search for: </label>
+	    <input type="text" class="form-control" id="fldQ" name="q" value="{{ criteria }}" />
+	  </div>
+	</form>
+{% endblock %}
+
+{% block content %}
+<table class="table" id="tableLinks">
+<thead>
+<tr>
+<th>Host</th>
+<th>Link</th>
+<th>Created At</th>
+<th> </th>
+<th> </th>
+</tr>
+</thead>
+<tbody>
+	{% for link in links %}
+	<tr id="row{{ link.id }}">
+		<td>
+		{{ link.hostname }}
+		</td>
+		<td>
+		<a href="{{ link.link }}" target="_newWindow">{{ link.title }}</a><br />
+		<small>{% for tag in link.tags %}<a class="btn-sm btn-theme" style="font-size: 75%" role="button">{{ tag }}</a>{% endfor %}</small>
+		</td>
+		<td>
+			<small>{{ link.created_at }}</small>
+		</td>
+		<td>
+			<small>{{ link.level }}</small>
+		</td>
+		<td>
+		<button class="btn btn-sm btn-danger" onClick="deleteLink({{ link.id }})"><i class="fa fa-times" aria-hidden="true"></i></button>
+		</td>
+		<td>
+		<a class="btn btn-sm btn-success" href="linkedit.php?id={{ link.id }}" target="_newResultWindow"><i class="fa fa-check" aria-hidden="true"></i></a>
+		</td>
+	</tr>
+	{% endfor %}
+</tbody>
+</table>
+
+{% endblock %}

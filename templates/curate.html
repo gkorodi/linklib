@@ -1,0 +1,29 @@
+{% extends('fullpage.html') %}
+
+{% block blue %}
+	<h3>Curate {{ rowcount }} rows</h3>
+{% endblock %}
+
+{% block content %}
+	<table class="table">
+	{% for link in links %}
+	<tr id="row{{ link.id }}" >
+		<td>
+			<a class="btn btn-sm btn-danger" onClick="deleteLink('{{ link.id }}');">
+				<span class="glyphicon glyphicon-remove"> </span>
+			</a><br />
+			<br />
+			<a class="btn-sm btn-link" href="linkedit.php?id={{ link.id }}" target="_newWin">
+				<span class="glyphicon glyphicon-ok"> </span>
+			</a>
+		</td>
+		<td>
+			<a href="{{ link.link }}" target="_newWindow">{{ link.title }}</a><br />
+			<small>host: <strong>{{ link.hostname }}</strong> created: <strong>{{ link.created_at}}</strong></small><br />
+			{{ include('parts/buttons_taglinks.html') }}
+			
+		</td>
+	</tr>
+	{% endfor %}
+	</table>
+{% endblock %}

@@ -1,9 +1,7 @@
-<?php require_once('_includes.php');
-
+<?php
+require_once('_includes.php');
 $links = query('SELECT * FROM links');
-
 $item_idx = rand(0,count($links['rows'])-1);
-
 $link = new Link($links['rows'][$item_idx][0]);
 
 ?><!DOCTYPE html>

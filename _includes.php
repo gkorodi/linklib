@@ -1,11 +1,15 @@
 <?php
-session_start();
-date_default_timezone_set('US/Eastern');
-
-if (!in_array(basename($_SERVER['PHP_SELF']), explode(',','login.php,index.php')) && !isset($_SESSION['uid'])) {
+if (isset($_SERVER['PHP_SELF'])) {
+	session_start();
+	if (!in_array(basename($_SERVER['PHP_SELF']), explode(',','login.php,index.php')) && !isset($_SESSION['uid'])) {
 		header("Location: login.php");
 		exit;
+	}
+} else {
+  echo 'DEBUG: No PHP_SELF, this must be CLI'.PHP_EOL;
 }
+
+date_default_timezone_set('US/Eastern');
 
 
 define('APP_ROOT','/linklib/');

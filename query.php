@@ -1,6 +1,14 @@
 <?php
 require_once('_includes.php');
 
+$searchresults = Array();
+if (isset($_REQUEST['q'])) {
+	$searchresults = query($_REQUEST['q']);
+	if (count($searchresults['rows']) > 300) {
+		$searchresults['rows'] = array_slice($searchresults['rows'],0,300);
+	}
+}
+
 ?><!DOCTYPE html>
 <html lang="en">
 <head>
@@ -42,13 +50,8 @@ require_once('_includes.php');
 			<table class="table">
 			<tbody>
 				<?php
-				if (isset($_REQUEST['q'])) {
-					$searchresults = query($_REQUEST['q']);
-					if (count($searchresults['rows']) > 300) {
-						$searchresults['rows'] = array_slice($searchresults['rows'],0,300);
-					}
-					foreach($searchresults['rows'] AS $row) {
-						$link = new Link($row[0]);
+				foreach($searchresults['rows'] AS $row) {
+					$link = new Link($row[0]);
 						?>
 						<tr id="row<?=$link->id?>">
 							<td>
@@ -61,7 +64,7 @@ require_once('_includes.php');
 									<a href="<?=$link->link?>" id="title-<?=$link->id?>" target="_newWindow">
 										<?=urldecode($link->title)?></a>
 								</b><br />
-								<p><?=json_decode($link->description)->description?></p>
+								<?=isset($link->description)&&!empty($link->description)&&isset(json_decode($link->description)->description)&&!empty(json_decode($link->description)->description)?'<p>'.json_decode($link->description)->description.'</p>':''?>
 								<small><?=$link->link?></small><br />
 								<small id="cdate-<?=$link->id?>">Created: <b><?=date('Y-m-d', strtotime($link->created_at))?></b></small>
 								<small id="date-<?=$link->id?>">Updated: <b><?=date('Y-m-d', strtotime($link->updated_at))?></b></small>
@@ -86,7 +89,6 @@ require_once('_includes.php');
 						</tr>
 						<?php
 					}
-				}
 				?>
 			</tbody>
 			</table>

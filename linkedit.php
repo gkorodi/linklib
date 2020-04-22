@@ -1,12 +1,5 @@
 <?php
 require_once('_includes.php');
-
-if (!isset($_SESSION['uid'])) {
-  http_response_code(402);
-  die();
-}
-
-require_once('_includes.php');
 $debugs = Array();
 $handed = "left";
 

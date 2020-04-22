@@ -1,88 +1,24 @@
 <?php
-require_once('_includes.php');
+require_once('_inc.php');
+require_once(__DIR__.'/vendor/autoload.php');
+
+$loader = new \Twig\Loader\FilesystemLoader(__DIR__.'/templates');
+//$twig = new \Twig\Environment($loader); //, [ 'cache' => '/path/to/compilation_cache' ]);
+$twig = new \Twig\Environment($loader, array('debug' => true));
+
 $sql="SELECT * FROM links WHERE tags = 'curate' ORDER BY updated_at DESC LIMIT 200";
-$raw = query($sql);
+$rs = queryX($sql);
 
-?><!DOCTYPE html>
-<html lang="en">
-  <head>
-	  <?php require_once('_metatags.php');?>
-		
-    <link rel="shortcut icon" href="assets/ico/favicon.ico">
-    <title><?php echo APP_TITLE;?> - Curate List</title>
-    
-		<!-- Bootstrap core CSS -->
-    <link href="assets/css/bootstrap.css" rel="stylesheet">
-    <!-- Custom styles for this template -->
-    <link href="assets/css/style.css" rel="stylesheet">
-    <!-- Just for debugging purposes. Don't actually copy this line! -->
-    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+$links = Array();
+foreach($rs AS $r) {
+	$r['hostname'] = justHostName($r['link']);
+	$links[] = $r;
+}
 
-    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
+if ($_REQUEST['format'] == 'json') {
+	header('Content-type: application/json');
+	echo json_encode($links);
+	exit;
+}
 
-    <script src="assets/js/modernizr.js"></script>
-  </head>
-
-<body>
-	<?php require_once('_menu.php'); ?>
-
-	<div id="blue">
-		<div class="container">
-			<div class="row">
-				<h3>Curate <?=count($raw['rows'])?> rows</h3>
-			</div><!-- /row -->
-		</div> <!-- /container -->
-	</div><!-- /blue -->
-
-
-	<div class="container mtb">
-		<div class="row">
-			<div id="randomlist" class="col-lg-12">
-				<table class="table">
-				<?php
-				$idx = 0;
-				foreach ($raw['rows'] AS $row) {
-					$idx++;
-					?>
-					<tr id="row<?=$row[ROW_ID]?>" >
-						<td>
-							<button class="btn btn-sm btn-danger" onClick="deleteLink('<?=$row[ROW_ID]?>');">
-								<span class="glyphicon glyphicon-remove"> </span>
-							</button>
-						</td>
-						
-						<td>
-							<a href="<?=$row[ROW_LINK]?>" target="_newWindow"><?=urldecode($row[ROW_TITLE])?></a><br />
-							<small>host: <strong><?=justHostName($row[ROW_LINK])?></strong></small><br />
-							<small>created: <?=$row[ROW_CREATED_AT]?></small>
-						</td>
-						
-						<td>
-							
-
-							<button class="btn btn-sm btn-warning" onClick="hideLink('<?=$row[ROW_ID]?>');">
-								<span class="glyphicon glyphicon-cog"> </span>
-							</button>
-						</td>
-						<td>
-							<a class="btn btn-sm btn-info" href="linkedit.php?id=<?=$row[ROW_ID]?>" target="_newWin">
-								<span class="glyphicon glyphicon-ok"> </span>
-							</a>
-						</td>
-					</tr>
-					<?php
-				}
-				?>
-				</table>
-			</div>
-		</div>
-	</div>
-
-	<?php require_once('_footer.php'); ?>
-	<?php require_once('_scripts.php'); ?>
-</body>
-</html>
+echo $twig->render('curate.html', ['profile' => $profile, 'links' => $links]);
