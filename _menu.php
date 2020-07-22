@@ -16,7 +16,7 @@
             <li class="<?php echo (basename($_SERVER['PHP_SELF'],'.php')=='stats'?'active':'');?>"><a href="stats.php">STATS</a></li>
             <?php if (isset($_SESSION['uid']) && isset($_SESSION['role']) && $_SESSION['role'] === 'ADMIN') { ?>
               <li><a href="search.php">SEARCH</a></li>
-              <li><a href="linkedit.php">RANDOMLINK</a></li>
+              <li><a href="linkedit.php">RANDOM</a></li>
               <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">
 				  <?php echo strtoupper($_SESSION['uid']).' '.($_SESSION['role']?$_SESSION['role']:'anonymous');?> <b class="caret"></b>
@@ -27,13 +27,14 @@
 				<li><a href="curate_latest.php">CURATE LATEST</a></li>
 				<li><a href="curate_today.php">CURATE TODAY</a></li>
 				<li>---</li>
-                <li><a href="random.php">RANDOM100</a></li>
-                <li><a href="linkedit.php">RANDOMLINK</a></li>
-				<li><a href="random-single2.php">RANDOMLINK2</a></li>
-                <li><a href="list_hosts.php">LIST HOSTS</a></li>
+                <li><a href="random.php">RANDOM LIST</a></li>
+				<li><a href="random-single.php">RANDOM </a></li>
+				<li>---</li>
+				<li><a href="list_hosts.php">LIST HOSTS</a></li>
                 <li><a href="list_tags.php">LIST TAGS</a></li>
                 <li><a href="list_status.php">LIST STATUS</a></li>
                 <li>---</li>
+				<li><a href="query.php">QUERY</a></li>
 				<li><a href="addnew.php">NEWLINK</a></li>
                 <li><a href="contact.php">CONTACT</a></li>
 				<li><a href="settings.php">SETTINGS</a></li>

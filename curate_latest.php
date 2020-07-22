@@ -12,6 +12,7 @@ $rs = queryX($sql);
 $links = Array();
 foreach($rs AS $r) {
 	$r['hostname'] = justHostName($r['link']);
+	$r['updated_at'] = empty($r['updated_at'])?'n/a':date('Y-m-d', strtotime($r['updated_at']));
 	$links[] = $r;
 }
 
@@ -21,6 +22,6 @@ if ($_REQUEST['format'] == 'json') {
 	exit;
 }
 
-echo $twig->render('curate.html', ['profile' => $profile, 'links' => $links]);
+echo $twig->render('curate.html', ['profile' => $pageProfile, 'links' => $links]);
 
 

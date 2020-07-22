@@ -21,4 +21,4 @@ if ($_REQUEST['format'] == 'json') {
 	exit;
 }
 
-echo $twig->render('curate.html', ['profile' => $profile, 'links' => $links]);
+echo $twig->render('curate.html', ['profile' => $pageProfile, 'links' => $links]);

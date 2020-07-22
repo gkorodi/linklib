@@ -1,5 +1,4 @@
  <?php
-
 require_once('_inc.php');
 require_once(__DIR__.'/vendor/autoload.php');
 
@@ -48,21 +47,20 @@ foreach($resultset AS $r) {
 }
 
 // Related Tags
-/*
+
 $relatedTags = Array();
 $tagList = Array();
 foreach($resultset AS $row) {
 	if ($k === $_REQUEST['tag']) { continue; }
-	if (empty($row[ROW_TAGS])) { $tagList[] = 'empty'; }
-	foreach(explode(',', $row[ROW_TAGS]) AS $tag) {
+	if (empty($row['tags'])) { $tagList[] = 'empty'; }
+	foreach(explode(',', $row['tags']) AS $tag) {
 		$tagList[] = $tag;
 	}
 }
 $relatedTags = groupBy($tagList);
 ksort($result);
-*/
 
-$data = ['links' => $links, 'searchTag' => $_REQUEST['tag'], 'profile' => $profile];
+$data = ['links' => $links, 'searchTag' => $_REQUEST['tag'], 'profile' => $pageProfile, 'relatedTags' => $relatedTags];
 
 if (isset($_REQUEST['format']) && !empty($_REQUEST['format']) && $_REQUEST['format'] == 'json') {
 	header('Content-type: application/json');

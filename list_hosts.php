@@ -90,7 +90,8 @@ require_once('_includes.php');
 						?>
 						<tr>
 			        <th>
-								<a href="search_byhost.php?host=<?=$hname;?>" target="_newEditLinkWindow"><?=$hname;?></a>
+								<a href="search_byhost.php?host=<?=$hname?>" target="_newEditLinkWindow"><?=$hname;?></a>
+								&nbsp; <a href="magazine.php?host=<?=$hname?>" target="magazineTab">&#x1F517;</a>
 							</th>
 							<td>
 								<?=isset($statusTAGLESS[$hname])?$statusTAGLESS[$hname]:'n/a'?>

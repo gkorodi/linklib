@@ -6,8 +6,9 @@ $loader = new \Twig\Loader\FilesystemLoader(__DIR__.'/templates');
 //$twig = new \Twig\Environment($loader); //, [ 'cache' => '/path/to/compilation_cache' ]);
 $twig = new \Twig\Environment($loader, array('debug' => true));
 
-$sql="SELECT * FROM links WHERE (tags = '' OR tags IS NULL) AND DATE(updated_at) = CURDATE() ORDER BY updated_at DESC LIMIT 200";
-$rs = queryX($sql);
+$sql="SELECT * FROM links WHERE (tags = '' OR tags IS NULL) AND (DATE(updated_at) >= now() - INTERVAL 2 DAY) ORDER BY updated_at DESC";
+$raw = queryX($sql);
+$rs = queryX($sql.' LIMIT 200');
 
 $links = Array();
 foreach($rs AS $r) {
@@ -21,5 +22,5 @@ if ($_REQUEST['format'] == 'json') {
 	exit;
 }
 
-echo $twig->render('curate_today.html', ['profile' => $profile, 'links' => $links]);
+echo $twig->render('curate_today.html', ['profile' => $pageProfile, 'links' => $links, 'totalcount'=> count($raw), 'rowcount' => count($links)]);
 

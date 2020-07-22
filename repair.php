@@ -170,54 +170,7 @@ $errorMessage = null;
 
 
 	<?php require_once('_footer.php'); ?>
-
-	<!-- Bootstrap core JavaScript
-	================================================== -->
-	<!-- Placed at the end of the document so the pages load faster -->
 	<?php require_once('_scripts.php'); ?>
-
-	<script>
-
-	function updateLink(newurl, newstatus) {
-		$('#link').val(newurl);
-		$('#status').val(newstatus);
-		$('#lblTitle').html("Loading ...");
-		$('#frmEditLink').submit();
-	}
-
-	$('#btnDelete').on('click', function() {
-		$('#lblTitle').html('...');
-
-		$.get('_functions.php?method=deletelink&id=<?php echo $link->id;?>', function(data) {
-			console.log(data);
-
-			if (data.status == 'ok') {
-				window.location="repair.php";
-			} else {
-				alert(data.message);
-			}
-		});
-	});
-
-	$("form input[type=submit]").click(function() {
-		$('#lblTitle').html("Loading ...");
-		$('#btnNext').focus();
-	        if($(this).val() == 'Update') {
-	        	return true;
-	        }
-	});
-
-	$('#btnHeader').on('click', function(event) {
-		var getHeaderURL = '_functions.php?method=getheader&id=<?php echo $link->id;?>';
-		$.get(getHeaderURL, function(data) {
-			if (data.status == 'ok') {
-				$('#status').val(data.details.status);
-				$('#title').val(data.details.title);
-				$('#last_updated').val(data.details.last_updated);
-			}
-		});
-	});
-	</script>
 </body>
 </html>
 
