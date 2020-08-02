@@ -6,7 +6,7 @@ require_once('_includes.php');
 	<?php require_once('_metatags.php');?>
 	<link rel="shortcut icon" href="assets/ico/favicon.ico">
 
-	<title><?php echo APP_TITLE;?></title>
+	<title><?=APP_TITLE?></title>
 
 	<!-- Bootstrap core CSS -->
 	<link href="assets/css/bootstrap.css" rel="stylesheet">
@@ -29,7 +29,7 @@ require_once('_includes.php');
 	    <div class="container">
 			<div class="row">
 				<form method="GET"><input type="text" name="q"
-					<?php echo (isset($_REQUEST['q'])?'value="'.$_REQUEST['q'].'"':'');?> size="100"/>
+					<?=(isset($_REQUEST['q'])?'value="'.$_REQUEST['q'].'"':'')?> size="100"/>
 				</form>
 			</div><!-- /row -->
 	    </div> <!-- /container -->
@@ -41,14 +41,10 @@ require_once('_includes.php');
 			<table class="table">
 			<tbody>
 				<?php
-				if (isset($_REQUEST['q'])) {
-					$searchresults = query($_REQUEST['q']);
-					if (count($searchresults['rows']) > 300) {
-						$searchresults['rows'] = array_slice($searchresults['rows'],0,300);
-					}
-					foreach($searchresults['rows'] AS $row) {
+				foreach($searchresults['rows'] AS $row) {
+					$link = new Link($row[0]);
 						?>
-						<tr id="row<?php echo $row[0];?>">
+						<tr id="row<?=$link->id?>">
 							<td>
 								<b>
 									<a href="<?php echo $row[1];?>" id="title-<?php echo $row[0];?>" target="_newWindow">
@@ -86,11 +82,6 @@ require_once('_includes.php');
 						</tr>
 						<?php
 					}
-					//foreach($searchresults AS $k=>$v) {
-					//	if ($k==='rows') { continue; }
-					//	echo '<b>'.$k.'</b>: '.$v.'<br />';
-					//}
-				}
 				?>
 			</tbody>
 			</table>
@@ -99,10 +90,6 @@ require_once('_includes.php');
 	 </div><!--/container -->
 
 	<?php require_once('_footer.php'); ?>
-
-	<!-- Bootstrap core JavaScript
-	================================================== -->
-	<!-- Placed at the end of the document so the pages load faster -->
 	<?php require_once('_scripts.php'); ?>
 	<script>
 
@@ -150,8 +137,13 @@ require_once('_includes.php');
 				);
 
 			} else {
+				console.log(data);
 				$('#row'+linkid).css('background-color','pink');
 			}
+    })
+		.fail(function(data) {
+			console.log( "repairQueryLink() error" );
+			console.log(data);
 		});
 	}
   </script>

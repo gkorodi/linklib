@@ -1,0 +1,33 @@
+{% extends('fullpage.html') %}
+
+{% block blue %}
+<h3>Curate Today {{ rowcount }} or {{ totalcount }} rows</h3>
+{% endblock %}
+
+{% block content %}
+
+<table class="table">
+{% for link in links %}
+<tr id="row{{ link.id }}" >
+	<td>
+		<h4><a href="{{ link.link }}" target="_newWindow">{{ link.title }}</a></h4><br />
+		<small>Host: <strong>{{ link.hostname }}</strong></small><br />
+		
+		<div style="margin-top: 10px">
+				{{ include('parts/buttons_taglinks.html') }}
+		</div><br />
+	</td>
+	<td>
+		<button class="btn-lg btn-danger" onClick="deleteLink('{{ link.id }}');">
+			<span class="glyphicon glyphicon-remove"> </span>
+		</button><br />
+		<br /><br /><br />
+		<a class="btn-lg btn-success" href="linkedit.php?id={{ link.id }}" target="_newWin">
+				<span class="glyphicon glyphicon-ok"> </span>
+		</a>
+	</td>
+	
+</tr>
+{%endfor %}
+</table>
+{% endblock %}

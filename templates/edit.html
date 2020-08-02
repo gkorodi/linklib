@@ -1,0 +1,79 @@
+{% extends('fullpage.html') %}
+
+
+{% block content %}
+
+	<h3>URL: {{ pages }}
+		<a href="{{ link.link }}" target="_newLinkWin">{{ link.title }}</a>
+	</h3>
+	
+	<div style="color:red">
+		{{ errorMessages }}
+	</div>
+	
+	<p class="lead">
+		{{ description }}
+	</p>
+				
+	<div class="row">
+		<div class="col">
+			<a class="btn btn-lg btn-danger" id="btnDelete" accesskey="D"><u>D</u>elete</a>
+			<a class="btn btn-lg btn-warning" id="btnFix" accesskey="x">Fi<u>x</u></a>
+		</div>
+	</div>
+     
+	<form id="frmEditLink" class="form-horizontal" method="POST">
+		<a style="margin-right: 10px" class="btn btn-warning"
+			href="https://duckduckgo.com/?q={{ link.title }}&t=ffsb&ia=web"
+				target="_srchWindow">Duck
+		</a>
+
+		<a style="margin-right: 10px" class="btn btn-warning" 
+			href="{{ link.link }}" target="_newWindow">Show
+		</a>
+
+		<input type="submit" name="btnUpdate" id="btnUpdateId" class="btn btn-info " value="Update" /><br />
+		<br/>
+		<br />
+
+		<div class="form-group">
+			<label for="tags">Tags:</label>
+			<input type="text" class="form-control" id="tags" name="tags" value="{{ link.tags }}" />
+		</div>
+
+
+		<div class="form-group">
+			<label for="created_at">Created At:</label>
+			<input type="text" class="form-control" id="created_at" 
+				name="created_at" size="12" value="{{ link.created_at }}" />
+		</div>
+
+		<div class="form-group">
+			<label for="link">Link:</label>
+			<input type="text" class="form-control" id="link" name="link" value="{{ link.link }}" />
+		</div>
+
+		<div class="row">
+			<textarea name="description" id="description" cols="100" rows="10">{{ link.description }}</textarea>
+		</div>
+
+		<div class="form-group">
+			<label for="title">Title:</label>
+			<input type="text" class="form-control" id="title" name="title" value="{{ link.title }}" />
+		</div>
+
+		<input type="hidden" id="id" name="id" value="{{ link.id }}" />
+
+		<div class="form-group">
+			<label for="status">Status:</label>
+			<input type="text" class="form-control" id="status" name="status" value="{{ link.status }}" size="10" />
+		</div>
+
+		<div class="form-group">
+			<label for="fld_updated_at">Updated At:</label>
+			<input type="text" readonly class="form-control" id="fld_updated_at" value="{{ link.updated_at}}" size="12">
+		</div>
+
+	</form>
+
+{% endblock %}

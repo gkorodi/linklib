@@ -52,7 +52,7 @@ require_once('_includes.php');
 		$criteria .= " AND INSTR(`column`, '{$needle}') > 0"; "(".implode(',', $a).")";
 	}
 
-	$queryString = "SELECT * FROM links WHERE UCASE(title) LIKE '%".strtoupper(urldecode($_REQUEST['q']))."%' ".$criteria." ORDER BY last_updated LIMIT 100";
+	$queryString = "SELECT * FROM links WHERE UCASE(title) LIKE '%".strtoupper(urldecode($_REQUEST['q']))."%' ".$criteria." ORDER BY updated_at LIMIT 100";
 	?>Query: <pre><?php echo $queryString;?></pre><?php
 	$entryList = query($queryString);
 } else {

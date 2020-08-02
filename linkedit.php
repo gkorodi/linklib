@@ -1,21 +1,26 @@
 <?php
 require_once('_includes.php');
+$debugs = Array();
+$handed = "left";
 
+$randomQuery = 'SELECT * FROM links WHERE tags IS NULL LIMIT 1';
+$randomQuery = 'SELECT * FROM links AS r1 JOIN (SELECT CEIL(RAND() * (SELECT MAX(id) FROM links WHERE tags IS NULL)) AS id) AS r2 WHERE r1.id >= r2.id AND tags IS NULL ORDER BY r1.id ASC LIMIT 1';
 if (!isset($_REQUEST['id']) || $_REQUEST['id'] == '') {
+	$links = Array();
 	try {
-		$queryString = "SELECT id FROM links";
-		$links = query($queryString);
+		$links = query($randomQuery);
 	} catch (Exception $e) {
-		throw new Exception('Could not run SQL query:'+$queryString);
+		throw new Exception('Could not run full SQL query:');
 	}
 
 	if (count($links['rows']) == 0) {
-		throw new Exception('There is no link available.'+$queryString);
+		throw new Exception('There is no link available.');
 	}
-	$guessid = rand(1,count($links['rows']));
-	$randomid = $links['rows'][$guessid][0];
-	$link = new Link($randomid);
+	
+	$link = new Link($links['rows'][0]);
+	
 } else {
+	$debugs[] = 'Creating new link object.';
 	$link = new Link($_REQUEST['id']);
 	if (isset($_POST['id'])) {
 		if (!$link->updateByMap($_POST)) {
@@ -29,33 +34,44 @@ if (!$link->id) {
 	throw new Exception('There is no link->id field!'.print_r($debug, true));
 }
 
-$nextidSQLQuery = "SELECT * FROM `links` ORDER BY RAND() LIMIT 100";
-$nextid_res = query($nextidSQLQuery);
-$nextid = $nextid_res['rows'][rand(0,$nextid_res['rowcount']-1)][0];
-
 $errorMessage = null;
+if (isset($_POST['id'])) {
+	
+	$link->title = $_POST['title'];
+	$link->link = $_POST['link'];
+	$link->tags = implode(',', explode(',', str_replace(' ','', strtolower($_POST['tags']))));
+	$link->status = $_POST['status'];
+	$link->created_at = empty($_POST['created_at'])?date('Y-m-d'):date('Y-m-d', strtotime($_POST['created_at']));
+	$link->updated_at = date('Y-m-d');
+	$link->description = empty($_POST['description'])?'{"pagetitle":"'.$link->title.'"}':$_POST['description'];
+	
+	$msgs = [];
+	if (!$link->update()) {
+		if (count($link->errors)>0) {
+			foreach($link->errors AS $msg) {
+				$msgs[] = '<h4>ERROR:'.$msg.'</h4>';
+			}
+		}
+		// if (count($link->debugs)>0) {
+		// 	foreach($link->debugs AS $msg) {
+		// 		$msgs[] = 'DEBUG:'.$msg;
+		// 	}
+		// }
+		$errorMessage = 'Could not updates link!'.'<br />'.implode('<br />', $msgs);
+	}
+}
+
 ?><!DOCTYPE html>
 <html lang="en">
 <head>
 	<?php require_once('_metatags.php');?>
 	<link rel="shortcut icon" href="assets/ico/favicon.ico">
-	<title><?php echo APP_TITLE;?></title>
+	<title><?=APP_TITLE?></title>
 	<link href="assets/css/bootstrap.css" rel="stylesheet">
 
 	<!-- Custom styles for this template -->
 	<link href="assets/css/style.css" rel="stylesheet">
 	<link href="assets/css/font-awesome.min.css" rel="stylesheet">
-
-
-	<!-- Just for debugging purposes. Don't actually copy this line! -->
-	<!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-
-	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-	<!--[if lt IE 9]>
-	<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-	<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-	<![endif]-->
-
 	<script src="assets/js/modernizr.js"></script>
 </head>
 <body>
@@ -67,8 +83,38 @@ $errorMessage = null;
     ***************************************************************************************************************** -->
     <div id="blue">
       <div class="container">
+				
         <div class="row">
-          <h3 id="lblTitle"><?php echo $link->title; ?>.</h3>
+				  <div class="col-2">
+						<a class="btn-lg btn-info" href ="linkedit.php" id="btnNext" accesskey="n"><u>N</u>ext</a>
+					</div>
+				</div>
+				
+        <div class="row">
+					<div class="col">
+						<h3>
+							<a href="<?=$link->link?>" target="_newLinkWin"><?=$link->title?></a>
+						</h3>
+						
+						<div style="color:red">
+							<?=(isset($errorMessage) && !empty($errorMessage))?$errorMessage:''?>
+						</div>
+						
+						<p class="lead">
+							<?php
+							if (!empty($link->description)) {
+								try {
+									$metatags = json_decode($link->description);
+									if (isset($metatags->description) && !empty($metatags->description)) {
+										echo $metatags->description;
+									}
+								} catch (Exception $ex) {
+									echo 'Could not parse the "description" field.'.$ex->getMessage();
+								}
+							}	
+							?>
+						</p>
+					</div>
         </div><!-- /row -->
 			  <?php
 			  //$info = $link->getURLInfo();
@@ -168,34 +214,37 @@ $errorMessage = null;
 	<?php require_once('_scripts.php'); ?>
 
 	<script>
-
-	function updateLink(newurl, newstatus) {
-		$('#link').val(newurl);
-		$('#status').val(newstatus);
-		$('#lblTitle').html("Loading ...");
-		$('#frmEditLink').submit();
-	}
+	$('#btnNext').on('click', function() {
+		console.log('going to next records.')
+		$('#blue').css('background-color','gray');
+	});
+	
+	$('#btnCurate').on('click', function() {
+		tagCurate(<?=$link->id?>);
+		window.location='linkedit.php';
+	});
 
 	$('#btnDelete').on('click', function() {
-		$('#lblTitle').html('...');
-
-		$.get('_functions.php?method=deletelink&id=<?php echo $link->id;?>', function(data) {
-			console.log(data);
-
+		$('#blue').css('background-color','orange');
+		$.get('_functions.php?method=deletelink&id=<?=$link->id?>', function(data) {
 			if (data.status == 'ok') {
-				window.location="linkedit.php?id=<?php echo $nextid;?>";
+				$('#blue').css('background-color','lightGreen');
+				window.location='linkedit.php';
 			} else {
-				alert(data.message);
+				alert('Failed to delete link <?=$link->id?>');
+				$('#blue').css('background-color','red');
 			}
 		});
 	});
 
 	$("form input[type=submit]").click(function() {
+		var baseColor = $('#blue').css('background-color');
+		$('#blue').css('background-color','yellow');
 		$('#lblTitle').html("Loading ...");
-		$('#btnNext').focus();
-	        if($(this).val() == 'Update') {
-	        	return true;
-	        }
+		if($(this).val() == 'Update') {
+			$('#blue').css('background-color', baseColor);
+		 return true;
+		}
 	});
 
 	$('#btnHeader').on('click', function(event) {
@@ -214,6 +263,8 @@ $errorMessage = null;
 			}
 			$('#fldLastUpdated').css('background-color','white');
 		});
+		
+		$('#blue').css('background-color',baseColor);
 	});
 	</script>
 </body>
