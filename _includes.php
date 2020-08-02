@@ -208,7 +208,8 @@ function query($sql) {
 	$errors = Array();
 	$response['sql'] = $sql;
 
-	$conn = new mysqli(DB_HOST.(array_key_exists('DB_PORT', get_defined_vars())?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
+	$connectionString = DB_HOST.(array_key_exists('DB_PORT', get_defined_vars())?':'.DB_PORT:'');
+	$conn = new mysqli($connectionString, DB_USER, DB_PASSWORD, DB_NAME);
 	if ($conn->connect_errno) {
 		array_push($errors, "Connect failed: %s\n", $mysqli->connect_error);
 	} else {
@@ -216,15 +217,18 @@ function query($sql) {
 		if($rs === false) {
 		  trigger_error('Wrong SQL: ' . $sql . ' Error: ' . $conn->error, E_USER_ERROR);
 		} else {
-		  $response['rowcount'] = $rs->num_rows;
+			if (is_bool($rs)) {
+				$response['status'] = ($rs?'ok':'error');
+			} else {
+				$response['rows'] = Array();
+				$response['rowcount'] = $rs->num_rows;
+				$rs->data_seek(0);
+				while($row = $rs->fetch_row()){
+					array_push($response['rows'], $row);
+				}
+				$rs->free();
+			}
 		}
-
-		$response['rows'] = Array();
-		$rs->data_seek(0);
-		while($row = $rs->fetch_row()){
-			array_push($response['rows'], $row);
-		}
-		$rs->free();
 		$conn->close();
 	}
 	if (count($errors)>0) {
@@ -246,7 +250,7 @@ class DBQueryService {
 		array_push($this->debugs, date('c')." ".$msg);
 	}
 
-	function DBQueryService() {
+	function __construct() {
 		$this->conn = new mysqli(DB_HOST.(defined('DB_PORT')?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
 		$this->logger("Connected to ".DB_NAME." database.");
 
@@ -402,6 +406,7 @@ class Link {
 	}
 
 	function __construct($id = null) {
+
 		if ($id == null) {
 			$this->logger("Create an empty object. No 'id' has been specified in constructor.");
 		} else {
@@ -828,7 +833,7 @@ class Link {
 			}
 
 			$sqlString .= ' WHERE id = '.$this->id;
-			
+
 			foreach(explode(',', $sqlString) AS $sstr) {
 				array_push($this->debugs, "Link.updateByMap() SQL: ".$sstr);
 			}

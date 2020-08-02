@@ -7,9 +7,9 @@ if (isset($_POST['link'])) {
 	$link = new Link();
 	$link->title = $_POST['title'];
 	$link->link = $_POST['link'];
-	$link->status = $_POST['status'];
-	$link->last_updated = $_POST['last_updated'];
-	
+	$link->status = (isset($_POST['status'])?$_POST['status']:-1);
+	$link->last_updated = (isset($_POST['last_updated'])?$_POST['last_updated']:date('c'));
+
 	$link->tags = $_POST['tags'];
 	if ($link->save()) {
 		header("Location: linkedit.php?id=".$link->id);
@@ -84,41 +84,40 @@ if (isset($_POST['link'])) {
 			}
 			?>
 
-	 		<! -- SINGLE POST -->
 	 		<div class="col-md-8">
 				<form role="form" id="frmAddLink" method="POST">
 				        <div class="row">
 				            <div class="form-group col-lg-12">
 				                <label for="code">Link</label>
-				                <input type="text" class="form-control input-normal" name="link"  />
+				                <input type="text" class="form-control input-normal" name="link" value="<?=(isset($_REQUEST['link'])?$_REQUEST['link']:'')?>"/>
 				            </div>
 				        </div>
 
 				        <div class="row">
 				            <div class="form-group col-lg-12">
 				                <label for="code">Title</label>
-				                <input type="text" class="form-control input-normal" name="title" />
+				                <input type="text" class="form-control input-normal" name="title" value="<?=(isset($_REQUEST['title'])?$_REQUEST['title']:'')?>"/>
 				            </div>
 				        </div>
 				        <div class="row">
 				            <div class="form-group col-lg-12">
 				                <label for="code">Tags</label>
-				                <input type="text" class="form-control input-normal" name="tags" />
+				                <input type="text" class="form-control input-normal" name="tags"/>
 				            </div>
 				        </div>
-					<button class="btn" id="btnAdd">Add</button>
+				        <div class="row">
+				            <div class="form-group col-lg-12">
+				                <label for="code">Timestamp</label>
+				                <input type="text" class="form-control input-normal" name="timestamp" />
+				            </div>
+				        </div>
+					<button class="btn btn-info" id="btnAdd">Add</button>
 				</form>
 			</div>
 
 			<! -- SIDEBAR -->
 			<div class="col-md-4">
-				<h4>Extras</h4>
-				<div class="hline"></div>
-
-				<br />
 				<a class="btn btn-success pull-right" id="btnTest">Test</a>
-
-		 		<div class="spacing"></div>
 		 		<h4>Analysis</h4>
 		 		<div class="hline"></div>
 		 		<div id="areaTestResults">
@@ -128,7 +127,7 @@ if (isset($_POST['link'])) {
 	 	</div><! --/row -->
 	 </div><! --/container -->
 
-	<?php require_once('_footer.php'); ?>
+	 <?php require_once('_footer.php'); ?>
 
 	<!-- Bootstrap core JavaScript
 	================================================== -->
@@ -136,19 +135,36 @@ if (isset($_POST['link'])) {
 	<?php require_once('_scripts.php'); ?>
 
 	<script>
-		$('#btnTest').on('click', function(e,o) {
+		function getTestResult() {
+			$('#areaTestResults').html('Loading ...');
 			$.getJSON('_functions.php?method=testlink&link='+$('input[name="link"]').val(), function(obj) {
-				var fontColor = 'gray';
+				console.log(obj);
 
-				if (obj.status == 'ok') {
-					fontColor = 'green';
-				} else {
-					fontColor = 'red';
+				if (typeof obj.keywords !== 'undefined') {
+				  $('input[name="tags"]').val(obj.keywords);
 				}
-				$('#areaTestResults').html('<div style="color: '+fontColor+'">'+obj.message+'</div>'+
-					'<small>'+obj.debugs+'</small>');
+
+				if (typeof obj.timestamp !== 'undefined') {
+				  $('input[name="timestamp"]').val(obj.timestamp);
+				} else {
+					$('input[name="timestamp"]').val((new Date()).toISOString());
+				}
+
+				$('#areaTestResults').html(
+					'<div style="color: '+(obj.status && obj.status == 'ok'?'green':'red')+'">'+obj.message+'</div>'+
+					'<small>'+obj.debugs+'</small>'
+				);
 			});
+		}
+
+		$(document).ready(function() {
+			getTestResult();
 		});
+
+		$('#btnTest').on('click', function() {
+			getTestResult();
+		});
+
 	</script>
 </body>
 </html>

@@ -22,7 +22,12 @@ if (!isset($_REQUEST['id']) || $_REQUEST['id'] == '') {
 } else {
 	$debugs[] = 'Creating new link object.';
 	$link = new Link($_REQUEST['id']);
-	$debugs[] = 'Freshly minted tags.'.$link->tags;
+	if (isset($_POST['id'])) {
+		if (!$link->updateByMap($_POST)) {
+			$errorMessage = 'Could not updates link!'.'<br />'.implode('<br />', $link->debugs);
+		}
+		$linktags_after = $link->tags;
+	}
 }
 
 if (!$link->id) {
@@ -111,83 +116,95 @@ if (isset($_POST['id'])) {
 						</p>
 					</div>
         </div><!-- /row -->
-				
-				<div class="row">
-					<div class="col">
-						<a class="btn btn-lg btn-danger" id="btnDelete" accesskey="D"><u>D</u>elete</a>
-						<a class="btn btn-lg btn-warning" id="btnFix" accesskey="x">Fi<u>x</u></a>
-					</div>
-				</div>
+			  <?php
+			  //$info = $link->getURLInfo();
+			  if ($errorMessage != null) {
+				  echo '<div style="color:red">'.$errorMessage.'</div>';
+			  }
+			  ?>
       </div> <!-- /container -->
     </div><!-- /blue -->
 
-<form id="frmEditLink" class="form-horizontal" method="POST">
-    	<div class="container">
-					<div class="row">
-						<a style="margin-right: 10px" class="btn btn-warning"
-						href="https://duckduckgo.com/?q=<?php echo urlencode($link->title);?>&t=ffsb&ia=web"
-						target="_srchWindow">Duck</a>
+    <div class="container mtb">
+      <div class="row">
+        <div>
+	 <form id="frmEditLink" method="POST">
+	  <div class="form-group">
+	    <label for="link">Link:</label>
+	    <input type="text" class="form-control" id="link" name="link" value="<?php echo $link->link;?>" />
+	  </div>
 
-						<a style="margin-right: 10px" class="btn btn-warning" href="<?php echo $link->link;?>" target="_newWindow">Show</a>
-					
-						<?php
-						if (isset($_SESSION['uid'])) {
-						?>
-							<input type="submit" name="btnUpdate" id="btnUpdateId" class="btn btn-info " value="Update" /><br />
-						<?php
-						}
-						?>
-						<br/>
-						<br />
-					</div>
-					
-					<div class="row">
-						<div class="form-group col-lg-4">
-							<label for="tags">Tags:</label>
-							<input type="text" class="form-control" id="tags" name="tags" value="<?=$link->tags?>" />
-						</div>
-					</div>
-				
-					<div class="row">
-						<div class="form-group col-lg-4">
-							<label for="created_at">Created At:</label>
-							<input type="text" class="form-control" id="created_at" name="created_at" size="12" value="<?=empty($link->created_at)?date('Y-m-d'):date('Y-m-d', strtotime($link->created_at))?>" />
-						</div>
-					</div>
-					
-					<div class="row left">
-						<div class="form-group col-lg-4">
-							<label for="link">Link:</label>
-							<input type="text" class="form-control" id="link" name="link" value="<?=$link->link?>" />
-						</div>
-					</div>
-				
-					<div class="row">
-						<textarea name="description" id="description" cols="100" rows="10"><?=$link->description?></textarea>
-					</div>
-				
-					<div class="row">
-						<div class="form-group">
-							<label for="title">Title:</label>
-							<input type="text" class="form-control" id="title" name="title" value="<?php echo isset($link->title)?$link->title:'Missing Title';?>" />
-						</div>
-						
-					
-						<input type="hidden" id="id" name="id" value="<?=$link->id?>" />
+	  <div class="form-group">
+	    <label for="tags">Tags:</label>
+	    <input type="text" class="form-control" id="tags" name="tags" value="<?php echo $link->tags;?>" />
+	  </div>
 
-						<div class="form-group">
-							<label for="status">Status:</label>
-							<input type="text" class="form-control" id="status" name="status" value="<?=empty($link->status)?'200':$link->status?>" size="10" />
-						</div>
+	  <div class="form-group" id="fldLastUpdated">
+	    <label for="last_updated">Last Update:</label><br />
+	    <input type="text" class="form-controlx" style="padding: 3px"
+	    	id="last_updated" name="last_updated" value="<?php echo date('Y-m-d', strtotime($link->row['last_updated']));?>" size="12" />
+	  </div>
 
-						<div class="form-group">
-							<label for="fld_updated_at">Updated At:</label>
-							<input type="text" readonly class="form-control" id="fld_updated_at" value="<?=date('Y-m-d', strtotime($link->updated_at))?>" size="12">
-						</div>
-						
-					</div>
-    </div><!--/container -->
-		</form>
+
+	<a class="btn btn-info" href="linkedit.php?id=<?php echo $nextid;?>" accesskey="N" id="btnNext"><u>N</u>ext</a>
+
+	<?php
+	/*$url = $info['url'];
+	if ($info['http_code'] == 200 && $info['redirect_count'] > 0) {
+		if (strpos($info['url'],'?')) {
+		$url = substr($info['url'],0,strpos($info['url'],'?'));
+		}
+		echo '  <a class="btn btn-warning"
+				href="#" onClick="updateLink(\''.$url.'\', '.$info['http_code'].');">'.
+		'Status <sup>'.$info['http_code'].'/'.$info['redirect_count'].'</sup></a>';
+	} else {
+				echo '  <a class="btn disabled" href="#">Status <sup>-1</sup></a>';
+	}*/
+	?>
+
+	<a class="btn btn-warning"
+		id="btnHeader" href="#">Hdr</a>
+
+		<input type="submit" name="btnUpdate"
+		  	id="btnUpdateId" class="btn btn-info" value="Update" />
+
+	<a class="btn btn-warning" href="<?php echo $link->link;?>" target="_newWindow">Show</a>
+
+	<a class="btn btn-warning"
+		href="https://duckduckgo.com/?q=<?php echo urlencode($link->title);?>&t=ffsb&ia=web"
+		target="_srchWindow">Duck</a>
+
+
+			<br />
+	<br />
+
+	  <div class="form-group">
+	    <label for="title">Title:</label>
+	    <input type="text" class="form-control"
+	    	id="title" name="title" value="<?php echo urldecode($link->title);?>" />
+	  </div>
+
+	  <div class="form-group">
+	    <label for="status">Status:</label><br />
+	    <input type="text" class="form-controlx" style="padding: 3px"
+	    	id="status" name="status" value="<?php echo $link->status;?>" size="5"/>
+	  </div>
+	  <input type="hidden" id="id" name="id" value="<?php echo $link->id;?>" />
+
+
+	</form>
+	<button id="btnDelete" class="btn btn-danger">Delete</button><br />
+	<br />
+	<br />
+
+
+	<br />
+	<br />
+	</div>
+
+      </div><! --/row -->
+    </div><! --/container -->
+
 
 	<?php require_once('_footer.php'); ?>
 
@@ -230,34 +247,21 @@ if (isset($_POST['id'])) {
 		}
 	});
 
-	$('#btnFix').on('click', function(event) {
-		
-		var baseColor = $('#blue').css('background-color');
-		$('#blue').css('background-color','yellow');
+	$('#btnHeader').on('click', function(event) {
+		var getHeaderURL = '_functions.php?method=getheader&id=<?php echo $link->id;?>';
+		$('#fldLastUpdated').css('background-color','pink');
+		$.get(getHeaderURL, function(data) {
 
-		
-		console.log("Calling URL:"+'_functions.php?method=getheader&id=<?=$link->id?>');
-		
-		$.get('_functions.php?method=getheader&id=<?=$link->id?>', function(data) {
-			console.log(data);
-			$('#blue').css('background-color','lightGreen');
-
-			// This is just for example
-			//for (var key in data.meta){
-			//  console.log('Key:' + key + " -> Value:" + data.meta[key]);   
-			//}
-			$('#link').val(data.link);
-			$('#title').val(data.title);
-			$('#lblTitle').html(data.title);
-			$('#tags').val(data.tags);
-			$('#created_at').val(data.created_at);
-			$('#updated_at').val(data.updated_at);
-			$('#status').val(data.status);
-			$('#description').html(JSON.stringify(data.meta));
-			
-			if (data.meta.description != undefined) {
-				$('#link-description').html(data.details.description);
+			$('#title').val(data.meta.og_title?data.meta.og_title:$('#title').val());
+			var newDate = getDateMetaTag(data.meta);
+			if (newDate != '') {
+				$('#last_updated').val(newDate);
 			}
+			$('#fldLastUpdated').css('background-color','lightGreen');
+			if (data.status == 'ok') {
+				$('#status').val('200');
+			}
+			$('#fldLastUpdated').css('background-color','white');
 		});
 		
 		$('#blue').css('background-color',baseColor);

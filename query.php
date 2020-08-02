@@ -1,14 +1,5 @@
 <?php
 require_once('_includes.php');
-
-$searchresults = Array();
-if (isset($_REQUEST['q'])) {
-	$searchresults = query($_REQUEST['q']);
-	if (count($searchresults['rows']) > 300) {
-		$searchresults['rows'] = array_slice($searchresults['rows'],0,300);
-	}
-}
-
 ?><!DOCTYPE html>
 <html lang="en">
 <head>
@@ -55,36 +46,38 @@ if (isset($_REQUEST['q'])) {
 						?>
 						<tr id="row<?=$link->id?>">
 							<td>
-								<button class="btn btn-sm btn-danger" onClick="deleteLink(<?=$link->id?>);">
-									<span class="glyphicon glyphicon-trash"> </span>
-								</button>
-							</td>
-							<td>
 								<b>
-									<a href="<?=$link->link?>" id="title-<?=$link->id?>" target="_newWindow">
-										<?=urldecode($link->title)?></a>
+									<a href="<?php echo $row[1];?>" id="title-<?php echo $row[0];?>" target="_newWindow">
+										<?php echo urldecode($row[2]);?></a>
 								</b><br />
-								<?=isset($link->description)&&!empty($link->description)&&isset(json_decode($link->description)->description)&&!empty(json_decode($link->description)->description)?'<p>'.json_decode($link->description)->description.'</p>':''?>
-								<small><?=$link->link?></small><br />
-								<small id="cdate-<?=$link->id?>">Created: <b><?=date('Y-m-d', strtotime($link->created_at))?></b></small>
-								<small id="date-<?=$link->id?>">Updated: <b><?=date('Y-m-d', strtotime($link->updated_at))?></b></small>
-								<small id="status-<?=$link->id?>">Status: <b><?=$link->status?></b></small>
-								<div id="description-<?=$link->id?>"></div>
-							</td>
-							<td>
-								<input type="text" id="tags-<?=$link->id?>"
-									onChange="tagLink(<?=$link->id?>, $(this).val());"
-										value="<?=$link->tags?>" />
-							</td>
-							<td>
-								<a class="btn btn-sm btn-info" href="linkedit.php?id=<?=$link->id?>" target="_winEditLink">
-									<span class="glyphicon glyphicon-ok"> </span>
-								</a>
-							</td>
-							<td>
-								<a class="btn btn-sm btn-warning" onClick="repairQueryLink('<?=$link->id?>');">
-										<span class="glyphicon glyphicon-check"> </span>
-								</a>
+								<small><?php echo $row[1];?></small><br />
+								<small id="date-<?php echo $row[0];?>"><?php echo date('Y-m-d', strtotime($row[4]));?></small>
+							<br />
+							<?php
+							if (isset($modified) && $modified != null && $modified == 'repair') {?>
+								<input type="text" id="tags<?php echo $row[0];?>"
+									onChange="repairLink(<?php echo $row[0];?>, $(this).val());"
+										value="<?php echo $row[5];?>" />
+											repairlink:<?php echo $row[0];?>
+							<?php } else { ?>
+								<input type="text" id="tags<?php echo $row[0];?>"
+									onChange="tagLink(<?php echo $row[0];?>, $(this).val());"
+										value="<?php echo $row[5];?>" />
+
+							<?php } ?>
+							<br /><br />
+							<button class="btn btn-sm btn-danger" onClick="deleteLink(<?php echo $row[0];?>);">
+								<span class="glyphicon glyphicon-trash"> </span>
+							</button>
+							
+							<a class="btn btn-sm btn-info" href="linkedit.php?id=<?php echo $row[0];?>" target="_winEditLink">
+								<span class="glyphicon glyphicon-ok"> </span>
+							</a>
+							
+							<a class="btn btn-sm btn-warning" onclick="repairlink('<?php echo $row[0];?>');">
+									<span class="glyphicon glyphicon-check"> </span>
+							</a>
+							
 							</td>
 						</tr>
 						<?php
@@ -98,26 +91,51 @@ if (isset($_REQUEST['q'])) {
 
 	<?php require_once('_footer.php'); ?>
 	<?php require_once('_scripts.php'); ?>
-	
 	<script>
-	function repairQueryLink(linkid) {
-		console.log('repairQueryLink() starting '+linkid);
-		
+
+	function repairlink(linkid) {
 		$('#title-'+linkid).html('...');
+
+		console.log("js.repairlink() Calling `repairlink` back-end process...");
 		
-		$.getJSON( '_functions.php?method=repairlink&id='+linkid, {
-		    format: "json"
-		  })
-    .done(function( data ) {
+		$.getJSON('_functions.php?method=repairlink&id='+linkid, function(data) {
+			console.log("js.repairlink() returned values are:");
+			console.log(data);
+
 			if (data.status == 'ok') {
-				console.log(data);
-		
-				$('#title-'+linkid).html(data.details.title);
-				$('#tags'+linkid).val(data.details.tags);
-				$('#date-'+linkid).html(data.details.updated_at);
-				$('#status-'+linkid).val(data.details.status);
-		
-				$('#description-'+linkid).html('<b>'+data.meta['og:description']+'</b>');
+
+				$('#title-'+linkid).html(data.meta.og_title);
+				var tagsVar = $('#tags'+linkid).val();
+				var dateVar = getDateMetaTag(data.meta);
+
+				$('#date-'+linkid).html(dateVar);
+
+				if (data.meta.news_keywords) {
+					tagsVar = data.meta.news_keywords;
+				} else if (data.meta.category) {
+					tagsVar = data.meta.category;
+				}
+
+				console.log("js.repairlink() Updating all fields");
+				$.getJSON('_functions.php',
+					{
+						"method":"updatelink",
+						"id": linkid,
+						"last_updated": dateVar,
+						"tags": tagsVar
+					},
+					function(ndata) {
+						console.log("js.repairlink() Response data:");
+						console.log(ndata);
+						if (ndata.status == 'ok') {
+							$('#row'+linkid).css('background-color','lightGreen');
+						} else {
+							console.log(ndata);
+							$('#row'+linkid).css('background-color','red');
+						}
+					}
+				);
+
 			} else {
 				console.log(data);
 				$('#row'+linkid).css('background-color','pink');
