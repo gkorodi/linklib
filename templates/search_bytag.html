@@ -1,0 +1,79 @@
+{% extends('layouts/page.html') %}
+
+{% block blue %}
+<h3>Search Results by tag <b>`{{ searchTag }}`</b>.</h3>
+<form class="pull-right"><input type="hidden" name="tag" value="{{ searchTag }}"/>
+	<input type="checkbox" {% if profile.request.olderfirst %}checked{% endif %} name="olderfirst" onChange="this.form.submit()"> Older First?
+</form>
+{% endblock %}
+
+{% block content %}
+
+<style>
+tr.status200 {
+    background-color: white;
+}
+
+tr.status500 {
+    background-color: red;
+    color: white;
+}
+
+tr.status301 {
+    background-color: orange;
+}
+
+tr.status302 {
+    background-color: orange;
+}
+
+</style>
+
+<table id="tableLinks" class="table">
+<thead>
+	
+</thead>
+<tbody>
+	{% for link in links %}
+	<tr align="top" class="status{{ link.status }}" id="row{{ link.id}}">
+		<td>
+
+			<a class="btn-sm btn-danger" style="margin: 5px" onclick="deleteLink({{ link.id }});">
+				<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+			</a><br />
+			
+			<br />
+
+			<a class="btn-sm btn-info" style="margin: 5px" href="linkedit.php?id={{ link.id }}" target="_winEditLink">
+				<span class="glyphicon glyphicon-ok"> </span>
+			</a><br />
+			<br />
+
+			<a class="btn-sm btn-warning" style="margin: 5px" href="linkedit.php?id={{ link.id }}" target="_winEditLink">
+				<span class="glyphicon glyphicon-eye-open"> </span>
+			</a>
+
+		</td>
+		<td>
+			<b><a href="{{ link.link }}" target="_newWindow">{{ link.title }}</a></b> <small>{{ link.tags }}</small><br />
+			<small>{{ link.hostname}}</small><br />
+			{{ include('parts/buttons_taglinks.html') }}
+		</td>
+		<td>
+			<small>{{ link.created_at }}</small>
+		</td>
+	</tr>
+	{% endfor %}
+</tbody>
+</table>
+
+{% endblock %}
+
+{% block sidebar %}
+	<br /><a href="?tag={{ searchTag }}">Back</a><br />
+	
+	<h2>Related Tags</h2>
+	{% for rtag in relatedTags %}
+	<a href="?tag={{ searchTag }},{{ rtag.tag }}">{{ rtag.tag }}</a><sup>{{ rtag.count }}</sup><br />
+	{% endfor %}
+{% endblock %}

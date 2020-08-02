@@ -1,9 +1,16 @@
 <?php
 require_once('_includes.php');
 
+if (!isset($_SESSION['uid'])) { header("Location: login.php"); exit(1); }
+
 $resp['status'] = 'error';
 $resp['message'] = 'No method has been specified';
+
 $debugs = $_REQUEST;
+function log_debug($msg) {
+	global $debugs;
+	$debugs[] = $msg;
+}
 
 function get_web_page( $url )
 {
@@ -57,14 +64,34 @@ function curlGET($url) {
 
 function getContentByLinkId($linkId) {
 	global $debugs;
-	$resp = query('SELECT * FROM tobecurated WHERE id = '.$linkId.' LIMIT 1');
-	$content = '';
-	try {
-		$content = file_get_contents($resp['rows'][0][1]);
-	} catch (Exception $ex) {
-		$debugs[] = 'getContentByLinkId() ERROR reading link content:'.$ex->getMessage();
+	global $skiptagList;
+	
+	$arr = Array();
+	$doc = new DOMDocument();
+	libxml_use_internal_errors(true);
+	@$doc->loadHTML($content); // loads your HTML
+	
+	foreach($doc->getElementsByTagName('title') as $tag) {
+		log_debug('got title');
+		$arr['pagetitle'] = $tag->nodeValue;
 	}
-	return $content;
+	
+	foreach($doc->getElementsByTagName('meta') as $metatag) {
+
+		if ($metatag->getAttribute('name') != null) {
+			$tn = $metatag->getAttribute('name');
+		}
+		
+		if ($metatag->getAttribute('property') != null) {
+			$tn = $metatag->getAttribute('property');
+		}
+		
+		if (isset($tn)) {
+			if (!in_array($tn,$skiptagList)) { $arr[$tn] = $metatag->getAttribute('content'); }
+		}
+	}
+	log_debug('Added '.count($arr).' tags');
+	return $arr;
 }
 
 
@@ -126,7 +153,7 @@ function findMetaTags($content) {
 }
 
 if (isset($_REQUEST['method'])) {
-	array_push($debugs, '_functions.php Method '.$_REQUEST['method'].' has been specified.');
+	log_debug('_functions.php Method '.$_REQUEST['method'].' has been specified.');
 
 
 	if ($_REQUEST['method']==='deletelink') {
@@ -134,11 +161,31 @@ if (isset($_REQUEST['method'])) {
 		if ($link->delete()) {
 			$resp['status'] = 'ok';
 			$resp['message'] = 'Deleted link, with id <b>'.$_REQUEST['id'].'</b>';
-			array_push($debugs, $link->debugs);
+			log_debug(print_r($link->debugs, true));
 		} else {
 			$resp['status'] = 'error';
 			$resp['message'] = 'Could not delete link, with id <b>'.$_REQUEST['id'].'</b><br />'.
-				'<small>'.$link->getErrorListFormatted().'</small>';
+				'<small>'.implode('<br />', $link->errors).'</small>';
+			log_debug(print_r($link->debugs, true));
+		}
+	} else if ($_REQUEST['method']==='warnlink') {
+		$link = $link = new Link($_REQUEST['id']);
+		
+		if (!$link->repair()) {
+			$resp['status'] = 'error';
+			$resp['message'] = 'Could not repair link. '.implode('<br />', $link->errors).'<br />Debugs:'.implode('<br />', $link->debugs);
+		} else {
+			$resp['status'] = 'ok';
+			$resp['message'] = 'Just mirroring back the record that we had';
+			$resp['content'] = <<<CONTENT
+				<a href="<?=$link->link?>" target="_newWindow"><b><?=$link->title?></b></a><br />
+				<small><?=$link->link?><br />
+					NewStatus: <b><?=(!isset($link->status)?'n/a':$link->status)?></b> 
+					NewTags: <b><?=(!isset($link->tags) || empty($row[ROW_TAGS])?'EMPTY':$row[ROW_TAGS])?></b> 
+					NewCreated: <b><?=(!isset($link->curated_at) || empty($link->curated_at)?'n/a':date('Y-m-d', strtotime($link->created_at)))?></b> 
+					NewUpdated: <b><?=(!isset($link->updated_at]) || empty($link->updated_at)?'n/a':date('Y-m-d', strtotime($link->created_at)))?></b>
+				</small>
+CONTENT;
 		}
 	} else if ($_REQUEST['method']==='curatelink') {
 		$debugs[] = '/curatelink starting '.json_encode($_REQUEST);
@@ -247,31 +294,43 @@ if (isset($_REQUEST['method'])) {
 		$resp['value'] = count(glob('data/*.json'));
 
 	} else if ($_REQUEST['method'] === 'savefeeditem') {
-		$debugs[] = 'saving new feed item.';
+		log_debug('saving new feed item.');
 
 		$link = new Link();
 		$link->title = $_REQUEST['title'];
 		$link->link = $_REQUEST['link'];
-		$link->last_updated = $_REQUEST['last_updated'];
+		$link->updated_at = $_REQUEST['updated_at'];
 
 		if ($link->addLink()) {
 			$resp['status'] = 'ok';
 			$resp['message'] = "Imported details.";
-			foreach($link->debugs AS $msg) { $debugs[] = "${msg}"; }
+			foreach($link->debugs AS $msg) { log_debug("${msg}"); }
 		} else {
 			$resp['status'] = 'error';
 			$resp['message'] = "Could not import feed item.";
 		}
-
+	} else if ($_REQUEST['method']==='tagCurate') {
+		log_debug("tagCurate() request id ".$_REQUEST['id']);
+		
+		$lnk = new Link($_REQUEST['id']);
+		$lnk->tags = 'curate';
+		if ($lnk->update()) {
+			$resp['status'] = 'ok';
+			$resp['message'] = 'Link tagged';
+		} else {
+			$resp['status'] = 'error';
+			$resp['message'] = 'Could not tag link ';
+			log_debug($lnk->debugs);
+		}
 
 	} else if ($_REQUEST['method']==='savefile') {
 		$resp['status'] = 'error';
 		$inputFileName = FEED_DIR.'/'.$_REQUEST['filename'].'.json';
 
-		$debugs[] = 'savefile() Processing file:'.$inputFileName;
+		log_debug('savefile() Processing file:'.$inputFileName);
 
 		if (file_exists($inputFileName)) {
-			$debugs[] = "savefile() File exists";
+			log_debug("savefile() File exists");
 
 			try {
 				$raw = file_get_contents($inputFileName);
@@ -280,23 +339,23 @@ if (isset($_REQUEST['method'])) {
 				$newLink->link = $obj->link.'';
 				$newLink->title = $obj->title;
 				$newLink->status = getLinkStatus($newLink->link);
-				$newLink->last_updated = $obj->last_updated.''; //date('c', strtotime(str_replace(' at ',' ', $obj->published)));
+				$newLink->updated_at = $obj->updated_at.''; //date('c', strtotime(str_replace(' at ',' ', $obj->published)));
 				$newLink->tags = $obj->tags;
 
-				$debugs[] = 'savefile() link         :'.$newLink->link;
-				$debugs[] = 'savefile() title        :'.$newLink->title;
-				$debugs[] = 'savefile() status       :'.$newLink->status;
-				$debugs[] = 'savefile() last_updated :'.$newLink->last_updated;
-				$debugs[] = 'savefile() tags         :'.$newLink->tags;
-
+				log_debug('savefile() link         :'.$newLink->link);
+				log_debug('savefile() title        :'.$newLink->title);
+				log_debug('savefile() status       :'.$newLink->status);
+				log_debug('savefile() updated_at :'.$newLink->updated_at);
+				log_debug('savefile() tags         :'.$newLink->tags);
+				
 				if ($newLink->addLink()) {
 					$resp['status'] = 'ok';
 					$resp['message'] = "Imported file for curation. id:". $newLink->id;
-					foreach($newLink->debugs AS $msg) { $debugs[] = $msg; }
+					foreach($newLink->debugs AS $msg) {log_debug($msg); }
 					if (unlink($inputFileName)) {
-						$debugs[] = "savefile() deleted file ${inputFileName}";
+						log_debug( "savefile() deleted file ${inputFileName}");
 					} else {
-						$debugs[] = "savefile() ERROR: could not delete file ${inputFileName}";
+						log_debug("savefile() ERROR: could not delete file ${inputFileName}");
 					}
 				} else {
 					$resp['message'] = "Could not import file for curation!!!!";
@@ -304,10 +363,10 @@ if (isset($_REQUEST['method'])) {
 
 			} catch (Exception $e) {
 				$resp['message'] = "Could not import file!!!!";
-				$debugs[] = "savefile() ".print_r($e, true);
+				log_debug("savefile() ".print_r($e, true));
 			}
 		} else {
-			$debugs[] = "savefile() File does not exists.";
+			log_debug("savefile() File does not exists.");
 		}
 
 	} else if ($_REQUEST['method']==='curate_del') {
@@ -334,7 +393,7 @@ if (isset($_REQUEST['method'])) {
 		$resp['status'] = ($status?'ok':'error');
 		$resp['message'] = implode("\n",$logmessages);
 
-	} else if ($_REQUEST['method']==='curate_tag') {
+	} else if ($_REQUEST['method']==='updateFieldById') {
 
 		$status = false;
 		$logmessages = Array();
@@ -345,15 +404,16 @@ if (isset($_REQUEST['method'])) {
 			    "(" . $mysqli->connect_errno . ") " . $mysqli->connect_error);
 		} else {
 			$mysqli->autocommit(true);
-			$queryStr = "UPDATE import1 SET tags = '".$_REQUEST['tags']."', ".
-					"status = ".getLinkStatus($_REQUEST['linkUrl']).
-						" WHERE link = '".$_REQUEST['linkUrl']."'";
+			$queryStr = "UPDATE links SET ".$_REQUEST['field']." = '".$_REQUEST['value']."'".
+					" WHERE id = ".$_REQUEST['id'];
+			array_push($logmessages, "SQL Query: ".$queryStr);
+			
 			if ($mysqli->query($queryStr) === TRUE) {
 				$status = true;
-				array_push($logmessages, "Link ".$_REQUEST['linkUrl']." has been tagged.");
+				array_push($logmessages, "Link ".$_REQUEST['id']." field `".$_REQUEST['field']."` has been updated with `".$_REQUEST['value']."`.");
 			} else {
-				array_push($logmessages, "Could not update 'tags' column [".$queryStr."]: ".
-					"(" . $mysqli->errno . ") " .$mysqli->error);
+				array_push($logmessages, "Could not update `".$_REQUEST['field']."` column [".$queryStr."]: ".
+					"(" . $mysqli->errno . "/" .$mysqli->error);
 			}
 			$mysqli->close();
 		}
@@ -361,19 +421,81 @@ if (isset($_REQUEST['method'])) {
 		$resp['message'] = implode("\n",$logmessages);
 
 	} else if ($_REQUEST['method']==='getheader') {
-			$link = new Link($_REQUEST['id']);
-			$resp['status'] = 'ok';
-			$resp['message'] = 'Meta tags parsing';
+		
+		$link = new Link($_REQUEST['id']);
+		
+		$resp['link'] = $link->link;
+		$resp['title'] = $link->title;
+		$resp['tags'] = $link->tags;
+		$resp['updated_at'] = $link->updated_at;
+		$resp['created_at'] = $link->created_at;
+		$resp['status'] = $link->status;
 
-			$RESTresponse = curlGET(trim($link->link));
-			//$debugs[] = print_r($RESTresponse, true);
+		$ch = curl_init($link->link);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT ,5);
+		$content = curl_exec($ch);
+		$info = curl_getinfo($ch);
+		curl_close($ch);
 
-			$debugs[] = 'About to parse '.strlen($RESTresponse['content'])." bytes.";
-			$resp['meta'] = findMetaTags($RESTresponse['content']);
-			//$resp['info'] = $RESTresponse['info'];
-			$resp['status'] = 'ok';
-			$resp['message'] = 'URL Headers for '.$link->link;
+		$details = findMetaTags($content);
 
+		$resp['meta'] = $details;
+		$resp['status'] = $info['http_code'];
+		$resp['title'] = (empty($details['pagetitle'])?$link->title:$details['pagetitle']);
+
+		foreach($details AS $tag=>$val) {
+			switch($tag) {
+				case 'twitter:title':
+				case 'og:title':
+					$resp['title'] = $val;
+					break;
+				case 'og:url':
+					$resp['link'] = $val;
+					break;
+				case 'article:tag':
+				case 'keywords':
+					$resp['tags'] = $val;
+					break;
+				case 'article:modified_time':
+				case 'og:updated_time':
+					log_debug('Setting update_at to '.str_replace('-','', $val));
+					$resp['updated_at'] = empty($val)?date('Y-m-d'):date('Y-m-d', strtotime(str_replace('-','', $val)));
+					log_debug( 'now '.$resp['updated_at']);
+					break;
+				case 'article:published_time':
+				case 'parsely-pub-date':
+				case 'DC.date.issued':
+				case 'date':
+					if (strpos($val,'-')) { $val = str_replace('-','', $val); }
+					if (strpos($val,'T')) { $val = str_replace('T',' ', $val); }
+				
+					log_debug('Setting created_at to '.$val);
+					$resp['created_at'] = empty($val)?date('Y-m-d'):date('Y-m-d', strtotime($val));
+					log_debug('now: '.$resp['created_at']);
+					break;
+			}
+		}
+		if ($resp['created_at'] == null || empty($resp['created_at'])) {
+			$resp['created_at'] = date('Y-m-d');
+		}
+		if ($resp['updated_at'] == null || empty($resp['updated_at'])) {
+			$resp['updated_at'] = date('Y-m-d');
+		}
+		
+		// Find better description, if no meta tag was found
+		log_debug('adding description');
+		if (!isset($details['description'])) { $details['description'] = '';}
+		if (isset($details['twitter:description']) && !empty($details['twitter:description'])) {
+			$details['description'] .= $details['twitter:description'];
+		}
+		if (isset($details['og:description']) && !empty($details['og:description'])) {
+			log_debug('added og:description');			
+			$details['description'] .= $details['og:description'];
+		}
+		$resp['details'] = $details;
+		$resp['message'] = 'URL Headers for '.$link->link;
 
 	} else if ($_REQUEST['method']==='curate_done') {
 		$newLink = new Link();
@@ -381,7 +503,7 @@ if (isset($_REQUEST['method'])) {
 		$newLink->link = $_REQUEST['link'];
 		$newLink->title = $_REQUEST['title'];
 		$newLink->status = getLinkStatus($_REQUEST['link']);
-		$newLink->last_updated = $_REQUEST['published'];
+		$newLink->updated_at = $_REQUEST['published'];
 		$newLink->tags = $_REQUEST['tags'];
 
 		if ($newLink->addLink()) {
@@ -392,17 +514,11 @@ if (isset($_REQUEST['method'])) {
 			$resp['message'] = $newLink->message;
 		}
 	} else if ($_REQUEST['method']==='repairlink') {
-		array_push($debugs, 'repairlink() id:'.$_REQUEST['id']);
 
 		$link = new Link($_REQUEST['id']);
 		$resp['message'] = 'Repair options for link '.$link->id;
-
-		$resp['id'] = $link->id;
-		$resp['title'] = $link->title;
-		$resp['link'] = $link->link;
-		$resp['state'] = $link->status;
-		$resp['last_updated'] = $link->last_updated;
-		$resp['tags'] = $link->tags;
+		
+		$resp['details'] = $link->row;
 
 		$ch = curl_init($link->link);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -442,44 +558,10 @@ if (isset($_REQUEST['method'])) {
 			$resp['status'] = 'error';
 			$resp['message'] = 'Could not get the expected webpage!'.print_r($resp['info'], true);
 		} else {
-
-			$startpos = strpos($content, '>', strpos($content, '<title'));
-			$endpos = strpos($content, '</title', $startpos);
-			$resp['title'] = substr($content, $startpos+1, $endpos-$startpos-1);
-
-			$editorLink = '<div class="form-group">'.
-			'<label for="link">Link</label>'.
-			'<input type="text" class="form-control" id="link" name="link" placeholder="URL for the link " value="'.$resp['link'].'">'.
-			'</div>';
-
-			$editorTitle = '<div class="form-group">'.
-			'<label for="title">Title</label>'.
-			'<input type="title" class="form-control" id="title" name="title" '.
-				'placeholder="Enter the title of the link" value="'.$resp['title'].'">'.
-			'</div>';
-
-			$editorTags = '<div class="form-group">'.
-			'<label for="tags">Tags</label>'.
-			'<input type="text" class="form-control" id="tags" name="tags" placeholder="Comma separated list of tags." value="'.$resp['tags'].'">'.
-			'</div>';
-
-			$editorDate = '<div class="form-group">'.
-			'<label for="last_updated">Last Updated</label>'.
-			'<input type="text" class="form-control" id="last_updated" name="last_updated" placeholder="Last time updated" value="'.$resp['last_updated'].'">'.
-			'</div>';
-
-			$resp['body'] = '<form method="POST" action="linkedit.php?id='.$_REQUEST['id'].'">'.
-				'<input type="hidden" name="id" value="'.$_REQUEST['id'].'" />'.
-				$editorTitle.
-				$editorLink.
-				$editorTags.
-				$editorDate.
-				'<button type="submit" class="btn btn-default">Submit</button>'.
-			'</form>';
+			$resp['status'] = 'error';
 		}
-
 	} else if ($_REQUEST['method']==='getRandomTotal') {
-		$sql="SELECT count(*)  FROM links WHERE tags IS NULL OR last_updated IS NULL OR tags = '' OR last_updated = ''";
+		$sql="SELECT count(*)  FROM links WHERE tags IS NULL OR updated_at IS NULL OR tags = '' OR updated_at = ''";
 		$raw_rs = query($sql);
 		$resp['status'] = 'ok';
 		$resp['count'] = 123;
@@ -528,7 +610,7 @@ if (isset($_REQUEST['method'])) {
 
 
 	} else if ($_REQUEST['method']==='getRecentPosts') {
-		$r = query("SELECT * FROM links ORDER BY last_updated LIMIT 10");
+		$r = query("SELECT * FROM links ORDER BY updated_at LIMIT 10");
 		$resp['status'] = 'ok';
 		$resp['message'] = 'recent posts are not available.';
 
@@ -582,7 +664,7 @@ if (isset($_REQUEST['method'])) {
 	} else if ($_REQUEST['method']==='testurl') {
 
 		$link = new Link($_REQUEST['id']);
-		array_push($debugs, 'Link #'.$link->id.' and ['.$link->link.']');
+		log_debug('Link #'.$link->id.' and ['.$link->link.']');
 
 		if ($link->test()) {
 			$resp['status'] = 'ok';
@@ -650,7 +732,7 @@ if (isset($_REQUEST['method'])) {
 			$newlink->title = (isset($_REQUEST['title'])?$_REQUEST['title']:'');
 			$newlink->tags = (isset($_REQUEST['tags'])?$_REQUEST['tags']:'');
 			$newlink->status = (isset($_REQUEST['status'])?$_REQUEST['status']:-1);
-			$newlink->last_updated = (isset($_REQUEST['last_updated'])?$_REQUEST['last_updated']:-1);
+			$newlink->updated_at = (isset($_REQUEST['updated_at'])?$_REQUEST['updated_at']:-1);
 			$debugs << 'Updated fields of object.';
 
 			if ($newlink->save()) {
@@ -697,8 +779,8 @@ if (isset($_REQUEST['method'])) {
 				$link->tags = $_REQUEST['value'];
 			}
 
-			if ($col == 'last_updated') {
-				$link->last_updated = $_REQUEST['value'];
+			if ($col == 'updated_at') {
+				$link->updated_at = $_REQUEST['value'];
 			}
 
 			if ($link->update()) {

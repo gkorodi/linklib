@@ -1,0 +1,39 @@
+{% extends "fullpage.html" %}
+
+{% block blue %}
+	<h3>Article.</h3>
+	<strong><a href="{{ articles[0]['link'] }}" target="newWindow">{{ articles[0]['title'] }}</a></strong> 
+	<button class="btn btn-success" onClick="prevArticle();">Prev</button>
+	<button class="btn btn-success" onClick="nextArticle();">Next</button>
+	<script>
+		let linkList = [];
+		{% for article in articles %}
+		linkList.push('{{ article.link }}');
+		{% endfor %}
+	</script>
+{% endblock %}
+
+{% block content %}
+ <iframe id='ifrm' src="" height="800" width="100%" title="">
+ 	
+ </iframe> 
+{% endblock %}
+
+{% block pagescripts %}
+<script>
+	var articleIdx = 0;
+	$(document).ready(function() {
+		window.frames['ifrm'].src = linkList[0];
+	});
+	
+	function nextArticle() {
+		articleIdx++;
+		window.frames['ifrm'].src = linkList[articleIdx];
+	}
+	function prevArticle() {
+		articleIdx--;
+		window.frames['ifrm'].src = linkList[articleIdx];
+	}
+</script>
+{% endblock %}
+
