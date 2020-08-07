@@ -391,14 +391,26 @@ class Link {
 	var $status = '';
 	var $created_at = '';
 	var $updated_at = '';
+	var $level = 0;
+
 	var $tags = '';
 	var $content = '';
 	var $description = '';
-  var $errorMessage = '';
+    var $errorMessage = '';
+    var $exception = '';
+
 	var $row = Array();
 
 	function logger($msg) {
 		array_push($this->debugs, date('c')." ".$msg);
+	}
+
+	function getException() {
+		return $this->exception;
+	}
+
+	function updateLevelById($level) {
+
 	}
 
 	function __construct($id = null) {
@@ -439,10 +451,10 @@ class Link {
 									$this->title = $row['title'];
 									$this->status = isset($row['status'])?empty($row['status'])?-1:$row['status']:0;
 									$this->tags = $row['tags'];
+									$this->level = $row['level'];
 									$this->updated_at = isset($row['updated_at'])?$row['updated_at']:date('Y-m-d');
 									$this->created_at = isset($row['created_at'])?$row['created_at']:date('Y-m-d');
 									$this->description = empty($row['description'])?'{}':$row['description'];
-									
 									$this->row = $row;
 					    }
 					    /* free result set */
@@ -675,12 +687,11 @@ class Link {
 
 	function update() {
 		$this->logger("update() starting...");
-		
-		
 		$this->logger("update() id:".$this->id);
 		$this->logger("update() link        :".$this->link);
 		$this->logger("update() title       :".$this->title);
 		$this->logger("update() tags        :".$this->tags);
+		$this->logger("update() level       :".(isset($this->level)?$this->level:'unset'));
 		$this->logger("update() status      :".(isset($this->status)?(empty($this->status)?-1:$this->status):0));
 		$this->logger("update() updated_at  :".(isset($this->updated_at)?$this->updated_at:date('Y-m-d')));
 		$this->logger("update() created_at  :".(isset($this->created_at)?$this->created_at:date('Y-m-d')));
@@ -702,6 +713,7 @@ class Link {
 			if (empty($this->created_at)) {
 				$this->created_at = date('Y-m-d');
 			}
+			$sqlString .= ", level = ".$this->level;
 			$sqlString .= ", created_at = '".$mysqli->real_escape_string(date('Y-m-d', strtotime($this->created_at)))."'";
 			$sqlString .= ", description = '".$mysqli->real_escape_string($this->description)."'";
 			$sqlString .= ' WHERE id = '.$this->id;
@@ -739,6 +751,7 @@ class Link {
 		$raw_data['created_at'] = $this->created_at;
 		$raw_data['updated_at'] = $this->updated_at;
 		$raw_data['tags'] = $this->tags;
+		$raw_data['level'] = $this->level;
 		$raw_data['description'] = $this->description;
 		
 		foreach($raw_data AS $k=>$v) {
@@ -776,6 +789,7 @@ class Link {
 		$raw_data['updated_at'] = date('Y-m-d');
 		$raw_data['created_at'] = date('Y-m-d');
 		$raw_data['tags'] = (isset($_REQUEST['tags'])?$_REQUEST['tags']:'');
+		$raw_data['level'] = (isset($_REQUEST['level'])?$_REQUEST['level']:0);
 		$raw_data['description'] = $this->description;
 
 		if ($dbservice->addRow($raw_data)) {
@@ -817,6 +831,9 @@ class Link {
 
 			if (isset($fieldmap['title'])) {
 				$sqlString .= ", title = '".$fieldmap['title']."'";
+			}
+			if (isset($fieldmap['level'])) {
+				$sqlString .= ", level = ".$fieldmap['level'];
 			}
 
 			if (isset($fieldmap['tags'])) {

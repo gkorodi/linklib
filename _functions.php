@@ -201,6 +201,15 @@ CONTENT;
 		}
 		$resp['status'] = ($status?'ok':'error');
 		$resp['message'] = implode("\n",$logmessages);
+	} else if ($_REQUEST['method']==='updateLevelById') {
+
+		$link = new Link($_REQUEST['id']);
+		if ($link->updateLevelById($_REQUEST['level'])){
+			$resp['status'] = 'ok';
+		} else {
+			$resp['status'] = 'error';
+			$resp['message'] = $link->getException();
+		}
 
 	} else if ($_REQUEST['method']==='updateFieldById') {
 
