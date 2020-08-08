@@ -3,9 +3,10 @@
     "twig/twig": "^3.0",
     "twig/intl-extra": "^3.0",
     "ext-curl": "*",
-    "ext-json": "*"
+    "ext-json": "*",
+    "phpunit/phpunit": "^9.3"
   },
   "scripts": {
-    "test": "phpunit"
+    "test": "vendor/bin/phpunit"
   }
 }
