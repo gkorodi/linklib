@@ -11,23 +11,12 @@
     <title><?php echo APP_TITLE;?></title>
 
     <!-- Bootstrap core CSS -->
-    <link href="assets/css/bootstrap.css" rel="stylesheet">
+    <link href="../assets/css/bootstrap.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
-    <link href="assets/css/style.css" rel="stylesheet">
-    <link href="assets/css/font-awesome.min.css" rel="stylesheet">
-
-
-    <!-- Just for debugging purposes. Don't actually copy this line! -->
-    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-
-    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-    
-    <script src="assets/js/modernizr.js"></script>
+    <link href="../assets/css/style.css" rel="stylesheet">
+    <link href="../assets/css/font-awesome.min.css" rel="stylesheet">
+    <script src="../assets/js/modernizr.js"></script>
   </head>
 
   <body>
@@ -63,13 +52,13 @@
 				  <!-- Wrapper for slides -->
 				  <div class="carousel-inner">
 				    <div class="item active">
-				      <img src="assets/img/portfolio/single01.jpg" alt="">
+				      <img src="../assets/img/portfolio/single01.jpg" alt="">
 				    </div>
 				    <div class="item">
-				      <img src="assets/img/portfolio/single02.jpg" alt="">
+				      <img src="../assets/img/portfolio/single02.jpg" alt="">
 				    </div>
 				    <div class="item">
-				      <img src="assets/img/portfolio/single03.jpg" alt="">
+				      <img src="../assets/img/portfolio/single03.jpg" alt="">
 				    </div>
 				  </div>
 				</div><! --/Carousel -->
@@ -107,11 +96,11 @@
             <div class="recentitems portfolio">
 				<div class="portfolio-item graphic-design">
 					<div class="he-wrap tpl6">
-					<img src="assets/img/portfolio/portfolio_09.jpg" alt="">
+					<img src="../assets/img/portfolio/portfolio_09.jpg" alt="">
 						<div class="he-view">
 							<div class="bg a0" data-animate="fadeIn">
                                 <h3 class="a1" data-animate="fadeInDown">A Graphic Design Item</h3>
-                                <a data-rel="prettyPhoto" href="assets/img/portfolio/portfolio_09.jpg" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
+                                <a data-rel="prettyPhoto" href="../assets/img/portfolio/portfolio_09.jpg" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
                                 <a href="single-project.html" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-link"></i></a>
                         	</div><!-- he bg -->
 						</div><!-- he view -->		
@@ -120,11 +109,11 @@
                             
                 <div class="portfolio-item web-design">
                     <div class="he-wrap tpl6">
-					<img src="assets/img/portfolio/portfolio_02.jpg" alt="">
+					<img src="../assets/img/portfolio/portfolio_02.jpg" alt="">
 						<div class="he-view">
 							<div class="bg a0" data-animate="fadeIn">
                                 <h3 class="a1" data-animate="fadeInDown">A Web Design Item</h3>
-                                <a data-rel="prettyPhoto" href="assets/img/portfolio/portfolio_02.jpg" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
+                                <a data-rel="prettyPhoto" href="../assets/img/portfolio/portfolio_02.jpg" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
                                 <a href="single-project.html" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-link"></i></a>
                         	</div><!-- he bg -->
 						</div><!-- he view -->		
@@ -133,11 +122,11 @@
         
                 <div class="portfolio-item graphic-design">
                     <div class="he-wrap tpl6">
-					<img src="assets/img/portfolio/portfolio_03.jpg" alt="">
+					<img src="../assets/img/portfolio/portfolio_03.jpg" alt="">
 						<div class="he-view">
 							<div class="bg a0" data-animate="fadeIn">
                                 <h3 class="a1" data-animate="fadeInDown">A Graphic Design Item</h3>
-                                <a data-rel="prettyPhoto" href="assets/img/portfolio/portfolio_03.jpg" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
+                                <a data-rel="prettyPhoto" href="../assets/img/portfolio/portfolio_03.jpg" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
                                 <a href="single-project.html" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-link"></i></a>
                         	</div><!-- he bg -->
 						</div><!-- he view -->		
@@ -146,11 +135,11 @@
         
                 <div class="portfolio-item graphic-design">
                     <div class="he-wrap tpl6">
-					<img src="assets/img/portfolio/portfolio_04.jpg" alt="">
+					<img src="../assets/img/portfolio/portfolio_04.jpg" alt="">
 						<div class="he-view">
 							<div class="bg a0" data-animate="fadeIn">
                                 <h3 class="a1" data-animate="fadeInDown">A Graphic Design Item</h3>
-                                <a data-rel="prettyPhoto" href="assets/img/portfolio/portfolio_04.jpg" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
+                                <a data-rel="prettyPhoto" href="../assets/img/portfolio/portfolio_04.jpg" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
                                 <a href="single-project.html" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-link"></i></a>
                         	</div><!-- he bg -->
 						</div><!-- he view -->		
@@ -159,11 +148,11 @@
 
                 <div class="portfolio-item graphic-design">
                     <div class="he-wrap tpl6">
-					<img src="assets/img/portfolio/portfolio_05.jpg" alt="">
+					<img src="../assets/img/portfolio/portfolio_05.jpg" alt="">
 						<div class="he-view">
 							<div class="bg a0" data-animate="fadeIn">
                                 <h3 class="a1" data-animate="fadeInDown">A Graphic Design Item</h3>
-                                <a data-rel="prettyPhoto" href="assets/img/portfolio/portfolio_04.jpg" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
+                                <a data-rel="prettyPhoto" href="../assets/img/portfolio/portfolio_04.jpg" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
                                 <a href="single-project.html" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-link"></i></a>
                         	</div><!-- he bg -->
 						</div><!-- he view -->		
@@ -181,13 +170,13 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <script src="assets/js/bootstrap.min.js"></script>
-	<script src="assets/js/retina-1.1.0.js"></script>
-	<script src="assets/js/jquery.hoverdir.js"></script>
-	<script src="assets/js/jquery.hoverex.min.js"></script>
-	<script src="assets/js/jquery.prettyPhoto.js"></script>
-  	<script src="assets/js/jquery.isotope.min.js"></script>
-  	<script src="assets/js/custom.js"></script>
+    <script src="../assets/js/bootstrap.min.js"></script>
+	<script src="../assets/js/retina-1.1.0.js"></script>
+	<script src="../assets/js/jquery.hoverdir.js"></script>
+	<script src="../assets/js/jquery.hoverex.min.js"></script>
+	<script src="../assets/js/jquery.prettyPhoto.js"></script>
+  	<script src="../assets/js/jquery.isotope.min.js"></script>
+  	<script src="../assets/js/custom.js"></script>
 
 
     <script>

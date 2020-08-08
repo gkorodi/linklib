@@ -4,10 +4,6 @@ require_once('class_Link.php');
 
 $entityBody = file_get_contents('php://input');
 
-#$link = new Link();
-#$link->link = $linkDetails['URL'];
-#$link->update();
-
 $resp['status'] = 'ok';
 $resp['req'] = json_decode($entityBody);
 
@@ -24,4 +20,4 @@ if (!$link->addLink()) {
 }
 $resp['debugs'] = $link->debugs;
 
-echo json_encode($resp);
+echo json_encode($resp, JSON_PRETTY_PRINT);
