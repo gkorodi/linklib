@@ -1,12 +1,44 @@
 <?php
-require_once('_includes.php');
-?><!DOCTYPE html>
+
+require_once('_inc.php');
+require_once(__DIR__.'/vendor/autoload.php');
+
+//$loader = new \Twig\Loader\FilesystemLoader(__DIR__.'/templates');
+//$twig = new \Twig\Environment($loader); //, [ 'cache' => '/path/to/compilation_cache' ]);
+//$twig = new \Twig\Environment($loader, array('debug' => true));
+
+$app['title'] = "LinkLib";
+
+$sql="SELECT * FROM links WHERE tags = 'curate' ORDER BY updated_at DESC LIMIT 200";
+$rs = queryX($sql);
+
+$links = Array();
+foreach($rs AS $r) {
+	$r['hostname'] = justHostName($r['link']);
+	$links[] = $r;
+}
+
+if ($_REQUEST['format'] == 'json') {
+	header('Content-type: application/json');
+	echo json_encode($links);
+	exit;
+}
+
+$loader = new \Twig\Loader\ArrayLoader([
+    'indexTemplate' => file_get_contents('templates/fullpage.html'),
+]);
+$twig = new \Twig\Environment($loader);
+
+echo $twig->render('indexTemplate', ['name' => 'Fabien']);
+exit;
+
+?>
+<!DOCTYPE html>
 <html lang="en">
   <head>
-	  <?php require_once('_metatags.php');?>
+    {{ include('templates/parts/metatags.html') }}
     <link rel="shortcut icon" href="assets/ico/favicon.ico">
-
-    <title><?php echo APP_TITLE;?></title>
+    <title>{{ app.title }}</title>
 
     <!-- Bootstrap core CSS -->
     <link href="assets/css/bootstrap.css" rel="stylesheet">
@@ -24,7 +56,7 @@ require_once('_includes.php');
     <div id="blue">
       <div class="container">
         <div class="row">
-          <h3>TAG LIST.</h3>
+          <h3>LIST BY DATE.</h3>
         </div><!-- /row -->
       </div> <!-- /container -->
     </div><!-- /blue -->
@@ -57,7 +89,6 @@ require_once('_includes.php');
 		<input type="text" class="form-control" name="q" placeholder="Search something">
 		</form>
 		</p>
->
 		<div class="spacing"></div>
 
 		<h4>Categories</h4>

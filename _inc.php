@@ -6,14 +6,11 @@ date_default_timezone_set('US/Eastern');
 define('APP_ROOT','/linklib/');
 define('APP_TITLE','linkLIB');
 
-$profile['session'] = $_SESSION;
-$profile['request'] = $_REQUEST;
-$profile['server'] = $_SERVER;
-
 require_once('/opt/config/vars');
 
-$pageProfile = $_SERVER;
-
+$pageProfile['server'] = $_SERVER;
+$pageProfile['session'] = $_SESSION;
+$pageProfile['request'] = $_REQUEST;
 
 $skiptagList = Array(
 	'og:image:height',
@@ -78,7 +75,7 @@ function getLevel($tags) {
 	if (strpos(strtolower($tags),'evel3')>0) { return 3;}
 	if (strpos(strtolower($tags),'evel4')>0) { return 4;}
 	if (strpos(strtolower($tags),'evel5')>0) { return 5;}
-	return -1;
+	return "?";
 }
 
 function getRowDescription($record) {
@@ -97,7 +94,11 @@ function groupBy($arr) {
 			$ret[$e] = 1;
 		}
 	}
-	return $ret;
+	$taglist = [];
+	foreach($ret AS $k=>$v) {
+		$tagList[] = ["tag" => $k, "count" => $v];
+	}
+	return $tagList;
 }
 
 function getLinkStatus($url) {

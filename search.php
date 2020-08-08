@@ -31,4 +31,4 @@ if (isset($_REQUEST['format']) && $_REQUEST['format'] == 'json') {
   exit;
 }
 
-echo $twig->render('search.html', [ 'profile' => $profile, 'criteria' => $_REQUEST['q'], 'links' => $links, 'result_count' => count($links) ]);
+echo $twig->render('search.html', [ 'profile' => $pageProfile, 'criteria' => $_REQUEST['q'], 'links' => $links, 'result_count' => count($links) ]);

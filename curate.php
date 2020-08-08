@@ -6,7 +6,7 @@ $loader = new \Twig\Loader\FilesystemLoader(__DIR__.'/templates');
 //$twig = new \Twig\Environment($loader); //, [ 'cache' => '/path/to/compilation_cache' ]);
 $twig = new \Twig\Environment($loader, array('debug' => true));
 
-$sql="SELECT * FROM links WHERE tags = 'curate' ORDER BY updated_at DESC LIMIT 200";
+$sql="SELECT * FROM links WHERE tags = 'curate' ORDER BY updated_at ASC LIMIT 200";
 $rs = queryX($sql);
 
 $links = Array();
@@ -21,4 +21,4 @@ if ($_REQUEST['format'] == 'json') {
 	exit;
 }
 
-echo $twig->render('curate.html', ['profile' => $profile, 'links' => $links]);
+echo $twig->render('curate.html', ['profile' => $pageProfile, 'links' => $links]);

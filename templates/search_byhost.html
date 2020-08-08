@@ -3,16 +3,16 @@
 {% block blue %}
 		
 	<form method="GET" id="frmRefine" class="pull-right">
-		<input type="checkbox" class="adjusterfield" name="olderfirst" {% if req.isOldestFirst %}checked{% endif %}/> OlderFirst<br />
-		<input type="checkbox" class="adjusterfield" name="untaggedonly" {% if req.isUntaggedOnly %}checked{% endif %}/> UntaggedOnly<br />
-		<input type="checkbox" class="adjusterfield" name="nostatus" {% if req.isNoStatus %}checked{% endif %}/> No Status<br />
-		<input type="checkbox" class="adjusterfield" name="badstatus" {% if req.isBadStatus %}checked{% endif %}/> Bad Status<br />
-		<input type="hidden" id="fldHost" name="host" value="{{ hostname }}" />
+		<input type="checkbox" class="adjusterfield" onchange="submit();" name="olderfirst" {% if profile.request.olderfirst %}checked{% endif %}/> OlderFirst<br />
+		<input type="checkbox" class="adjusterfield" onchange="submit();" name="untaggedonly" {% if profile.request.untaggedonly %}checked{% endif %}/> UntaggedOnly<br />
+		<input type="checkbox" class="adjusterfield" name="nostatus" {% if profile.request.nostatus %}checked{% endif %}/> No Status<br />
+		<input type="checkbox" class="adjusterfield" name="badstatus" {% if profile.request.badstatus %}checked{% endif %}/> Bad Status<br />
+		<input type="hidden" id="fldHost" name="host" value="{{ profile.request.host }}" />
 	</form>
 
-	<h3>Search Results by host <a href="http://{{ hostname }}" target="_newWindow">{{ hostname }}</a>
+	<h3>
+		Search Results by host <a href="http://{{ profile.request.host }}" target="_newWindow">{{ profile.request.host }}</a>
 	</h3>
-	<small>There are {{ rowcount }} entries</small>
 	
 {% endblock %}
 
@@ -21,39 +21,46 @@
 	TR.link-301 {
 		background-color: lightGray;
 	}
-	TR.link--2 {
-		background-color: Purple; color: white;
+	TR.link-401 {
+		background-color: purple; color: white;
 	}
-	TR.link-2 {
-		background-color: Pink; color: white;
+	tr.link-200 {
+		background-color: lightBlue; color: white;
+	}
+	tr.link-0 {
+		background-color: #f0f0f0; color: white;
 	}
 </style>
 
 <table class="table">
 	<tbody>
 	{% for link in links %}
-	<tr id="row{{ link.id }}">
+	<tr id="row{{ link.id }}" class="link-{{ link.status }}">
 		<td>
-			</td>
-		<td>
-			<b><a href="{{ link.link }}" target="_newWindow">{{ link.title }}</a></b><br />
-			<small>
-				Created: <b>{{ link.created_at }}</b> Updated: <b>{{ link.updated_at }}</b> Tags: <b>{% for tag in link.tags %}{{ tag }} {% endfor %}</b>
-			</small><br />
-			<br />
-			<button class="btn-sm btn-danger" onClick="deleteLink({{ link.id }});">
+			<button class="btn btn-danger" onClick="deleteLink({{ link.id }});">
 				<span class="glyphicon glyphicon-remove"> </span>
-			</button>
-			
-			<a class="btn-sm btn-info" href="linkedit.php?id={{ link.id }}" target="_winEditLink">
+			</button><br />
+			<br />
+			<a class="btn btn-info" href="linkedit.php?id={{ link.id }}" target="_winEditLink">
 				<span class="glyphicon glyphicon-ok"> </span>
 			</a>
-			
+		</td>
+		<td>
+			<b><a href="{{ link.link }}" target="_newWindow">{{ link.title }}</a></b><br />
+			{% if not profile.request.untaggedonly %}
+				<small>
+				Tags: <b>{% if link.tags is empty %}n/a{% else %}{% for tag in link.tags %}{{ tag }} {% endfor %}{% endif %}</b>
+				</small><br />
+			{% endif %}
+			<br />
 			&nbsp;&nbsp;&nbsp;
 			{% include('parts/buttons_taglinks.html') %}
 		</td>
 		<td>
-			
+			{% if link.created_at is empty %}n/a{% else %}{{ link.created_at|split(' ',2)[0] }}{% endif %}
+		</td>
+		<td>
+			{% if link.updated_at is empty %}n/a{% else %}{{ link.updated_at|split(' ',2)[0] }}{% endif %}
 		</td>
 	</tr>
 	{% endfor %}

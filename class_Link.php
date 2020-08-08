@@ -1,385 +1,5 @@
 <?php
-if (isset($_SERVER['PHP_SELF'])) {
-	session_start();
-	if (!in_array(basename($_SERVER['PHP_SELF']), explode(',','login.php,index.php')) && !isset($_SESSION['uid'])) {
-		header("Location: login.php");
-		exit;
-	}
-} else {
-  echo 'DEBUG: No PHP_SELF, this must be CLI'.PHP_EOL;
-}
-
-date_default_timezone_set('US/Eastern');
-
-
-define('APP_ROOT','/linklib/');
-define('APP_TITLE','linkLIB');
-define('APP_ADDRESS', '<h4>Our Bunker</h4>'.
-'<div class="hline-w"></div>'.
-'<p>'.
-	'Boston, MA<br/>'.
-	'London, UK<br />'.
-	'Budapest, Hungary'.
-'</p>');
-define('APP_SOCIAL_LINKS','<h4>Social Links</h4><div class="hline-w"></div>'.
-'<p>'.
-	'<a href="https://www.linkedin.com/in/gaborkorodi" target="_newWindow"><i class="fa fa-linkedin"></i></a>'.
-	'<a href="https://twitter.com/korodigabor" target="_newWindow"><i class="fa fa-twitter"></i></a>'.
-	'<a href="https://gaborkorodi.wordpress.com" target="_newWindow"><i class="fa fa-globe"></i></a>'.
-'</p>');
-define('FEED_DIR','data');
-
-define('ROW_ID',0);
-define('ROW_LINK',1);
-define('ROW_TITLE',2);
-define('ROW_STATUS',3);
-define('ROW_TAGS',4);
-define('ROW_CREATED_AT',5);
-define('ROW_UPDATED_AT',6);
-define('ROW_DESCRIPTION',7);
-
-require_once('/opt/config/vars');
-
-$skiptagList = Array(
-	'og:image:height',
-	'og:image:width',
-	'msapplication-TileColor',
-	'fb:app_id',
-	'fb:pages',
-	'og:locale',
-	'og:site_name',
-	'og:image:secure_url',
-	'og:image',
-	'twitter:site',
-	'twitter:card',
-	'og:type',
-	'twitter:image',
-	'rating',
-	'apple-mobile-web-app-title',
-	'bt:body'
-);
-
-
-function validToken($token) {
-	return true;
-}
-
-foreach (getallheaders() as $name => $value) {
-    switch($name) {
-    	case 'Authorization':
-		$a = explode(' ', $value);
-		if (validToken($a[1])) {
-			$_SESSION['uid'] = $a[1];
-		}
-		break;
-	default:
-    }
-}
-
-
-function getRowDescription($record) {
-	$obj = json_decode($record[ROW_DESCRIPTION]);
-	if (isset($obj->{'og:description'})) return $obj->{'og:description'};
-	return 'No Description';
-}
-
-
-function groupBy($arr) {
-	$ret = Array();
-	foreach($arr AS $e) {
-		if (isset($ret[$e])) {
-			$ret[$e]++;
-		} else {
-			$ret[$e] = 1;
-		}
-	}
-	return $ret;
-}
-
-function getLinkStatus($url) {
-
-	$ch = curl_init($url);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 2);
-	curl_setopt($ch, CURLOPT_TIMEOUT, 5);
-	$json = curl_exec($ch);
-	$info = curl_getinfo($ch);
-	curl_close($ch);
-
-	return $info['http_code'];
-}
-
-function showRowSkinny($row) {
-	?>
-	<tr id="row<?php echo $row[0];?>">
-		<td> </td>
-		<td>
-			<a href="<?php echo $row[1];?>" target="_newWindow"><?php echo urldecode($row[2]);?></a><br />
-			<small><?php echo justHostName($row[1]); ?></small>
-		</td>
-		<td>
-			<small><?php echo date('Y-m-d', strtotime($row[4]));?></small>
-		</td>
-		<td>
-			<?php
-			foreach(explode(',', $row[5]) AS $tag) { ?>
-				<span class="badge"><?php echo $tag;?></span>
-			<?php
-			}
-			?>
-			<button class="btn btn-sm" onClick="checkDetails(<?php echo $row[0];?>);">
-				<span class="glyphicon glyphicon-plus"> </span>
-			</button>
-		</td>
-		<td>
-			<button class="btn btn-sm btn-danger pull-right" onClick="deleteLink(<?php echo $row[0];?>);">
-				<span class="glyphicon glyphicon-remove"> </span>
-			</button>
-		</td>
-		<td>
-
-			<a class="btn btn-sm btn-info" href="linkedit.php?id=<?php echo $row[0];?>" target="_winEditLink">
-				<span class="glyphicon glyphicon-ok"> </span>
-			</a>
-		</td>
-
-	</tr>
-	<?php
-}
-function showRow($row) {
-	?>
-	<tr id="row<?php echo $row[0];?>">
-		<td> </td>
-		<td>
-			<a href="<?php echo $row[1];?>" target="_newWindow"><?php echo urldecode($row[2]);?></a><br />
-			<small><?php echo justHostName($row[1]);?></small>
-		</td>
-		<td>
-			<input type="text" id="tags<?php echo $row[0];?>" onChange="repairLink(<?php echo $row[0];?>, $(this).val());" value="<?php echo $row[5];?>" />
-	</td>
-	<td>
-		<?php echo date('Y-m-d', strtotime($row[4]));?>
-	</td>
-	<td>
-			<button class="btn btn-sm btn-danger pull-right" onClick="deleteLink(<?php echo $row[0];?>);">
-				<span class="glyphicon glyphicon-remove"> </span>
-			</button>
-</td><td>
-			<a class="btn btn-sm btn-info" href="linkedit.php?id=<?php echo $row[0];?>" target="_winEditLink">
-				<span class="glyphicon glyphicon-ok"> </span>
-			</a>
-		</td>
-
-	</tr>
-	<?php
-}
-
-function showUserRow($row) {
-	?>
-	<tr id="row<?php echo $row[0];?>">
-		<td><?php echo justHostName($row[1]);?></small></td>
-		<td>
-			<h4><a href="<?php echo $row[1];?>" target="_newWindow"><?php echo urldecode($row[2]);?></a></h4><br />
-			<?php
-			foreach(explode(',', $row[5]) AS $tag) { echo '<span class="badge">'.$tag.'</span> ';}
-			 ?></small>
-		</td>
-	<td>
-		<?php echo date('Y-m-d', strtotime($row[4]));?>
-	</td>
-	</tr>
-	<?php
-}
-
-function errorMessage($msg) {
-	echo '<div style="color: red">'.$msg.'</div>';
-}
-
-function debugMessage($msg) {
-	if (APP_DEBUG!=null && APP_DEBUG === 'on') {
-		echo '<div style="color: gray">'.$msg.'</div>';
-	}
-}
-
-function query($sql) {
-	// Examples from: http://www.pontikis.net/blog/how-to-use-php-improved-mysqli-extension-and-why-you-should
-	// and some other from: http://www.pontikis.net/blog/how-to-write-code-for-any-database-with-php-adodb
-	$errors = Array();
-	$response['sql'] = $sql;
-
-	$conn = new mysqli(DB_HOST.(array_key_exists('DB_PORT', get_defined_vars())?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
-	if ($conn->connect_errno) {
-		array_push($errors, "Connect failed: %s\n", $mysqli->connect_error);
-	} else {
-		$rs = $conn->query($sql);
-		if($rs === false) {
-		  trigger_error('Wrong SQL: ' . $sql . ' Error: ' . $conn->error, E_USER_ERROR);
-		} else {
-		  $response['rowcount'] = $rs->num_rows;
-		}
-
-		$response['rows'] = Array();
-		$rs->data_seek(0);
-		while($row = $rs->fetch_row()){
-			array_push($response['rows'], $row);
-		}
-		$rs->free();
-		$conn->close();
-	}
-	if (count($errors)>0) {
-		$response['messages'] .= implode('<br />', $errors);
-	}
-	return $response;
-}
-
-class DBQueryService {
-	var $conn;
-	var $stmtUpate;
-	var $stmtInsert;
-	var $lastAffectedRow;
-
-	var $debugs = Array();
-	var $errorMessage = '';
-
-	function logger($msg) {
-		array_push($this->debugs, date('c')." ".$msg);
-	}
-
-	function DBQueryService() {
-		$this->conn = new mysqli(DB_HOST.(defined('DB_PORT')?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
-		$this->logger("Connected to ".DB_NAME." database.");
-
-		if (!($this->stmtUpdate = $this->conn->prepare("UPDATE links SET link = ?, title = ?, status = ?, tags = ? WHERE id = ?"))) {
-		    $this->logger("Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error);
-		}
-
-		if (!($this->stmtInsert = $this->conn->prepare("INSERT links (link,title,status,tags,updated_at) VALUES (?,?,?,?,?)"))) {
-			$this->logger("Prepare INSERT failed: (". $mysqli->errno. ") " . $mysqli->error);
-		}
-
-		if (!($this->stmtAddExtraDetails = $this->conn->prepare("INSERT raw_extras (linkid, details, type) VALUES (?,?,?)"))) {
-			$this->logger("Prepare INSERT failed: (". $mysqli->errno. ") " . $mysqli->error);
-			$this->error = "Prepare INSERT failed: (". $mysqli->errno. "/" . $mysqli->error;
-		}
-	}
-
-	function getAffectedRows() {
-		return $this->lastAffectedRow;
-	}
-
-	function getInsertId() {
-		return mysqli_stmt_insert_id ( $this->stmtInsert );
-	}
-
-	function addExtraDetails($row) {
-		if (!$this->stmtAddExtraDetails->bind_param("iss",
-			$row['linkid'],
-			$row['details'],
-			$row['type']
-			)
-		) {
-			$this->logger("Binding parameters ".print_r($row, true)." failed: (" . $this->stmtAddExtraDetails->errno . ") " . $this->stmtAddExtraDetails->error);
-		}
-
-		if (!$this->stmtAddExtraDetails->execute()) {
-		    $this->logger("Execute failed: (" . $this->stmtAddExtraDetails->errno . ") " . $this->stmtAddExtraDetails->error);
-		}
-	}
-
-	function addRow($row) {
-		//$v1="'" . $this->conn->real_escape_string('col1_value') . "'";
-		$status = false;
-
-		$rowTitle = $this->conn->real_escape_string($row['title']);
-
-		if (!$this->stmtInsert->bind_param("ssiss",
-			$row['link'],
-			$rowTitle,
-			$row['status'],
-			$row['tags'],
-			$row['updated_at']
-			)
-		) {
-			$this->logger("Binding parameters ".json_encode($row)." failed: (" . $this->stmtInsert->errno . ") " . $this->stmtInsert->error);
-		}
-
-		if (!$this->stmtInsert->execute()) {
-			$this->error = "Execute failed: (" . $this->stmtInsert->errno . "/" . $this->stmtInsert->error;
-			$this->errorMessage = $this->stmtInsert->errno . "/" . $this->stmtInsert->error;
-			
-		  $this->logger($this->error);
-		} else {
-			$this->lastAffectedRow = $this->stmtInsert->affected_rows;
-			$this->logger("Inserted ".$this->lastAffectedRow." row successfully.");
-			$status = true;
-		}
-		return $status;
-	}
-
-	function insertRow($mapFielValuePairs) {
-		/* Prepared statement, stage 2: bind and execute */
-		if (!$this->stmtUpdate->bind_param("ssisi",
-			$mapFielValuePairs['link'],
-			$mapFielValuePairs['title'],
-			$mapFielValuePairs['status'],
-			$mapFielValuePairs['tags'],
-			$mapFielValuePairs['id'])) {
-				$this->error = "Binding parameters failed: (" . $this->stmtUpdate->errno . "/" . $this->stmtUpdate->error;
-		    $this->logger($this->error);
-		}
-
-		if (!$this->stmtUpdate->execute()) {
-			$this->error = "Execute failed: (" . $this->stmtUpdate->errno . "/" . $this->stmtUpdate->error;
-			$this->logger($this->error);
-		}
-
-		/* Prepared statement: repeated execution, only data transferred from client to server */
-		/*for ($id = 2; $id < 5; $id++) {
-		    if (!$stmt->execute()) {
-		        echo date('c')." Execute failed: (" . $stmt->errno . ") " . $stmt->error;
-		    }
-		}*/
-
-		/* explicit close recommended */
-		$this->stmtUpdate->close();
-	}
-
-	function getRows($sql) {
-
-		$rs=$this->conn->query($sql);
-
-		if($rs === false) {
-		  trigger_error('Wrong SQL: ' . $sql . ' Error: ' . $conn->error, E_USER_ERROR);
-		} else {
-		  $rows_returned = $rs->num_rows;
-		}
-
-		$rows = Array();
-		/*
-		$rs->data_seek(0);
-		while($row = $rs->fetch_assoc()){
-		    echo $row['title'] . '<br>';
-		}*/
-
-
-		$rs->data_seek(0);
-		while($row = $rs->fetch_assoc()){
-			$rows[] = $row;
-
-			//foreach($row AS $k=>$v) {
-			//	$rows[$k] = $v;
-			//}
-		}
-		$rs->free();
-
-		return $rows;
-	}
-
-	function close() {
-		$this->conn->close();
-	}
-}
+require_once('class_DBQueryService.php');
 
 class Link {
 	var $errors = Array();
@@ -391,26 +11,14 @@ class Link {
 	var $status = '';
 	var $created_at = '';
 	var $updated_at = '';
-	var $level = 0;
-
 	var $tags = '';
 	var $content = '';
 	var $description = '';
-    var $errorMessage = '';
-    var $exception = '';
-
+  var $errorMessage = '';
 	var $row = Array();
 
 	function logger($msg) {
 		array_push($this->debugs, date('c')." ".$msg);
-	}
-
-	function getException() {
-		return $this->exception;
-	}
-
-	function updateLevelById($level) {
-
 	}
 
 	function __construct($id = null) {
@@ -451,10 +59,10 @@ class Link {
 									$this->title = $row['title'];
 									$this->status = isset($row['status'])?empty($row['status'])?-1:$row['status']:0;
 									$this->tags = $row['tags'];
-									$this->level = $row['level'];
 									$this->updated_at = isset($row['updated_at'])?$row['updated_at']:date('Y-m-d');
 									$this->created_at = isset($row['created_at'])?$row['created_at']:date('Y-m-d');
 									$this->description = empty($row['description'])?'{}':$row['description'];
+									
 									$this->row = $row;
 					    }
 					    /* free result set */
@@ -687,11 +295,12 @@ class Link {
 
 	function update() {
 		$this->logger("update() starting...");
+		
+		
 		$this->logger("update() id:".$this->id);
 		$this->logger("update() link        :".$this->link);
 		$this->logger("update() title       :".$this->title);
 		$this->logger("update() tags        :".$this->tags);
-		$this->logger("update() level       :".(isset($this->level)?$this->level:'unset'));
 		$this->logger("update() status      :".(isset($this->status)?(empty($this->status)?-1:$this->status):0));
 		$this->logger("update() updated_at  :".(isset($this->updated_at)?$this->updated_at:date('Y-m-d')));
 		$this->logger("update() created_at  :".(isset($this->created_at)?$this->created_at:date('Y-m-d')));
@@ -713,7 +322,6 @@ class Link {
 			if (empty($this->created_at)) {
 				$this->created_at = date('Y-m-d');
 			}
-			$sqlString .= ", level = ".$this->level;
 			$sqlString .= ", created_at = '".$mysqli->real_escape_string(date('Y-m-d', strtotime($this->created_at)))."'";
 			$sqlString .= ", description = '".$mysqli->real_escape_string($this->description)."'";
 			$sqlString .= ' WHERE id = '.$this->id;
@@ -751,7 +359,6 @@ class Link {
 		$raw_data['created_at'] = $this->created_at;
 		$raw_data['updated_at'] = $this->updated_at;
 		$raw_data['tags'] = $this->tags;
-		$raw_data['level'] = $this->level;
 		$raw_data['description'] = $this->description;
 		
 		foreach($raw_data AS $k=>$v) {
@@ -789,7 +396,6 @@ class Link {
 		$raw_data['updated_at'] = date('Y-m-d');
 		$raw_data['created_at'] = date('Y-m-d');
 		$raw_data['tags'] = (isset($_REQUEST['tags'])?$_REQUEST['tags']:'');
-		$raw_data['level'] = (isset($_REQUEST['level'])?$_REQUEST['level']:0);
 		$raw_data['description'] = $this->description;
 
 		if ($dbservice->addRow($raw_data)) {
@@ -832,9 +438,6 @@ class Link {
 			if (isset($fieldmap['title'])) {
 				$sqlString .= ", title = '".$fieldmap['title']."'";
 			}
-			if (isset($fieldmap['level'])) {
-				$sqlString .= ", level = ".$fieldmap['level'];
-			}
 
 			if (isset($fieldmap['tags'])) {
 				$sqlString .= ", tags = '".$fieldmap['tags']."'";
@@ -865,10 +468,5 @@ class Link {
 	function logupdate($msg) {
 		file_put_contents('/var/tmp/linklib_log.txt', $msg.PHP_EOL , FILE_APPEND | LOCK_EX);
 	}
-}
-
-function justHostName($url) {
-	$a = explode('/', $url);
-	return $a[2];
 }
 ?>

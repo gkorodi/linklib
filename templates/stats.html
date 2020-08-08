@@ -1,0 +1,64 @@
+{% extends ('layouts/page.html') %}
+
+{% block blue %}
+	<h3>STATS</h3>
+{% endblock %}
+
+{% block content %}
+	<table class="table">
+		<thead>
+			<tr>
+			<th>Metrics</th>
+			<th>Count</th>
+			<th>Percentage</th>
+			</tr>
+		</thead>
+		<tbody>
+		{% for query in querylist %}
+			<tr>
+				<th>
+					<a href="query.php?q={{ query.sql }}">{{ query.label }}</a>
+				</th>
+				<td>
+					{{ query.results|length }} 
+				</td>
+				<td>
+					{{ (((query.results|length)/querylist[0].results.0.counter)*100)|number_format(2, '.', ',') }}%
+				</td>
+			</tr>
+		{% endfor %}
+		</tbody>
+	</table>
+{% endblock %}
+
+{% block sidebar %}
+	<h4>Search</h4>
+	<div class="hline"></div>
+	<p>
+		<form action="search.php">
+		<input type="text" class="form-control" name="q" placeholder="Search something">
+		</form>
+	</p>
+	<div class="spacing"></div>
+
+	<h4>Statuses (other than OK)</h4>
+	<div class="hline"></div>
+	<table class="table">
+	{% for status in statuses %}
+		<tr>
+			<th><a href="list_status.php?status={{ status.status }}">{{ status.status }}</a></th>
+			<td>{{ status.counter }}</td>
+		</tr>
+	{% endfor %}
+	</table>
+
+	<div class="spacing"></div>
+	<h4>Recent Posts</h4>
+	<div class="hline"></div>
+
+	<div class="spacing"></div>
+
+	<h4>Popular Tags</h4>
+	<div class="hline"></div>
+	<p id="popular_tags"></p>
+{% endblock %}

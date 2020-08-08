@@ -34,7 +34,16 @@ if (isset($_POST['id'])) {
 	
 	$link->title = $_POST['title'];
 	$link->link = $_POST['link'];
-	$link->tags = implode(',', explode(',', str_replace(' ','', strtolower($_POST['tags']))));
+
+	$tagArray = explode(',', str_replace(' ','', strtolower($_POST['tags'])));
+	$link->level = 0;
+	if (in_array('level1', $tagArray)) { $link->level = 1; unset($tagArray[array_search('level1', $tagArray)]); }
+	if (in_array('level2', $tagArray)) { $link->level = 2; unset($tagArray[array_search('level2', $tagArray)]); }
+	if (in_array('level3', $tagArray)) { $link->level = 3; unset($tagArray[array_search('level3', $tagArray)]); }
+	if (in_array('level4', $tagArray)) { $link->level = 4; unset($tagArray[array_search('level4', $tagArray)]); }
+	if (in_array('level5', $tagArray)) { $link->level = 5; unset($tagArray[array_search('level5', $tagArray)]); }
+	$link->tags = implode(',', $tagArray);
+
 	$link->status = $_POST['status'];
 	$link->created_at = empty($_POST['created_at'])?date('Y-m-d'):date('Y-m-d', strtotime($_POST['created_at']));
 	$link->updated_at = date('Y-m-d');
@@ -47,12 +56,7 @@ if (isset($_POST['id'])) {
 				$msgs[] = '<h4>ERROR:'.$msg.'</h4>';
 			}
 		}
-		// if (count($link->debugs)>0) {
-		// 	foreach($link->debugs AS $msg) {
-		// 		$msgs[] = 'DEBUG:'.$msg;
-		// 	}
-		// }
-		$errorMessage = 'Could not updates link!'.'<br />'.implode('<br />', $msgs);
+		$errorMessage = 'Could not updates link!'.'<br />'.implode('<br />', $msgs).'<br /><pre>'.implode("\n", $link->debugs)."</pre>";
 	}
 }
 
@@ -138,6 +142,7 @@ if (isset($_POST['id'])) {
 						}
 						?>
 						<br/>
+						Level: <?=$link->level?>
 						<br />
 					</div>
 					
