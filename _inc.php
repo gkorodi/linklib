@@ -1,5 +1,13 @@
 <?php
-session_start();
+if (isset($_SERVER['PHP_SELF'])) {
+	session_start();
+	if (!in_array(basename($_SERVER['PHP_SELF']), explode(',','login.php,index.php')) && !isset($_SESSION['uid'])) {
+		header("Location: login.php");
+		exit;
+	}
+} else {
+  die('Please <a href="login.php">log in</a>');
+}
 
 date_default_timezone_set('US/Eastern');
 
