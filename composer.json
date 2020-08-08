@@ -4,5 +4,8 @@
     "twig/intl-extra": "^3.0",
     "ext-curl": "*",
     "ext-json": "*"
+  },
+  "scripts": {
+    "test": "phpunit"
   }
 }
