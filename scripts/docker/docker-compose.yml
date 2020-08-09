@@ -1,7 +1,7 @@
 version: '3'
 services:
 
-  web:
+  app:
     image: bitnami/laravel
     environment:
       - DB_HOST=host.docker.internal
@@ -12,6 +12,12 @@ services:
       - db
     ports:
       - "3000:3000"
+
+  web:
+    image: httpd
+    ports:
+      - 88:80
+      - 443:443
 
   db:
     image: mariadb

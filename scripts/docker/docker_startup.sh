@@ -2,11 +2,13 @@
 
 MYSQL_ROOT_PASSWORD=root
 
-/usr/local/bin/docker stop mdb
+/usr/local/bin/docker stop linklib_mdb
 /usr/local/bin/docker run -d --rm \
-	--name mdb \
+	--name linklib_mdb \
 	--publish 3310:3306 \
 	--env MYSQL_ROOT_PASSWORD="$MYSQL_ROOT_PASSWORD" \
 	--env MYSQL_DATABASE=linksdb \
 	mariadb:latest
+
+/usr/local/bin/docker stop linklib_web
 
