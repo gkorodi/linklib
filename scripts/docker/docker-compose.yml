@@ -22,7 +22,7 @@ services:
       - DB_USER=linklib_robot
       - DB_PASSWORD=somethingstupidhard
     volumes:
-      - ${PWD}/src:/var/www/html
+      - ${PWD}:/var/www/html
     ports:
       - 88:80
       - 443:443
@@ -33,6 +33,6 @@ services:
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=links
     volumes:
-      - ${PWD}/scripts/data/links_links.sql:/docker-entrypoint-initdb.d/links_links.sql
+      - ${PWD}/scripts/data/links_db.sql:/docker-entrypoint-initdb.d/links_links.sql
     ports:
       - 3307:3306

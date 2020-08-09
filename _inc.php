@@ -14,7 +14,7 @@ date_default_timezone_set('US/Eastern');
 define('APP_ROOT','/linklib/');
 define('APP_TITLE','linkLIB');
 
-require_once('/opt/config/vars');
+require_once('conf/vars');
 
 $pageProfile['server'] = $_SERVER;
 $pageProfile['session'] = $_SESSION;
