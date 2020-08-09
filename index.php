@@ -122,9 +122,7 @@ require_once('_includes.php');
 	<!-- Bootstrap core JavaScript
 	================================================== -->
 	<!-- Placed at the end of the document so the pages load faster -->
-	<?php require_once('_scripts.php'); ?>
-
-
+	<?php require_once('templates/parts/scripts.js'); ?>
 
     <script>
 // Portfolio
