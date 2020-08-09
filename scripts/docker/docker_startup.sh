@@ -11,4 +11,9 @@ MYSQL_ROOT_PASSWORD=root
 	mariadb:latest
 
 /usr/local/bin/docker stop linklib_web
+/usr/local/bin/docker run -d --rm \
+	--name linklib_web \
+	--publish 88:80 \
+	--publish 443:443 \
+	httpd
 
