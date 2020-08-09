@@ -38,7 +38,7 @@ define('ROW_CREATED_AT',5);
 define('ROW_UPDATED_AT',6);
 define('ROW_DESCRIPTION',7);
 
-require_once('/opt/config/vars');
+require_once('conf/vars');
 
 $skiptagList = Array(
 	'og:image:height',
