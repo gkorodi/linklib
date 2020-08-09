@@ -64,7 +64,7 @@ function queryX($sql) {
 	$conn = new mysqli(DB_HOST.':'.DB_PORT, DB_USER, DB_PASSWORD, DB_NAME);
 	if ($conn->connect_errno) {
 		$response['status'] = 'error';
-		$response['message'] = $mysqli->connect_error;
+		$response['message'] = $conn->connect_error.' with URL: '.DB_USER.':'.DB_PASSWORD.'@'.DB_HOST.':'.DB_PORT.'/'.DB_NAME;
 	} else {
 		$rs = $conn->query($sql);
 		if($rs && $rs->num_rows>0){

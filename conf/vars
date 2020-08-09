@@ -1,7 +1,7 @@
 <?php
-define('DB_HOST','127.0.0.1');
-define('DB_PORT', 3310);
-define('DB_NAME','linksdb');
+define('DB_HOST','db');
+define('DB_PORT', 3306);
+define('DB_NAME','links');
 define('DB_USER','root');
 define('DB_PASSWORD','root');
 define('APP_ADMIN','gabor');
