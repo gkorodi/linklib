@@ -9,16 +9,23 @@ class Link {
 	var $link = '';
 	var $title = '';
 	var $status = '';
+	var $level = 0;
 	var $created_at = '';
 	var $updated_at = '';
 	var $tags = '';
+	
 	var $content = '';
 	var $description = '';
-  var $errorMessage = '';
+  	var $errorMessage = '';
 	var $row = Array();
 
 	function logger($msg) {
 		array_push($this->debugs, date('c')." ".$msg);
+	}
+
+	function setLevel($level) {
+		$this->level = $level;
+		return $this->update();
 	}
 
 	function __construct($id = null) {

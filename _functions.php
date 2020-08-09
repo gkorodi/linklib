@@ -78,46 +78,6 @@ if (isset($_REQUEST['method'])) {
 				</small>
 CONTENT;
 		}
-
-	} else if ($_REQUEST['method']==='delfile') {
-		$resp['status'] = 'error';
-		if (file_exists($_REQUEST['filename'])) {
-			array_push($debugs, "File exists");
-			try {
-				$s = unlink($_REQUEST['filename']);
-				$resp['message'] = ($s?
-					"File '".$_REQUEST['filename']."' has been deleted.":
-					"File '".$_REQUEST['filename']."' could not be deleted."
-				);
-				$resp['status'] = 'ok';
-			} catch (Exception $e) {
-				$resp['message'] = "Could not delete file!!!!";
-				array_push($debugs, print_r($e, true));
-			}
-		} else {
-			array_push($debugs, "File does not exists.");
-		}
-
-} else if ($_REQUEST['method']==='getfilecount') {
-		$resp['status'] = 'ok';
-		$resp['value'] = count(glob('data/*.json'));
-
-	} else if ($_REQUEST['method'] === 'savefeeditem') {
-		log_debug('saving new feed item.');
-
-		$link = new Link();
-		$link->title = $_REQUEST['title'];
-		$link->link = $_REQUEST['link'];
-		$link->updated_at = $_REQUEST['updated_at'];
-
-		if ($link->addLink()) {
-			$resp['status'] = 'ok';
-			$resp['message'] = "Imported details.";
-			foreach($link->debugs AS $msg) { log_debug("${msg}"); }
-		} else {
-			$resp['status'] = 'error';
-			$resp['message'] = "Could not import feed item.";
-		}
 	} else if ($_REQUEST['method']==='tagCurate') {
 		log_debug("tagCurate() request id ".$_REQUEST['id']);
 		
@@ -131,6 +91,11 @@ CONTENT;
 			$resp['message'] = 'Could not tag link ';
 			log_debug($lnk->debugs);
 		}
+
+	} else if ($_REQUEST['method']==='setLevel') {
+		
+		$lnk = new Link($_REQUEST['id']);
+		$resp['status'] = $lnk->setLevel($_REQUEST['level'])?'ok':'error';
 
 	} else if ($_REQUEST['method']==='savefile') {
 		$resp['status'] = 'error';
