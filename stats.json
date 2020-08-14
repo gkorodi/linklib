@@ -1,74 +1,74 @@
 [
 	{
 		"label": "Total Link Count",
-		"sql": "SELECT * counter FROM links"
+		"sql": "SELECT count(*) AS counter FROM links"
 	},
 	{
 		"label": "OK Status",
-		"sql": "SELECT * FROM links WHERE status = 200;"
+		"sql": "SELECT count(*) AS counter FROM links WHERE status = 200 and tags IS NOT NULL;"
 	},
 	{
 		"label": "Level1",
-		"sql": "SELECT * FROM links WHERE tags = 'level1'"
+		"sql": "SELECT count(*) AS counter FROM links WHERE tags = 'level1'"
 	},
 	{
 		"label": "Level2",
-		"sql": "SELECT * FROM links WHERE tags = 'level2'"
+		"sql": "SELECT count(*) AS counter FROM links WHERE tags = 'level2'"
 	},
 	{
 		"label": "Level3",
-		"sql": "SELECT * FROM links WHERE tags = 'level3'"
+		"sql": "SELECT count(*) AS counter FROM links WHERE tags = 'level3'"
 	},
 	{
 		"label": "Level4",
-		"sql": "SELECT * FROM links WHERE tags  = 'level4'"
+		"sql": "SELECT count(*) AS counter FROM links WHERE tags  = 'level4'"
 	},
 	{
 		"label": "level5",
-		"sql": "SELECT * FROM links WHERE tags = 'level5'"
+		"sql": "SELECT count(*) AS counter FROM links WHERE tags = 'level5'"
 	},
 	{
 		"label": "Later",
-		"sql": "SELECT * FROM links WHERE tags  = 'later'"
+		"sql": "SELECT count(*) AS counter FROM links WHERE tags  = 'later'"
 	},
 	{
 		"label": "Later2",
-		"sql": "SELECT * FROM links WHERE tags = 'later2'"
+		"sql": "SELECT count(*) AS counter FROM links WHERE tags = 'later2'"
 	},
 	{
 		"label": "Later3",
-		"sql": "SELECT * FROM links WHERE tags = 'later3'"
+		"sql": "SELECT count(*) AS counter FROM links WHERE tags = 'later3'"
 	},
 	{
 		"label": "Later4",
-		"sql": "SELECT * FROM links WHERE tags = 'later4'"
+		"sql": "SELECT count(*) AS counter FROM links WHERE tags = 'later4'"
 	},
 	{
 		"label": "Missing Tags",
-		"sql": "SELECT * FROM links WHERE tags IS NULL;"
+		"sql": "SELECT count(*) AS counter FROM links WHERE tags IS NULL;"
 	},
 	{
 		"label": "Empty Tags",
-		"sql": "SELECT count(*) counter FROM links WHERE tags = '';"
+		"sql": "SELECT count(*) AS counter FROM links WHERE tags = '';"
 	},
 	{
 		"label": "Missing Status",
-		"sql": "SELECT count(*) counter FROM links WHERE status IS NULL;"
+		"sql": "SELECT count(*) AS counter FROM links WHERE status IS NULL;"
 	},
 	{
 		"label": "Empty Status",
-		"sql": "SELECT count(*) counter FROM links WHERE status = '';"
+		"sql": "SELECT count(*) AS counter FROM links WHERE status = '';"
 	},
 	{
 		"label": "Missing Dates",
-		"sql": "SELECT count(*) counter FROM links WHERE updated_at IS NULL;"
+		"sql": "SELECT count(*) AS counter FROM links WHERE updated_at IS NULL;"
 	},
 	{
 		"label": "Empty Dates",
-		"sql": "SELECT count(*) counter FROM links WHERE updated_at = '';"
+		"sql": "SELECT count(*) AS counter FROM links WHERE updated_at = '';"
 	},
 	{
 		"label": "Wrong Dates",
-		"sql": "SELECT count(*) counter FROM links WHERE updated_at < '2000-01-01';"
+		"sql": "SELECT count(*) AS counter FROM links WHERE updated_at < '2000-01-01';"
 	}
 ]

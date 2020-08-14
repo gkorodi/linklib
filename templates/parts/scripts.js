@@ -86,6 +86,30 @@
 		});
 	}
 	
+	function setLevel(linkId, level) {
+		console.log('setLevel() starting');
+		$('#row'+linkId).css('background-color','gray');
+		$.getJSON( '_functions.php', {
+			method: 'updateLevelById',
+			id: linkId,
+			field: 'level',
+			value: level
+		})
+		.done(function( data ) {
+			console.log(data);
+			$('#row'+linkId).css('background-color','pink');
+			if (data.status == 'ok') { 
+				$('#row'+linkId).hide(); 
+			} else {
+				$('#row'+linkId).css('background-color','red');
+			}
+		})
+		.fail(function(data) {
+			console.log( "setLevel() error" );
+			console.log(data);
+		});
+	}
+	
 	function tagLink(linkId, tags) {
 		console.log('tagLink() starting');
 		$('#row'+linkId).css('background-color','gray');

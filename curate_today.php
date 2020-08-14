@@ -1,12 +1,15 @@
 <?php
-require_once('_inc.php');
+require_once('_includes.php');
 require_once(__DIR__.'/vendor/autoload.php');
 
 $loader = new \Twig\Loader\FilesystemLoader(__DIR__.'/templates');
-//$twig = new \Twig\Environment($loader); //, [ 'cache' => '/path/to/compilation_cache' ]);
 $twig = new \Twig\Environment($loader, array('debug' => true));
 
-$sql="SELECT * FROM links WHERE (tags = '' OR tags IS NULL) AND (DATE(updated_at) >= now() - INTERVAL 2 DAY) ORDER BY updated_at DESC";
+$sql="SELECT * FROM links WHERE "
+	."(tags = '' OR tags IS NULL) "
+	."AND (DATE(updated_at) >= now() - INTERVAL 2 DAY) "
+	."AND level IS NULL "
+	."ORDER BY updated_at DESC";
 $raw = queryX($sql);
 $rs = queryX($sql.' LIMIT 200');
 
@@ -16,11 +19,16 @@ foreach($rs AS $r) {
 	$links[] = $r;
 }
 
-if ($_REQUEST['format'] == 'json') {
+if (isset($_REQUEST['format']) && $_REQUEST['format'] == 'json') {
 	header('Content-type: application/json');
 	echo json_encode($links);
 	exit;
 }
 
-echo $twig->render('curate_today.html', ['profile' => $pageProfile, 'links' => $links, 'totalcount'=> count($raw), 'rowcount' => count($links)]);
+echo $twig->render('curate_today.html', [
+	'profile' => $pageProfile, 
+	'links' => $links, 
+	'totalcount'=> count($raw), 
+	'rowcount' => count($links)
+]);
 

@@ -9,19 +9,37 @@ class Link {
 	var $link = '';
 	var $title = '';
 	var $status = '';
+	var $level = 0;
 	var $created_at = '';
 	var $updated_at = '';
 	var $tags = '';
+	
 	var $content = '';
 	var $description = '';
-  var $errorMessage = '';
+	
 	var $row = Array();
+	
+	private $mysqli = null;
+	private $statementInsertTag = null;
 
 	function logger($msg) {
 		array_push($this->debugs, date('c')." ".$msg);
 	}
+	
+	function addTagForLink($tagValue) {
+		
+		return false;
+	}
 
 	function __construct($id = null) {
+		$this->mysqli = new mysqli(DB_HOST.(defined('DB_PORT')?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
+		if ($this->mysqli->connect_errno) {
+		    die("Connect failed: ".$this->mysqli->connect_error);
+		}
+		if (!($this->statementInsertTag = $this->mysqli->prepare("INSERT INTO tags(link_id, tag_name) VALUES (?, ?)"))) {
+		    die("Prepare failed: (" . $this->mysqli->errno . ") " . $this->mysqli->error);
+		}
+		
 		if ($id == null) {
 			$this->logger("Create an empty object. No 'id' has been specified in constructor.");
 		} else {
@@ -44,32 +62,22 @@ class Link {
 			} else {
 				$this->logger("Initialize Link object with id ".$id);
 				$this->id = $id;
-				$this->logger("Initialized Link object with new id: ".$this->id);
-
-				$mysqli = new mysqli(DB_HOST.(defined('DB_PORT')?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
-				/* check connection */
-				if ($mysqli->connect_errno) {
-				    $this->logger("Connect failed: %s\n", $mysqli->connect_error);
-				} else {
-					$query = "SELECT * FROM links WHERE id = ${id}";
-					if ($result = $mysqli->query($query)) {
-					    /* fetch associative array */
-					    while ($row = $result->fetch_assoc()) {
-					        $this->link = $row['link'];
-									$this->title = $row['title'];
-									$this->status = isset($row['status'])?empty($row['status'])?-1:$row['status']:0;
-									$this->tags = $row['tags'];
-									$this->updated_at = isset($row['updated_at'])?$row['updated_at']:date('Y-m-d');
-									$this->created_at = isset($row['created_at'])?$row['created_at']:date('Y-m-d');
-									$this->description = empty($row['description'])?'{}':$row['description'];
-									
-									$this->row = $row;
-					    }
-					    /* free result set */
-					    $result->free();
-					}
-					/* close connection */
-					$mysqli->close();
+				$query = "SELECT * FROM links WHERE id = ${id}";
+				if ($result = $this->mysqli->query($query)) {
+				    /* fetch associative array */
+				    while ($row = $result->fetch_assoc()) {
+				        $this->link = $row['link'];
+						$this->title = $row['title'];
+						$this->status = isset($row['status'])?empty($row['status'])?-1:$row['status']:0;
+						$this->tags = $row['tags'];
+						$this->level = $row['level'];
+						$this->updated_at = isset($row['updated_at'])?$row['updated_at']:date('Y-m-d');
+						$this->created_at = isset($row['created_at'])?$row['created_at']:date('Y-m-d');
+						$this->description = empty($row['description'])?'{}':$row['description'];
+						$this->row = $row;
+				    }
+				    /* free result set */
+				    $result->free();
 				}
 			}
 		}
@@ -196,6 +204,21 @@ class Link {
 	function getLastError() {
 		return implode(',', $this->errors);
 	}
+	
+	function getException() {
+		return implode('<br />', $this->errors);
+	}
+	
+	function updateLevelById($level) {
+		$this->logger("Starting updateLevelById(${level})");
+		$this->level = $level;
+		if (!$this->update()) {
+			$this->errors[] = 'Could not update link to level ${level}';
+			return false;
+		}
+		$this->logger("Updated link to level ${level}");
+		return true;
+	}
 
 	function delete() {
 		// Default to error, just in case.
@@ -301,6 +324,7 @@ class Link {
 		$this->logger("update() link        :".$this->link);
 		$this->logger("update() title       :".$this->title);
 		$this->logger("update() tags        :".$this->tags);
+		$this->logger("update() level       :".$this->level);
 		$this->logger("update() status      :".(isset($this->status)?(empty($this->status)?-1:$this->status):0));
 		$this->logger("update() updated_at  :".(isset($this->updated_at)?$this->updated_at:date('Y-m-d')));
 		$this->logger("update() created_at  :".(isset($this->created_at)?$this->created_at:date('Y-m-d')));
@@ -318,6 +342,7 @@ class Link {
 			$sqlString = "UPDATE links SET link = '".$mysqli->real_escape_string($this->link)."'";
 			$sqlString .= ", title = '".$mysqli->real_escape_string($this->title)."'";
 			$sqlString .= ", tags = '".$mysqli->real_escape_string($this->tags)."'";
+			$sqlString .= ", level = ".$this->level;
 			$sqlString .= ", status = ".$mysqli->real_escape_string($this->status);
 			if (empty($this->created_at)) {
 				$this->created_at = date('Y-m-d');

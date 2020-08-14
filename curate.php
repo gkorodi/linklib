@@ -1,12 +1,13 @@
 <?php
-require_once('_inc.php');
+require_once('_includes.php');
 require_once(__DIR__.'/vendor/autoload.php');
 
 $loader = new \Twig\Loader\FilesystemLoader(__DIR__.'/templates');
-//$twig = new \Twig\Environment($loader); //, [ 'cache' => '/path/to/compilation_cache' ]);
 $twig = new \Twig\Environment($loader, array('debug' => true));
 
-$sql="SELECT * FROM links WHERE tags = 'curate' ORDER BY updated_at ASC LIMIT 200";
+$sql="SELECT * FROM links WHERE ".
+	"tags = 'curate' OR tags = 'later' OR tags = 'later2' ".
+		"ORDER BY updated_at LIMIT 200";
 $rs = queryX($sql);
 
 $links = Array();
@@ -15,10 +16,10 @@ foreach($rs AS $r) {
 	$links[] = $r;
 }
 
-if ($_REQUEST['format'] == 'json') {
+if (isset($_REQUEST['format']) && $_REQUEST['format'] == 'json') {
 	header('Content-type: application/json');
 	echo json_encode($links);
 	exit;
 }
 
-echo $twig->render('curate.html', ['profile' => $pageProfile, 'links' => $links]);
+echo $twig->render('curate.html', ['profile' => $pageProfile, 'rowcount' => count($rs), 'links' => $links]);

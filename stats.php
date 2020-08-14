@@ -1,17 +1,15 @@
 <?php
-require_once('_inc.php');
+require_once('_includes.php');
 require_once(__DIR__.'/vendor/autoload.php');
+$loader = new \Twig\Loader\FilesystemLoader(__DIR__.'/templates');
+$twig = new \Twig\Environment($loader, array('debug' => true));
 
 function runQueries(&$queryList) {
 	foreach($queryList AS $q) {
-		//$qrs = queryX($q->sql);
-		$q->results = range(1, rand(1,10000)); //count($qrs);
+		$qrs = queryX($q->sql);
+		$q->results = $qrs;
 	}
 }
-
-$loader = new \Twig\Loader\FilesystemLoader(__DIR__.'/templates');
-//$twig = new \Twig\Environment($loader); //, [ 'cache' => '/path/to/compilation_cache' ]);
-$twig = new \Twig\Environment($loader, array('debug' => true));
 
 $querylist = json_decode(file_get_contents('stats.json'));
 runQueries($querylist);

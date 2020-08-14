@@ -19,7 +19,7 @@ function findMetaTags($content) {
 	$arr = Array();
 	$doc = new DOMDocument();
 	libxml_use_internal_errors(true);
-	@$doc->loadHTML($content); // loads your HTML
+	@$doc->loadHTML($content);
 	
 	foreach($doc->getElementsByTagName('title') as $tag) {
 		log_debug('got title');
@@ -201,16 +201,44 @@ CONTENT;
 		}
 		$resp['status'] = ($status?'ok':'error');
 		$resp['message'] = implode("\n",$logmessages);
+		
 	} else if ($_REQUEST['method']==='updateLevelById') {
-
 		$link = new Link($_REQUEST['id']);
-		if ($link->updateLevelById($_REQUEST['level'])){
+		if ($link->updateLevelById($_REQUEST['value'])) {
 			$resp['status'] = 'ok';
+			$resp['message'] = implode('<br />', $link->debugs);
 		} else {
 			$resp['status'] = 'error';
-			$resp['message'] = $link->getException();
+			$resp['message'] = implode('<br />', $link->errors);
 		}
 
+	} else if ($_REQUEST['method']==='updateTagsById') {
+		
+		$link = new Link($_REQUEST['id']);
+		foreach(explode(',', $_REQUEST['value']) AS $tag) {
+			switch($tag) {
+				case 'level1':
+					$link->updateLevelById(1);
+					break;
+				case 'level2':
+					$link->updateLevelById(2);
+					break;
+				case 'level3':
+					$link->updateLevelById(3);
+					break;
+				case 'level4':
+					$link->updateLevelById(4);
+					break;
+				case 'level5':
+					$link->updateLevelById(5);
+					break;
+				default:
+					$link->addTagForLink($tag);
+			}
+		}
+		$resp['status'] = 'ok';
+		$resp['message'] = implode('<br />', $link->debugs);
+		
 	} else if ($_REQUEST['method']==='updateFieldById') {
 
 		$status = false;

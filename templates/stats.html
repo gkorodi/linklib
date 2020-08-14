@@ -20,7 +20,7 @@
 					<a href="query.php?q={{ query.sql }}">{{ query.label }}</a>
 				</th>
 				<td>
-					{{ query.results|length }} 
+					{{ query.results[0]['counter'] }} 
 				</td>
 				<td>
 					{{ (((query.results|length)/querylist[0].results.0.counter)*100)|number_format(2, '.', ',') }}%
