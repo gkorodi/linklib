@@ -16,7 +16,7 @@ class Link {
 	
 	var $content = '';
 	var $description = '';
-	
+  	var $errorMessage = '';
 	var $row = Array();
 	
 	private $mysqli = null;
@@ -29,6 +29,11 @@ class Link {
 	function addTagForLink($tagValue) {
 		
 		return false;
+	}
+
+	function setLevel($level) {
+		$this->level = $level;
+		return $this->update();
 	}
 
 	function __construct($id = null) {

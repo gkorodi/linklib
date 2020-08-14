@@ -11,7 +11,7 @@ function getURLFromShortcut($fileContent) {
 }
 
 function serviceAddLink($linkRecord) {
-    $urlToPost = 'https://gaborkorodi.com/linklib/api_link.php';
+    $urlToPost = 'https://gaborkorodi.com/linklib/api/link.php';
 
     $ch = curl_init( $urlToPost );
     # Setup request to send json via POST.
