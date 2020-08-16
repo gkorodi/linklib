@@ -1,0 +1,21 @@
+{% extends('fullpage.html') %}
+
+{% block content %}
+	<div class="col-lg-8 col-lg-offset-2">
+		<h1>URL Link Library.</h1>
+		<h3>Collect and Curate all the links that fit to be read.</h3>
+		<br />
+		<h5>Enter your designated username:</h5>
+	</div>
+	<div class="col-lg-8 col-lg-offset-2 himg">
+		<form method="POST">
+			<input type="text" name="uid" />
+			<button class="btn btn-info">Login</button>
+		</form>
+		<br />
+		<br />
+		{% for error in errors %}
+		<div style="color: red;">{{ error }}</div>
+		{% endfor %}
+	</div>
+{% endblock %}

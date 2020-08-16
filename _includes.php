@@ -227,15 +227,6 @@ function showUserRow($row) {
 	<?php
 }
 
-function errorMessage($msg) {
-	echo '<div style="color: red">'.$msg.'</div>';
-}
-
-function debugMessage($msg) {
-	if (APP_DEBUG!=null && APP_DEBUG === 'on') {
-		echo '<div style="color: gray">'.$msg.'</div>';
-	}
-}
 
 function query($sql) {
 	// Examples from: http://www.pontikis.net/blog/how-to-use-php-improved-mysqli-extension-and-why-you-should

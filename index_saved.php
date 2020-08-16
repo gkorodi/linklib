@@ -57,23 +57,65 @@ require_once('_includes.php');
  					<i class="fa fa-heart-o"></i>
  					<h4>Handsomely Crafted</h4>
  					<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
- 					
+ 					<p><br/><a href="#" class="btn btn-theme">More Info</a></p>
  				</div>
  				<div class="col-md-4">
  					<i class="fa fa-flask"></i>
  					<h4>Retina Ready</h4>
  					<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
- 					
+ 					<p><br/><a href="#" class="btn btn-theme">More Info</a></p>
  				</div>
  				<div class="col-md-4">
  					<i class="fa fa-trophy"></i>
  					<h4>Quality Theme</h4>
  					<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
- 					
+ 					<p><br/><a href="#" class="btn btn-theme">More Info</a></p>
  				</div>
 	 		</div>
 	 	</div><! --/container -->
 	 </div><! --/service -->
+
+	 <!--
+	 <?php
+		 // require_once('_section_portfolio.php');
+	?>
+	 -->
+
+
+	<!-- *****************************************************************************************************************
+	 MIDDLE CONTENT
+	 ***************************************************************************************************************** -->
+
+	 <div class="container mtb">
+	 	<div class="row">
+	 		<div class="col-lg-4 col-lg-offset-1">
+		 		<h4>More ...</h4>
+		 		<p>There is nothing more to say. This is it. Sweet and simple. </p>
+ 				<!-- <p><br/><a href="about.html" class="btn btn-theme">More Info</a></p> -->
+	 		</div>
+
+	 		<div class="col-lg-3">
+	 			<h4>Frequently Asked</h4>
+	 			<div class="hline"></div>
+	 			<p><a href="#">How do you pick the links?</a></p>
+	 			<p><a href="#">Can you add my link to this list?</a></p>
+	 			<p><a href="#">Can you contribute a link to me?</a></p>
+	 			<p><a href="#">Can you pay me if you include one of my URLs?</a></p>
+	 			<p><a href="#">Can you do the same app for me?</a></p>
+	 		</div>
+
+	 		<div class="col-lg-3">
+	 			<h4>Latest Links</h4>
+	 			<div class="hline"></div>
+	 			<p><a href="single-post.html">Our new site is live now.</a></p>
+	 			<p><a href="single-post.html">Retina ready is not an option.</a></p>
+	 			<p><a href="single-post.html">Bootstrap 3 framework is the best.</a></p>
+	 			<p><a href="single-post.html">You need this theme, buy it now.</a></p>
+	 			<p><a href="single-post.html">This theme is what you need.</a></p>
+	 		</div>
+
+	 	</div><! --/row -->
+	 </div><! --/container -->
 
 	<?php require_once('templates/parts/footer.html'); ?>
 	<?php require_once('templates/parts/scripts.js'); ?>
