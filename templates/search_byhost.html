@@ -54,13 +54,13 @@
 			{% endif %}
 			<br />
 			&nbsp;&nbsp;&nbsp;
-			{% include('parts/buttons_taglinks.html') %}
+			{% include('parts/buttons_levellinks.html') %}
 		</td>
 		<td>
-			{% if link.created_at is empty %}n/a{% else %}{{ link.created_at|split(' ',2)[0] }}{% endif %}
+			{% if link.created_at is empty %}n/a{% else %}{{ link.created_at|date('Y-m-d') }}{% endif %}
 		</td>
 		<td>
-			{% if link.updated_at is empty %}n/a{% else %}{{ link.updated_at|split(' ',2)[0] }}{% endif %}
+			{% if link.updated_at is empty %}n/a{% else %}{{ link.updated_at|date('Y-m-d') }}{% endif %}
 		</td>
 	</tr>
 	{% endfor %}

@@ -117,7 +117,7 @@ require_once('_includes.php');
 	 	</div><! --/row -->
 	 </div><! --/container -->
 
-	<?php require_once('templates/footer.html'); ?>
+	<?php require_once('templates/parts/footer.html'); ?>
 
 	<!-- Bootstrap core JavaScript
 	================================================== -->

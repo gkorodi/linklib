@@ -3,6 +3,20 @@ $header = Array();
 if (function_exists('apache_request_headers')) {
 	$header = apache_request_headers(); 
 } 
+
+/*foreach (getallheaders() as $name => $value) {
+    switch($name) {
+    	case 'Authorization':
+		$a = explode(' ', $value);
+		if (validToken($a[1])) {
+			$_SESSION['uid'] = $a[1];
+		}
+		break;
+	default:
+    }
+}*/
+
+
 if (!isset($header['Authorization']) || $header['Authorization'] != 'testToken') {
 	if (isset($_SERVER['PHP_SELF'])) {
 		session_start();
@@ -67,23 +81,9 @@ $skiptagList = Array(
 	'bt:body'
 );
 
-
 function validToken($token) {
 	return true;
 }
-
-foreach (getallheaders() as $name => $value) {
-    switch($name) {
-    	case 'Authorization':
-		$a = explode(' ', $value);
-		if (validToken($a[1])) {
-			$_SESSION['uid'] = $a[1];
-		}
-		break;
-	default:
-    }
-}
-
 
 function getRowDescription($record) {
 	$obj = json_decode($record[ROW_DESCRIPTION]);

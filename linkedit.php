@@ -194,12 +194,12 @@ if (isset($_POST['id'])) {
     </div><!--/container -->
 		</form>
 
-	<?php require_once('_footer.php'); ?>
+	<?php require_once('templates/parts/footer.html'); ?>
 
 	<!-- Bootstrap core JavaScript
 	================================================== -->
 	<!-- Placed at the end of the document so the pages load faster -->
-	<?php require_once('_scripts.php'); ?>
+	<?php require_once('templates/parts/scripts.js'); ?>
 
 	<script>
 	$('#btnNext').on('click', function() {

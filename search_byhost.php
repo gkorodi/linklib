@@ -1,9 +1,6 @@
 <?php
-require_once('_inc.php');
+require_once('_includes.php');
 require_once(__DIR__.'/vendor/autoload.php');
-
-$page['profile'] = $pageProfile;
-
 $loader = new \Twig\Loader\FilesystemLoader(__DIR__.'/templates');
 $twig = new \Twig\Environment($loader, array('debug' => true));
 
@@ -34,5 +31,3 @@ if (isset($_REQUEST['format']) && $_REQUEST['format'] == 'json') {
 }
 
 echo $twig->render('search_byhost.html', $page);
-
-?>
