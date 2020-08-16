@@ -7,11 +7,11 @@
 		<input type="checkbox" class="adjusterfield" onchange="submit();" name="untaggedonly" {% if profile.request.untaggedonly %}checked{% endif %}/> UntaggedOnly<br />
 		<input type="checkbox" class="adjusterfield" name="nostatus" {% if profile.request.nostatus %}checked{% endif %}/> No Status<br />
 		<input type="checkbox" class="adjusterfield" name="badstatus" {% if profile.request.badstatus %}checked{% endif %}/> Bad Status<br />
-		<input type="hidden" id="fldHost" name="host" value="{{ profile.request.host }}" />
+		<input type="hidden" id="fldHost" name="host" value="{{ request.host }}" />
 	</form>
 
 	<h3>
-		Search Results by host <a href="http://{{ profile.request.host }}" target="_newWindow">{{ profile.request.host }}</a>
+		Search Results by host <a href="http://{{ request.host }}" target="_newWindow">{{ request.host }}</a>
 	</h3>
 	
 {% endblock %}
@@ -19,7 +19,7 @@
 {% block content %}
 <style>
 	TR.link-301 {
-		background-color: lightGray;
+		background-color: lightGray; color: black;
 	}
 	TR.link-401 {
 		background-color: purple; color: white;
@@ -28,7 +28,7 @@
 		background-color: lightBlue; color: white;
 	}
 	tr.link-0 {
-		background-color: #f0f0f0; color: white;
+		background-color: #f0f0f0; color: blue;
 	}
 </style>
 
