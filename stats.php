@@ -23,8 +23,4 @@ if (isset($_REQUEST['format']) && $_REQUEST['format'] == 'json') {
   exit;
 }
 
-echo $twig->render('stats.html', [ 
-	'profile' => $pageProfile, 
-	'querylist' => $querylist,
-	'statuses' => $statuses
-]);
+renderView('stats.html', ['querylist' => $querylist, 'statuses' => $statuses]);

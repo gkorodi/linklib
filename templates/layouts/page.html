@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	{% include('parts/metatags.html') %}
+	{% include 'parts/metatags.html' %}
 
 	<link rel="shortcut icon" href="asset/ico/favicon.ico">
-	<title>linkLibrary - {{ page_title }}</title>
+	<title>linkLibrary - {{ context.page_title }}</title>
 	<link href="assets/css/bootstrap.css" rel="stylesheet">
 
 	<link href="assets/css/style.css" rel="stylesheet">
@@ -12,7 +12,7 @@
 	<script src="assets/js/modernizr.js"></script>
 </head>
 <body>
-	{{ include('parts/menu.html') }}
+	{% include 'parts/menu.html' %}
 
     <!-- *****************************************************************************************************************
     BLUE WRAP
@@ -43,8 +43,7 @@
       </div><! --/row -->
     </div><! --/container -->
 
-	{{ include('parts/footer.html') }}
-
-	{{ include('parts/scripts.js') }}
+	{% include 'parts/footer.html' %}
+	{% include 'parts/scripts.js' %}
 </body>
 </html>

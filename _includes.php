@@ -32,6 +32,8 @@ if (!isset($header['Authorization']) || $header['Authorization'] != 'testToken')
 date_default_timezone_set('US/Eastern');
 define('APP_ROOT','/linklib/');
 define('APP_TITLE','linkLIB');
+$context['app_title'] = APP_TITLE;
+
 define('APP_ADDRESS', '<h4>Our Bunker</h4>'.
 '<div class="hline-w"></div>'.
 '<p>'.
@@ -58,9 +60,9 @@ define('ROW_DESCRIPTION',7);
 
 require_once('conf/vars');
 
-$pageProfile['server'] = $_SERVER;
-$pageProfile['session'] = $_SESSION;
-$pageProfile['request'] = $_REQUEST;
+$context['server'] = $_SERVER;
+$context['session'] = $_SESSION;
+$context['request'] = $_REQUEST;
 
 $skiptagList = Array(
 	'og:image:height',
@@ -80,6 +82,15 @@ $skiptagList = Array(
 	'apple-mobile-web-app-title',
 	'bt:body'
 );
+
+function renderView($filename, $pageContentDetails) {
+	global $context;
+	global $twig;
+	echo $twig->render(
+		$filename, 
+		array_merge(Array('context' => $context), $pageContentDetails)
+	);
+}
 
 function validToken($token) {
 	return true;
@@ -264,6 +275,9 @@ require_once('class_Link.php');
 
 function justHostName($url) {
 	$a = explode('/', $url);
+	if (count($a)<3) {
+		return 'Invalid url: '.$url;
+	}
 	return $a[2];
 }
 ?>

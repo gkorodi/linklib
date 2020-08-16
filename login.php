@@ -1,14 +1,11 @@
 <?php
 require_once('_includes.php');
 require_once(__DIR__.'/vendor/autoload.php');
-
 $loader = new \Twig\Loader\FilesystemLoader(__DIR__.'/templates');
 $twig = new \Twig\Environment($loader, array('debug' => true));
 
 $errors = Array();
-if (isset($_SESSION['uid'])) {
-	$error[] = 'Already logged in, as '.$_SESSION['uid'];
-} else {
+if (!isset($_SESSION['uid'])) {
 	if (!isset($_REQUEST['uid'])) {
 		$error[] = 'No UID specified. Need it to verify!';
 	} else {
@@ -20,17 +17,15 @@ if (isset($_SESSION['uid'])) {
 		} elseif (in_array($_REQUEST['uid'], explode(',', APP_USERS))) {
 			$_SESSION['uid'] = $_REQUEST['uid'];
 			$_SESSION['role'] = 'USER';
-
 		} else {
 			$errors[] = 'UID:<b>'.$_REQUEST['uid'].'</b> has no role!';
 		}
 	}
 }
 
-echo json_encode($errors);
-exit;
+if (isset($_SESSION['uid'])) {
+	header('Location: stats.php');
+	exit;
+}
 
-echo $twig->render('login.html', [ 
-	'profile' => $pageProfile, 
-	'errors' => $errors
-]);
+renderView('login.html', ['errors' => $errors]);

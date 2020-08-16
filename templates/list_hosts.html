@@ -1,0 +1,35 @@
+{% extends('fullpage.html') %}
+
+{% block blue %}
+<h3>List of Hosts</h3>
+{% endblock %}
+
+{% block content %}
+	<table class="table">
+	<tr>
+		<th>Host</th>
+		<th>Tagless</th>
+		<th>NotOK</th>
+		<th>Total</th>
+	</tr>
+
+	{% for host in hostList %}
+		<tr>
+			<th>
+				<a href="search_byhost.php?host={{host.name}}" target="_newEditLinkWindow">{{host.name}}</a>
+				&nbsp; <a href="magazine.php?host={{host.name}}" target="magazineTab">&#x1F517;</a>
+			</th>
+			<td>
+				
+			</td>
+			<td>
+				
+			</td>
+			<td>
+				{{ host.total }}
+			</td>
+		</tr>
+		
+	{% endfor %}
+	</table>
+{% endblock %}
