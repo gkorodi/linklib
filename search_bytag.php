@@ -1,13 +1,13 @@
  <?php
-require_once('_inc.php');
+require_once('_includes.php');
 require_once(__DIR__.'/vendor/autoload.php');
 
 $loader = new \Twig\Loader\FilesystemLoader(__DIR__.'/templates');
-//$twig = new \Twig\Environment($loader); //, [ 'cache' => '/path/to/compilation_cache' ]);
 $twig = new \Twig\Environment($loader, array('debug' => true));
-$links = Array();
 
+$links = Array();
 $resultset = Array();
+
 if (isset($_REQUEST['tag'])) {
 	if ($_REQUEST['tag'] == 'empty') {
 	        $sql = "SELECT * FROM links WHERE tags IS NULL ".
@@ -30,8 +30,8 @@ if (isset($_REQUEST['tag'])) {
 	$resultset = queryX($sql);
 }
 
-$links = Array();
-foreach($resultset AS $r) {
+$links = $resultset;
+/*foreach($resultset AS $r) {
 	$r['hostname'] = justHostName($r['link']);
 	if (empty($r['created_at'])) {
 		$r['created_at'] = 'n/a';
@@ -44,31 +44,33 @@ foreach($resultset AS $r) {
 		$r['updated_at'] = date('Y-m-d', strtotime($r['updated_at']));
 	}
 	$links[] = $r;
-}
+}*/
 
 // Related Tags
-
-$relatedTags = Array();
+/*$relatedTags = Array();
 $tagList = Array();
 foreach($resultset AS $row) {
-	if ($k === $_REQUEST['tag']) { continue; }
+	if ($row['tags'] === $_REQUEST['tag']) { continue; }
 	if (empty($row['tags'])) { $tagList[] = 'empty'; }
 	foreach(explode(',', $row['tags']) AS $tag) {
 		$tagList[] = $tag;
 	}
 }
 $relatedTags = groupBy($tagList);
-ksort($result);
+ksort($relatedTags);
+*/
 
-$data = ['links' => $links, 'searchTag' => $_REQUEST['tag'], 'profile' => $pageProfile, 'relatedTags' => $relatedTags];
+$data = [
+	'links' => $links, 
+	'searchTag' => $_REQUEST['tag'], 
+	'profile' => $pageProfile, 
+	'relatedTags' => Array()
+];
 
-if (isset($_REQUEST['format']) && !empty($_REQUEST['format']) && $_REQUEST['format'] == 'json') {
+if (isset($_REQUEST['format']) && $_REQUEST['format'] === 'json') {
 	header('Content-type: application/json');
 	echo json_encode($data);
 	exit;
 }
 
 echo $twig->render('search_bytag.html', $data);
-
-?>
-

@@ -1,5 +1,5 @@
 <?php
-require_once('_includes.php');
+require_once('../_includes.php');
 
 $categories['empty'] = 0;
 $categories['NULL'] = 0;

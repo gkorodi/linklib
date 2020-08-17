@@ -1,6 +1,77 @@
 [
 	{
 		"label": "Total Link Count",
+<<<<<<< HEAD
+		"sql": "SELECT count(*) AS counter FROM links"
+	},
+	{
+		"label": "OK Status",
+		"sql": "SELECT count(*) AS counter FROM links WHERE status = 200 and tags IS NOT NULL;"
+	},
+	{
+		"label": "Level1",
+		"sql": "SELECT count(*) AS counter FROM links WHERE tags = 'level1'"
+	},
+	{
+		"label": "Level2",
+		"sql": "SELECT count(*) AS counter FROM links WHERE tags = 'level2'"
+	},
+	{
+		"label": "Level3",
+		"sql": "SELECT count(*) AS counter FROM links WHERE tags = 'level3'"
+	},
+	{
+		"label": "Level4",
+		"sql": "SELECT count(*) AS counter FROM links WHERE tags  = 'level4'"
+	},
+	{
+		"label": "level5",
+		"sql": "SELECT count(*) AS counter FROM links WHERE tags = 'level5'"
+	},
+	{
+		"label": "Later",
+		"sql": "SELECT count(*) AS counter FROM links WHERE tags  = 'later'"
+	},
+	{
+		"label": "Later2",
+		"sql": "SELECT count(*) AS counter FROM links WHERE tags = 'later2'"
+	},
+	{
+		"label": "Later3",
+		"sql": "SELECT count(*) AS counter FROM links WHERE tags = 'later3'"
+	},
+	{
+		"label": "Later4",
+		"sql": "SELECT count(*) AS counter FROM links WHERE tags = 'later4'"
+	},
+	{
+		"label": "Missing Tags",
+		"sql": "SELECT count(*) AS counter FROM links WHERE tags IS NULL;"
+	},
+	{
+		"label": "Empty Tags",
+		"sql": "SELECT count(*) AS counter FROM links WHERE tags = '';"
+	},
+	{
+		"label": "Missing Status",
+		"sql": "SELECT count(*) AS counter FROM links WHERE status IS NULL;"
+	},
+	{
+		"label": "Empty Status",
+		"sql": "SELECT count(*) AS counter FROM links WHERE status = '';"
+	},
+	{
+		"label": "Missing Dates",
+		"sql": "SELECT count(*) AS counter FROM links WHERE updated_at IS NULL;"
+	},
+	{
+		"label": "Empty Dates",
+		"sql": "SELECT count(*) AS counter FROM links WHERE updated_at = '';"
+	},
+	{
+		"label": "Wrong Dates",
+		"sql": "SELECT count(*) AS counter FROM links WHERE updated_at < '2000-01-01';"
+=======
 		"sql": "SELECT * counter FROM links"
 	},
 	{
@@ -70,5 +141,6 @@
 	{
 		"label": "Wrong Dates",
 		"sql": "SELECT count(*) counter FROM links WHERE updated_at < '2000-01-01';"
+>>>>>>> master
 	}
 ]

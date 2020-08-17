@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {% include 'parts/metatags.html' %}
+	
+    <link rel="shortcut icon" href="assets/ico/favicon.ico">
+    <title>{{ context.app_title }}</title>
+	
+    <link href="assets/css/bootstrap.css" rel="stylesheet">
+    <link href="assets/css/style.css" rel="stylesheet">
+    <link href="assets/css/font-awesome.min.css" rel="stylesheet">
+  </head>
+
+  <body>
+	{% include 'parts/menu.html' %}
+
+	<!-- *****************************************************************************************************************
+	 HEADERWRAP
+	 ***************************************************************************************************************** -->
+	<div id="headerwrap">
+	    <div class="container">
+			<div class="row">
+				<div class="col-lg-8 col-lg-offset-2">
+					<h3>All the links that are fit to be clicked.</h3>
+					<h1>URL LinkLibrary</h1>
+					<h5>Hand curated URL/Title store of various articles, based on my specific interests.</h5>
+					<h5>Categorized and tagged based on one persons' fancy.</h5>
+				</div>
+				<div class="col-lg-8 col-lg-offset-2 himg">
+					<img src="assets/img/browser.png" class="img-responsive">
+				</div>
+			</div><!-- /row -->
+	    </div> <!-- /container -->
+	</div><!-- /headerwrap -->
+
+	<!-- *****************************************************************************************************************
+	 SERVICE LOGOS
+	 ***************************************************************************************************************** -->
+	 <div id="service">
+	 	<div class="container">
+ 			<div class="row centered">
+ 				<div class="col-md-4">
+ 					<i class="fa fa-heart-o"></i>
+ 					<h4>Handsomely Crafted</h4>
+ 					<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+ 					
+ 				</div>
+ 				<div class="col-md-4">
+ 					<i class="fa fa-flask"></i>
+ 					<h4>Retina Ready</h4>
+ 					<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+ 					
+ 				</div>
+ 				<div class="col-md-4">
+ 					<i class="fa fa-trophy"></i>
+ 					<h4>Quality Theme</h4>
+ 					<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+ 					
+ 				</div>
+	 		</div>
+	 	</div><! --/container -->
+	 </div><! --/service -->
+
+	{% include 'parts/footer.html' %}
+	{% include 'parts/scripts.js' %}
+
+
+  </body>
+</html>

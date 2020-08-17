@@ -1,0 +1,25 @@
+{% extends('fullpage.html') %}
+
+{% block blue %}
+	<h3>LOGIN</h3>
+{% endblock %}
+
+{% block content %}
+	<div class="col-lg-8 col-lg-offset-2 himg">
+		<form method="POST">
+			
+		    <div class="form-group">
+		      <!-- <label for="fldUsername">Username</label> -->
+		      <input type="username" class="form-control" id="uid" aria-describedby="usernameHelp" name="uid" placeholder="Enter username">
+		      <small id="usernameHelp" class="form-text text-muted">Please enter the username you have been given by the admin.</small>
+		    </div>
+			
+			<button class="btn btn-info">Login</button>
+		</form>
+		<br />
+		<br />
+		{% for error in errors %}
+		<div style="color: red;">{{ error }}</div>
+		{% endfor %}
+	</div>
+{% endblock %}
