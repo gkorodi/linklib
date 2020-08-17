@@ -1,3 +1,11 @@
 vendor/
 
 .DS_Store
+.idea/linklib.iml
+.idea/modules.xml
+.idea/php-test-framework.xml
+.idea/php.xml
+.idea/vcs.xml
+.idea/workspace.xml
+.phpunit.result.cache
+scripts/data/links_db.sql
