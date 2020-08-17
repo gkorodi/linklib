@@ -3,3 +3,4 @@ vendor/
 .DS_Store
 scripts/data/
 links_links_2020-08-09.sql
+.phpunit.result.cache
