@@ -11,7 +11,7 @@
 						
 		<div style="color:red">{{errorMessage}}</div>
 						
-		<p class="lead">{{link.description}}</p>
+		<p class="lead">{{ link.description }}</p>
 	</div>
 </div>
 <div class="row">
@@ -24,63 +24,65 @@
 
 {% block content %}
 <form id="frmEditLink" class="form-horizontal" method="POST">
-    	<div class="container">
-					<div class="row">
-						<a style="margin-right: 10px" class="btn btn-warning"
-						href="https://duckduckgo.com/?q={{link.title}}&t=ffsb&ia=web" target="_srchWindow">Duck</a>
+	<div class="container">
+		<input type="hidden" id="id" name="id" value="{{link.id}}" />
+		<input type="hidden" id="level" name="level" value="{{link.level}}" />
 
-						<a style="margin-right: 10px" class="btn btn-warning" href="{{link.link}}" target="_newWindow">Show</a>
-						<input type="submit" name="btnUpdate" id="btnUpdateId" class="btn btn-info " value="Update" /><br />
-						<br/>
-						Level: {{link.level}}
-						<br />
-					</div>
-					
-					<div class="row">
-						<div class="form-group col-lg-4">
-							<label for="tags">Tags:</label>
-							<input type="text" class="form-control" id="tags" name="tags" value="{{link.tags}}" />
-						</div>
-					</div>
-				
-					<div class="row">
-						<div class="form-group col-lg-4">
-							<label for="created_at">Created At:</label>
-							<input type="text" class="form-control" id="created_at" name="created_at" size="12" value="{{link.created_at|date('Y-m-d')}}" />
-						</div>
-					</div>
-					
-					<div class="row left">
-						<div class="form-group col-lg-4">
-							<label for="link">Link:</label>
-							<input type="text" class="form-control" id="link" name="link" value="{{link.link}}" />
-						</div>
-					</div>
-				
-					<div class="row">
-						<textarea name="description" id="description" cols="100" rows="10">{{link.row|json_encode}}</textarea>
-					</div>
-				
-					<div class="row">
-						<div class="form-group">
-							<label for="title">Title:</label>
-							<input type="text" class="form-control" id="title" name="title" value="<?php echo isset($link->title)?$link->title:'Missing Title';?>" />
-						</div>
-						
-					
-						<input type="hidden" id="id" name="id" value="<?=$link->id?>" />
+		<div class="row">
+			<a style="margin-right: 10px" class="btn btn-warning"
+			href="https://duckduckgo.com/?q={{link.title}}&t=ffsb&ia=web" target="_srchWindow">Duck</a>
 
-						<div class="form-group">
-							<label for="status">Status:</label>
-							<input type="text" class="form-control" id="status" name="status" value="{{link.status}}" size="10" />
-						</div>
+			<a style="margin-right: 10px" class="btn btn-warning" href="{{link.link}}" target="_newWindow">Show</a>
+			
+			<input type="submit" name="btnUpdate" id="btnUpdateId" class="btn btn-info" value="Update" /><br />
+			
+			<br/>
+			Level: {{link.level}}
+			<br />
+		</div>
+					
+		<div class="row">
+			<div class="form-group col-lg-4">
+				<label for="tags">Tags:</label>
+				<input type="text" class="form-control" id="tags" name="tags" value="{{link.tags}}" />
+			</div>
+		</div>
+				
+		<div class="row">
+			<div class="form-group col-lg-4">
+				<label for="created_at">Created At:</label>
+				<input type="text" class="form-control" id="created_at" name="created_at" size="12" value="{{link.created_at|date('Y-m-d')}}" />
+			</div>
+		</div>
+					
+		<div class="row left">
+			<div class="form-group col-lg-4">
+				<label for="link">Link:</label>
+				<input type="text" class="form-control" id="link" name="link" value="{{link.link}}" />
+			</div>
+		</div>
+	
+		<div class="row">
+			<textarea name="description" id="description" cols="100" rows="10">{{link.description}}</textarea>
+		</div>
+	
+		<div class="row">
+			<div class="form-group">
+				<label for="title">Title:</label>
+				<input type="text" class="form-control" id="title" name="title" value="{{link.title}}" />
+			</div>
 
-						<div class="form-group">
-							<label for="fld_updated_at">Updated At:</label>
-							<input type="text" readonly class="form-control" id="fld_updated_at" value="{{link.updated_at|date('Y-m-d')}}" size="12">
-						</div>
-						
-					</div>
+			<div class="form-group">
+				<label for="status">Status:</label>
+				<input type="text" class="form-control" id="status" name="status" value="{{link.status}}" size="10" />
+			</div>
+
+			<div class="form-group">
+				<label for="fld_updated_at">Updated At:</label>
+				<input type="text" readonly class="form-control" id="fld_updated_at" value="{{link.updated_at|date('Y-m-d')}}" size="12">
+			</div>
+			
+		</div>
     </div><!--/container -->
 		</form>
 {% endblock %}
@@ -91,20 +93,15 @@
 		console.log('going to next records.')
 		$('#blue').css('background-color','gray');
 	});
-	
-	$('#btnCurate').on('click', function() {
-		tagCurate(<?=$link->id?>);
-		window.location='linkedit.php';
-	});
 
 	$('#btnDelete').on('click', function() {
 		$('#blue').css('background-color','orange');
-		$.get('_functions.php?method=deletelink&id=<?=$link->id?>', function(data) {
+		$.get('_functions.php?method=deletelink&id={{link.id}}', function(data) {
 			if (data.status == 'ok') {
 				$('#blue').css('background-color','lightGreen');
 				window.location='linkedit.php';
 			} else {
-				alert('Failed to delete link <?=$link->id?>');
+				alert('Failed to delete link {{link.id}}');
 				$('#blue').css('background-color','red');
 			}
 		});
@@ -112,23 +109,23 @@
 
 	$("form input[type=submit]").click(function() {
 		var baseColor = $('#blue').css('background-color');
+		
 		$('#blue').css('background-color','yellow');
 		$('#lblTitle').html("Loading ...");
+		
 		if($(this).val() == 'Update') {
 			$('#blue').css('background-color', baseColor);
+			
 		 return true;
 		}
 	});
 
 	$('#btnFix').on('click', function(event) {
-		
 		var baseColor = $('#blue').css('background-color');
 		$('#blue').css('background-color','yellow');
-
+		console.log("Calling URL:"+'_functions.php?method=getheader&id={{link.id}}');
 		
-		console.log("Calling URL:"+'_functions.php?method=getheader&id=<?=$link->id?>');
-		
-		$.get('_functions.php?method=getheader&id=<?=$link->id?>', function(data) {
+		$.get('_functions.php?method=getheader&id={{link.id}}', function(data) {
 			console.log(data);
 			$('#blue').css('background-color','lightGreen');
 

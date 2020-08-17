@@ -33,6 +33,7 @@ $errorMessage = '';
 if (isset($_POST['id'])) {
 
 	$link = new Link($_POST['id']);
+	
 	$link->title = $_POST['title'];
 	$link->link = $_POST['link'];
 
@@ -60,9 +61,6 @@ if (isset($_POST['id'])) {
 		$errorMessage = 'Could not updates link!'.'<br />'.implode('<br />', $msgs).'<br /><pre>'.implode("\n", $link->debugs)."</pre>";
 	}
 }
-echo '<pre>';
-var_dump($link);
-exit;
 
 renderView('linkedit.html', ['link'=>$link->row, 'errorMessage' => $errorMessage]);
 
