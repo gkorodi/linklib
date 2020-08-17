@@ -122,8 +122,5 @@ require_once('_includes.php');
 
 	<?php require_once('_scripts.php'); ?>
 
-	<script>
-	</script>
-
   </body>
 </html>

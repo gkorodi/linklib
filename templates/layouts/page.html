@@ -1,10 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<<<<<<< HEAD
 	{% include 'parts/metatags.html' %}
 
 	<link rel="shortcut icon" href="asset/ico/favicon.ico">
 	<title>linkLibrary - {{ context.page_title }}</title>
+=======
+	{% include('parts/metatags.html') %}
+
+	<link rel="shortcut icon" href="asset/ico/favicon.ico">
+	<title>linkLibrary - {{ page_title }}</title>
+>>>>>>> master
 	<link href="assets/css/bootstrap.css" rel="stylesheet">
 
 	<link href="assets/css/style.css" rel="stylesheet">
@@ -12,7 +19,11 @@
 	<script src="assets/js/modernizr.js"></script>
 </head>
 <body>
+<<<<<<< HEAD
 	{% include 'parts/menu.html' %}
+=======
+	{{ include('parts/menu.html') }}
+>>>>>>> master
 
     <!-- *****************************************************************************************************************
     BLUE WRAP
@@ -43,7 +54,13 @@
       </div><! --/row -->
     </div><! --/container -->
 
+<<<<<<< HEAD
 	{% include 'parts/footer.html' %}
 	{% include 'parts/scripts.js' %}
+=======
+	{{ include('parts/footer.html') }}
+
+	{{ include('parts/scripts.js') }}
+>>>>>>> master
 </body>
 </html>

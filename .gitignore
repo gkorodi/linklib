@@ -1,6 +1,19 @@
 vendor/
+<<<<<<< HEAD
 .idea/
 .DS_Store
 scripts/data/
 links_links_2020-08-09.sql
 .phpunit.result.cache
+=======
+
+.DS_Store
+.idea/linklib.iml
+.idea/modules.xml
+.idea/php-test-framework.xml
+.idea/php.xml
+.idea/vcs.xml
+.idea/workspace.xml
+.phpunit.result.cache
+scripts/data/links_db.sql
+>>>>>>> master

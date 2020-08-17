@@ -7,11 +7,19 @@
 		<input type="checkbox" class="adjusterfield" onchange="submit();" name="untaggedonly" {% if profile.request.untaggedonly %}checked{% endif %}/> UntaggedOnly<br />
 		<input type="checkbox" class="adjusterfield" name="nostatus" {% if profile.request.nostatus %}checked{% endif %}/> No Status<br />
 		<input type="checkbox" class="adjusterfield" name="badstatus" {% if profile.request.badstatus %}checked{% endif %}/> Bad Status<br />
+<<<<<<< HEAD
 		<input type="hidden" id="fldHost" name="host" value="{{ request.host }}" />
 	</form>
 
 	<h3>
 		Search Results by host <a href="http://{{ request.host }}" target="_newWindow">{{ request.host }}</a>
+=======
+		<input type="hidden" id="fldHost" name="host" value="{{ profile.request.host }}" />
+	</form>
+
+	<h3>
+		Search Results by host <a href="http://{{ profile.request.host }}" target="_newWindow">{{ profile.request.host }}</a>
+>>>>>>> master
 	</h3>
 	
 {% endblock %}
@@ -19,7 +27,11 @@
 {% block content %}
 <style>
 	TR.link-301 {
+<<<<<<< HEAD
 		background-color: lightGray; color: black;
+=======
+		background-color: lightGray;
+>>>>>>> master
 	}
 	TR.link-401 {
 		background-color: purple; color: white;
@@ -28,7 +40,11 @@
 		background-color: lightBlue; color: white;
 	}
 	tr.link-0 {
+<<<<<<< HEAD
 		background-color: #f0f0f0; color: blue;
+=======
+		background-color: #f0f0f0; color: white;
+>>>>>>> master
 	}
 </style>
 
@@ -54,6 +70,7 @@
 			{% endif %}
 			<br />
 			&nbsp;&nbsp;&nbsp;
+<<<<<<< HEAD
 			{% include('parts/buttons_levellinks.html') %}
 		</td>
 		<td>
@@ -61,6 +78,15 @@
 		</td>
 		<td>
 			{% if link.updated_at is empty %}n/a{% else %}{{ link.updated_at|date('Y-m-d') }}{% endif %}
+=======
+			{% include('parts/buttons_taglinks.html') %}
+		</td>
+		<td>
+			{% if link.created_at is empty %}n/a{% else %}{{ link.created_at|split(' ',2)[0] }}{% endif %}
+		</td>
+		<td>
+			{% if link.updated_at is empty %}n/a{% else %}{{ link.updated_at|split(' ',2)[0] }}{% endif %}
+>>>>>>> master
 		</td>
 	</tr>
 	{% endfor %}
