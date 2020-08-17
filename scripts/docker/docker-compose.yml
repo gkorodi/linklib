@@ -15,14 +15,15 @@ services:
 
   # Apache2(.4) installed in /etc/apache2, doc root is in /var/www/html
   web:
-    image: nimmis/apache-php7
+    build:
+      context: ./web
     environment:
       - DB_HOST=db
       - DB_PORT=3307
       - DB_USER=linklib_robot
       - DB_PASSWORD=somethingstupidhard
     volumes:
-      - ${PWD}:/var/www/html
+      - /Users/gabork/PhpstormProjects/linklib:/usr/local/apache2/htdocs
     ports:
       - 88:80
       - 443:443
