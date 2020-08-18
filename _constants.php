@@ -1,11 +1,9 @@
 <?php
 date_default_timezone_set('US/Eastern');
-
 define('APP_ROOT','/linklib/');
-
 define('APP_TITLE','linkLIB webapp');
 
-require_once('/opt/config/vars');
+require_once('config/vars');
 
 $skiptagList = Array(
 	'og:image:height',
