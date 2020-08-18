@@ -1,17 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<<<<<<< HEAD
 	{% include 'parts/metatags.html' %}
 
 	<link rel="shortcut icon" href="asset/ico/favicon.ico">
 	<title>linkLibrary - {{ context.page_title }}</title>
-=======
-	{% include('parts/metatags.html') %}
-
-	<link rel="shortcut icon" href="asset/ico/favicon.ico">
-	<title>linkLibrary - {{ page_title }}</title>
->>>>>>> master
 	<link href="assets/css/bootstrap.css" rel="stylesheet">
 
 	<link href="assets/css/style.css" rel="stylesheet">
@@ -19,20 +12,13 @@
 	<script src="assets/js/modernizr.js"></script>
 </head>
 <body>
-<<<<<<< HEAD
 	{% include 'parts/menu.html' %}
-=======
-	{{ include('parts/menu.html') }}
->>>>>>> master
 
-    <!-- *****************************************************************************************************************
-    BLUE WRAP
-    ***************************************************************************************************************** -->
     <div id="blue">
       <div class="container">
         <div class="row">
-			{% block blue %}
-			{% endblock %}
+					{% block blue %}
+					{% endblock %}
         </div><!-- /row -->
       </div> <!-- /container -->
     </div><!-- /blue -->
@@ -40,27 +26,20 @@
     <div class="container mtb">
       <div class="row">
         <div class="col-md-8">
-		{% block content %}
-		
-		{% endblock %}
+					{% block content %}
+
+					{% endblock %}
         </div>
 
-        <! -- SIDEBAR -->
         <div class="col-md-4">
-		{% block sidebar %}
-		
-		{% endblock %}
-		</div>
+					{% block sidebar %}
+
+					{% endblock %}
+				</div>
       </div><! --/row -->
     </div><! --/container -->
 
-<<<<<<< HEAD
 	{% include 'parts/footer.html' %}
 	{% include 'parts/scripts.js' %}
-=======
-	{{ include('parts/footer.html') }}
-
-	{{ include('parts/scripts.js') }}
->>>>>>> master
 </body>
 </html>
