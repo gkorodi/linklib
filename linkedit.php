@@ -4,13 +4,11 @@ require_once(__DIR__.'/vendor/autoload.php');
 $loader = new \Twig\Loader\FilesystemLoader(__DIR__.'/templates');
 $twig = new \Twig\Environment($loader, array('debug' => true));
 
-$randomQuery = 'SELECT * FROM links WHERE tags IS NULL LIMIT 1';
-$randomQuery = 'SELECT * FROM links AS r1 JOIN (SELECT CEIL(RAND() * (SELECT MAX(id) FROM links WHERE tags IS NULL)) AS id) AS r2 WHERE r1.id >= r2.id AND tags IS NULL ORDER BY r1.id ASC LIMIT 1';
-
 $link = null;
 if (!isset($_REQUEST['id']) || $_REQUEST['id'] == '') {
 	$links = Array();
 	try {
+		$randomQuery = "SELECT id FROM links WHERE tags IS NULL OR tags = 'curate' OR tags = 'later' LIMIT 1000";
 		$links = queryX($randomQuery);
 	} catch (Exception $e) {
 		throw new Exception('Could not run full SQL query:');
@@ -19,7 +17,7 @@ if (!isset($_REQUEST['id']) || $_REQUEST['id'] == '') {
 	if (count($links) == 0) {
 		throw new Exception('There is no link available.');
 	}
-	$link = new Link($links[0]['id']);
+	$link = new Link($links[rand(1,1000)]['id']);
 
 } else {
 	$link = new Link($_REQUEST['id']);
@@ -60,6 +58,12 @@ if (isset($_POST['id'])) {
 		}
 		$errorMessage = 'Could not updates link!'.'<br />'.implode('<br />', $msgs).'<br /><pre>'.implode("\n", $link->debugs)."</pre>";
 	}
+}
+
+if (isset($_REQUEST['format']) && $_REQUEST['format'] === 'json') {
+	header('Content-type: application/json');
+	echo json_encode($link);
+	exit;
 }
 
 renderView('linkedit.html', ['link'=>$link->row, 'errorMessage' => $errorMessage]);
