@@ -1,0 +1,14 @@
+{% extends('fullpage.html') %}
+
+{% block blue %}
+<h3>Status with status `{{ profile.request.status }}`</h3>
+{% endblock %}
+
+{% block content %}
+<div id="alltags">
+	{% for tag in tags %}
+	<a class="btn btn-theme" href="search_bytag.php?tag={{ tag.name }}" 
+						role="button" target="_newTagWindow">{{ tag.name }}<sup>{{ tag.count }}</sup></a>
+	{% endfor %}
+</div>
+{% endblock %}

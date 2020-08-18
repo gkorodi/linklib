@@ -25,8 +25,7 @@ if (isset($_REQUEST['format']) && $_REQUEST['format'] == 'json') {
   exit;
 }
 
-echo $twig->render('list_status.html', [ 
-	'profile' => $pageProfile, 
+renderView('list_status.html', [ 
 	'links' => $links,
 	'sql_query' => $sql
 ]);
