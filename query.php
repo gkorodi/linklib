@@ -11,5 +11,5 @@ if (isset($_REQUEST['q'])) {
 		$searchresults['rows'] = array_slice($searchresults['rows'],0,300);
 	}
 }
-renderView('query.html', ['results' => $searchresults]);
+renderView('query.html', [ 'results' => $searchresults, 'query' => $_REQUEST['q'] ]);
 
