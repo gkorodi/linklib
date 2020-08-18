@@ -86,7 +86,6 @@
 		});
 	}
 	
-<<<<<<< HEAD
 	function setLevel(linkId, level) {
 		console.log('setLevel() starting');
 		$('#row'+linkId).css('background-color','gray');
@@ -111,8 +110,6 @@
 		});
 	}
 	
-=======
->>>>>>> master
 	function tagLink(linkId, tags) {
 		console.log('tagLink() starting');
 		$('#row'+linkId).css('background-color','gray');

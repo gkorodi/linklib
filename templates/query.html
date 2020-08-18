@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 {% extends ('fullpage.html') %}
 
 {% block blue %}
@@ -25,15 +24,15 @@
 				</b><br />
 				<p>{{ row.description }}</p>
 				<small>{{row.link }}/small><br />
-								<small id="cdate-{{row.id}}">Created: <b>{{row.created_at|date('Y-m-d')}}</b></small>
-								<small id="date-{{row.id}}">Updated: <b>{{row.updated_at|date('Y-m-d')}}</b></small>
-								<small id="status-{{row.id}}">Status: <b>{{row.status}}</b></small>
-								<div id="description-{{row.id}}"></div>
+				<small id="cdate-{{row.id}}">Created: <b>{{row.created_at|date('Y-m-d')}}</b></small>
+				<small id="date-{{row.id}}">Updated: <b>{{row.updated_at|date('Y-m-d')}}</b></small>
+				<small id="status-{{row.id}}">Status: <b>{{row.status}}</b></small>
+				<div id="description-{{row.id}}"></div>
 			</td>
 			<td>
 				<input type="text" id="tags-{{row.id}}"
-									onChange="tagLink({{row.id}}, $(this).val());"
-										value="{{row.tags}}" />
+					onChange="tagLink({{row.id}}, $(this).val());"
+						value="{{row.tags}}" />
 			</td>
 			<td>
 				<a class="btn btn-sm btn-info" href="linkedit.php?id={{row.id}}" target="_winEditLink">
@@ -86,50 +85,4 @@
 		});
 	}
 </script>
-=======
-{% extends('fullpage.html') %}
-
-{% block blue %}
-<form method="GET"><input type="text" name="q" value={{ criteria }} size="100"/></form>
-{% endblock %}
-
-{% block content %}
-
-<table class="table">
-<tbody>
-	{% for link in links %}
-	<tr id="row{{ link.id }}">
-	<td>
-		<button class="btn btn-sm btn-danger" onClick="deleteLink({{ link.id }});">
-			<span class="glyphicon glyphicon-trash"> </span>
-		</button>
-	</td>
-	<td>
-		<b><a href="{{ link.link }}" id="title-{{ link.id }}" target="_newWindow">{{ link.title }}</a></b><br />
-		<small>{{ link.hostname }}</small><br />
-		<small id="cdate-{{ link.id }}">Created: <b>{{ link.created_at }}</b></small>
-		<small id="date-{{ link.id }}">Updated: <b>{{ link.updated_at }}</b></small>
-		<small id="status-{{ link.id }}">Status: <b>{{ link.status }}</b></small>
-		<div id="description-{{ link.id }}"></div>
-	</td>
-	<td>
-		<input type="text" id="tags-{{ link.id }}"
-			onChange="tagLink({{ link.id }}, $(this).val());"
-				value="{{ link.tags }}" />
-	</td>
-	<td>
-		<a class="btn btn-sm btn-info" href="linkedit.php?id={{ link.id }}" target="_winEditLink">
-			<span class="glyphicon glyphicon-ok"> </span>
-		</a>
-	</td>
-	<td>
-		<a class="btn btn-sm btn-warning" onClick="repairQueryLink('{{ link.id }}');">
-			<span class="glyphicon glyphicon-check"> </span>
-		</a>
-	</td>
-	</tr>
-	{% endfor %}
-</tbody>
-</table>
->>>>>>> master
 {% endblock %}
