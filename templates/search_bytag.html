@@ -38,29 +38,24 @@ tr.status302 {
 	<tr align="top" class="status{{ link.status }}" id="row{{ link.id}}">
 		<td>
 
-			<a class="btn-sm btn-danger" style="margin: 5px" onclick="deleteLink({{ link.id }});">
+			<a class="btn btn-danger" style="margin: 5px" onclick="deleteLink({{ link.id }});">
 				<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
 			</a><br />
-			
 			<br />
-
-			<a class="btn-sm btn-info" style="margin: 5px" href="linkedit.php?id={{ link.id }}" target="_winEditLink">
+			<a class="btn btn-info" style="margin: 5px" href="linkedit.php?id={{ link.id }}" target="_winEditLink">
 				<span class="glyphicon glyphicon-ok"> </span>
 			</a><br />
-			<br />
-
-			<a class="btn-sm btn-warning" style="margin: 5px" href="linkedit.php?id={{ link.id }}" target="_winEditLink">
-				<span class="glyphicon glyphicon-eye-open"> </span>
-			</a>
-
 		</td>
 		<td>
 			<b><a href="{{ link.link }}" target="_newWindow">{{ link.title }}</a></b> <small>{{ link.tags }}</small><br />
 			<small>{{ link.hostname}}</small><br />
-			{{ include('parts/buttons_taglinks.html') }}
+			{% include 'parts/buttons_levellinks.html' %}
 		</td>
 		<td>
-			<small>{{ link.created_at }}</small>
+			<small>{{ link.created_at|date('Y-m-d') }}</small>
+		</td>
+		<td>
+			<small>{{ link.updated_at|date('Y-m-d') }}</small>
 		</td>
 	</tr>
 	{% endfor %}

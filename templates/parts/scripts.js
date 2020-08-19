@@ -1,13 +1,17 @@
-	<script src="assets/js/jquery-1.12.4.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.5.1.js"
+			  integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
+			  crossorigin="anonymous"></script>
+			  
 	<script src="assets/js/bootstrap.min.js"></script>
+	
+	<script src="//cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"> </script>
+			  
 	<script src="assets/js/retina-1.1.0.js"></script>
 	<script src="assets/js/jquery.hoverdir.js"></script>
 	<script src="assets/js/jquery.hoverex.min.js"></script>
 	<script src="assets/js/jquery.prettyPhoto.js"></script>
 	<script src="assets/js/jquery.isotope.min.js"></script>
 	<script src="assets/js/custom.js"></script>
-	
-	<script src="//cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"> </script>
 
 	<!-- Global site tag (gtag.js) - Google Analytics 
 	<script async src="//www.googletagmanager.com/gtag/js?id=UA-64712928-2"></script>

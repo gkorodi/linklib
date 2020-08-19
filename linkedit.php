@@ -24,7 +24,7 @@ if (!isset($_REQUEST['id']) || $_REQUEST['id'] == '') {
 }
 
 if (!$link->id) {
-	throw new Exception('There is no link->id field!'.print_r($debug, true));
+	die('There is no link->id field!'.print_r($_REQUEST, true));
 }
 
 $errorMessage = '';
@@ -66,5 +66,5 @@ if (isset($_REQUEST['format']) && $_REQUEST['format'] === 'json') {
 	exit;
 }
 
-renderView('linkedit.html', ['link'=>$link->row, 'errorMessage' => $errorMessage]);
+renderView('linkedit.html', ['link'=>$link, 'errorMessage' => $errorMessage]);
 

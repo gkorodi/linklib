@@ -158,11 +158,11 @@ function getLinkStatus($url) {
 
 function showRowSkinny($row) {
 	?>
-	<tr id="row<?php echo $row[0];?>">
+	<tr id="row<?=$row[0]?>">
 		<td> </td>
 		<td>
-			<a href="<?php echo $row[1];?>" target="_newWindow"><?php echo urldecode($row[2]);?></a><br />
-			<small><?php echo justHostName($row[1]); ?></small>
+			<a href="<?=$row[1]?>" target="_newWindow"><?=urldecode($row[2])?></a><br />
+			<small><?=justHostName($row[1])?></small>
 		</td>
 		<td>
 			<small><?php echo date('Y-m-d', strtotime($row[4]));?></small>

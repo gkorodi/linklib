@@ -1,9 +1,7 @@
 <?php
-require_once('_inc.php');
+require_once('_includes.php');
 require_once(__DIR__.'/vendor/autoload.php');
-
 $loader = new \Twig\Loader\FilesystemLoader(__DIR__.'/templates');
-//$twig = new \Twig\Environment($loader); //, [ 'cache' => '/path/to/compilation_cache' ]);
 $twig = new \Twig\Environment($loader, array('debug' => true));
 
 $sql="SELECT * FROM links  WHERE (tags IS NULL OR tags = '') ORDER BY id ASC LIMIT 200";
@@ -15,10 +13,10 @@ foreach($rs AS $r) {
 	$links[] = $r;
 }
 
-if ($_REQUEST['format'] == 'json') {
+if (isset($_REQUEST['format']) && $_REQUEST['format'] == 'json') {
 	header('Content-type: application/json');
 	echo json_encode($links);
 	exit;
 }
 
-echo $twig->render('curate.html', ['profile' => $pageProfile, 'links' => $links]);
+renderView('curate.html', ['links' => $links]);

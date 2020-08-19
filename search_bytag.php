@@ -1,7 +1,6 @@
  <?php
 require_once('_includes.php');
 require_once(__DIR__.'/vendor/autoload.php');
-
 $loader = new \Twig\Loader\FilesystemLoader(__DIR__.'/templates');
 $twig = new \Twig\Environment($loader, array('debug' => true));
 
@@ -13,7 +12,7 @@ if (isset($_REQUEST['tag'])) {
 	        $sql = "SELECT * FROM links WHERE tags IS NULL ".
 	      	  	(isset($_REQUEST['notstatus'])?' AND status != '.$_REQUEST['notstatus']:'').
 	      		(isset($_REQUEST['status'])?' AND status = '.$_REQUEST['status']:'').
-								' ORDER BY created_at '.($_REQUEST['olderfirst']?'ASC':'DESC')
+								' ORDER BY updated_at '.($_REQUEST['olderfirst']?'ASC':'DESC')
 		.' LIMIT 50';
 	} else {
 		$criteria = [];
@@ -24,7 +23,7 @@ if (isset($_REQUEST['tag'])) {
 				implode(' AND ', $criteria)." ".
 	      	  	(isset($_REQUEST['notstatus'])?' AND status != '.$_REQUEST['notstatus']:'').
 	      		(isset($_REQUEST['status'])?' AND status = '.$_REQUEST['status']:'').
-						' ORDER BY created_at '.(isset($_REQUEST['olderfirst'])?'ASC':'DESC')
+						' ORDER BY updated_at '.(isset($_REQUEST['olderfirst'])?'ASC':'DESC')
 							.' LIMIT 50'	;
 	}
 	$resultset = queryX($sql);
@@ -63,7 +62,6 @@ ksort($relatedTags);
 $data = [
 	'links' => $links, 
 	'searchTag' => $_REQUEST['tag'], 
-	'profile' => $pageProfile, 
 	'relatedTags' => Array()
 ];
 
@@ -73,4 +71,4 @@ if (isset($_REQUEST['format']) && $_REQUEST['format'] === 'json') {
 	exit;
 }
 
-echo $twig->render('search_bytag.html', $data);
+renderView('search_bytag.html', $data);

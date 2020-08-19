@@ -4,6 +4,7 @@ require_once(__DIR__.'/vendor/autoload.php');
 $loader = new \Twig\Loader\FilesystemLoader(__DIR__.'/templates');
 $twig = new \Twig\Environment($loader, array('debug' => true));
 
+
 $categories = Array();
 $rows = queryX("SELECT tags FROM links");
 foreach ($rows AS $row) {
@@ -21,14 +22,14 @@ arsort($categories);
 
 $tags = Array();
 foreach($categories AS $category => $count) {
-	$tags[] = [ 'tag' => $category, 'count' => $$count ];
+	$tags[] = [ 'name' => $category, 'count' => $count ];
 }
 
-if (isset($_REQUEST['format']) && $_REQUEST === 'json') {
+if (isset($_REQUEST['format']) && $_REQUEST['format'] === 'json') {
 	header('Content-type: application/json');
 	echo json_encode($tags);
 	exit;
 }
 
-renderView('link_tags.html', [ 'tags' => $tags ]);
+renderView('list_tags.html', [ 'tags' => $tags ]);
 
