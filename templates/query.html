@@ -22,8 +22,7 @@
 				<b>
 					<a href="{{ row.link }}" id="title-{{ row.id}}" target="_newWindow">{{ row.title }}</a>
 				</b><br />
-				<p>{{ row.description }}</p>
-				<small>{{row.link }}/small><br />
+				<small>{{row.link }}</small><br />
 				<small id="cdate-{{row.id}}">Created: <b>{{row.created_at|date('Y-m-d')}}</b></small>
 				<small id="date-{{row.id}}">Updated: <b>{{row.updated_at|date('Y-m-d')}}</b></small>
 				<small id="status-{{row.id}}">Status: <b>{{row.status}}</b></small>

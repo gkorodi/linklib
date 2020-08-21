@@ -31,12 +31,11 @@ $errorMessage = '';
 if (isset($_POST['id'])) {
 
 	$link = new Link($_POST['id']);
-	
 	$link->title = $_POST['title'];
 	$link->link = $_POST['link'];
 
 	$tagArray = explode(',', str_replace(' ','', strtolower($_POST['tags'])));
-	$link->level = 0;
+	$link->level = (isset($_POST['level'])?$_POST['level']:0);
 	if (in_array('level1', $tagArray)) { $link->level = 1; unset($tagArray[array_search('level1', $tagArray)]); }
 	if (in_array('level2', $tagArray)) { $link->level = 2; unset($tagArray[array_search('level2', $tagArray)]); }
 	if (in_array('level3', $tagArray)) { $link->level = 3; unset($tagArray[array_search('level3', $tagArray)]); }
@@ -49,15 +48,7 @@ if (isset($_POST['id'])) {
 	$link->updated_at = date('Y-m-d');
 	$link->description = empty($_POST['description'])?'{"pagetitle":"'.$link->title.'"}':$_POST['description'];
 	
-	$msgs = [];
-	if (!$link->update()) {
-		if (count($link->errors)>0) {
-			foreach($link->errors AS $msg) {
-				$msgs[] = '<h4>ERROR:'.$msg.'</h4>';
-			}
-		}
-		$errorMessage = 'Could not updates link!'.'<br />'.implode('<br />', $msgs).'<br /><pre>'.implode("\n", $link->debugs)."</pre>";
-	}
+	$link->update();
 }
 
 if (isset($_REQUEST['format']) && $_REQUEST['format'] === 'json') {
