@@ -8,9 +8,11 @@
 <div class="row">
 	<div class="col">
 		<h3><a href="{{ link.link }}"" target="_newLinkWin">{{link.title}}</a></h3>
+		<div id="errorMessages">
 		{% for errorMessage in link.errors %}
 			<div style="color: red">{{errorMessage}}</div>
 		{% endfor %}
+		</div>
 		<p class="lead" id="fldDescription"></p>
 	</div>
 </div>
@@ -136,14 +138,13 @@
 			$('#title').val(data.title);
 			$('#lblTitle').html(data.title);
 			$('#tags').val(data.tags);
+			$('#level').val(data.level);
 			$('#created_at').val(data.created_at);
 			$('#updated_at').val(data.updated_at);
 			$('#status').val(data.status);
 			$('#description').html(JSON.stringify(data.meta));
-			
-			if (data.meta.description != undefined) {
-				$('#link-description').html(data.details.description);
-			}
+			showDescription();
+			checkLink(data.id, data.link);
 		});
 		
 		$('#blue').css('background-color',baseColor);
@@ -158,6 +159,20 @@
 				$('#fldDescription').text(metatags['og:description']);
 			}
 		}
+	}
+	
+	function checkLink(linkId, linkURL) {
+		console.log("checkLink() Checking new URL:"+linkURL);
+		
+	    $.getJSON( 'api/checklink.php', {
+	      url: linkURL,
+	      linkid: linkId
+	    })
+		.done(function( data ) {
+	        if (data.status != 'ok') { 
+				$('#errorMessages').html("The new link might be a possible duplciate!");
+			}
+	      });
 	}
 	
 	$(document).ready(function() {

@@ -44,17 +44,20 @@
 	<h4>Statuses (other than OK)</h4>
 	<div class="hline"></div>
 	<table class="table">
-	{% for status in statuses %}
+		{% for status in statuses %}
 		<tr>
 			<th><a href="list_status.php?status={{ status.status }}">{{ status.status }}</a></th>
 			<td>{{ status.counter }}</td>
 		</tr>
-	{% endfor %}
+		{% endfor %}
 	</table>
 
 	<div class="spacing"></div>
-	<h4>Recent Posts</h4>
+	<h4>Latest Links</h4>
 	<div class="hline"></div>
+		{% for latestlink in latestlinks %}
+		<a href="{{ latestlink.link }}" target="_newLatestLinkWindow">{{ latestlink.title }}</a><br />
+		{% endfor %}
 
 	<div class="spacing"></div>
 

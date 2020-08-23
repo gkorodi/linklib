@@ -61,7 +61,7 @@ define('ROW_DESCRIPTION',7);
 require_once('conf/vars');
 
 $context['server'] = $_SERVER;
-$context['session'] = $_SESSION;
+if (isset($_SESSION)) { $context['session'] = $_SESSION; }
 $context['request'] = $_REQUEST;
 
 $skiptagList = Array(
@@ -129,16 +129,6 @@ function queryX($sql) {
 	}
 	$conn->close();
 	return $response;
-}
-
-function getLevel($tags) {
-	if (empty($tags)) { return 0;}
-	if (strpos(strtolower($tags),'evel1')>0) { return 1;}
-	if (strpos(strtolower($tags),'evel2')>0) { return 2;}
-	if (strpos(strtolower($tags),'evel3')>0) { return 3;}
-	if (strpos(strtolower($tags),'evel4')>0) { return 4;}
-	if (strpos(strtolower($tags),'evel5')>0) { return 5;}
-	return "?";
 }
 
 
