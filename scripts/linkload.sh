@@ -1,14 +1,15 @@
-#!/bin/zsh 
+#!/bin/sh
 
 cd $HOME/Desktop
 for FN in *.webloc
 do
-	/usr/bin/plutil -convert json $FN
+	/usr/bin/plutil -convert json "${FN}"
 	/usr/bin/plutil -replace title -string "${FN}" "${FN}"
 	
 	tmpfile=$(mktemp linkload.XXXXXX)
-	curl -k --silent --data @"${FN}" --output $tmpfile https://gaborkorodi.com/linklib/api_link.php
-	
+
+	curl -k --silent --data @"${FN}" -H "Authorization: testToken" --output $tmpfile https://gaborkorodi.com/linklibrary/api/link.php
+
 	CURL_STATUS=`/usr/local/bin/jq -r .status $tmpfile`
 	if [ "${CURL_STATUS}" = "ok" ]; then
 	  rm -f $tmpfile
