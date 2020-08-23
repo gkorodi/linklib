@@ -235,9 +235,11 @@ CONTENT;
 		
 		$link = new Link($_REQUEST['id']);
 		
+		$resp['id'] = $link->id;
 		$resp['link'] = $link->link;
 		$resp['title'] = $link->title;
 		$resp['tags'] = $link->tags;
+		$resp['level'] = $link->level;
 		$resp['updated_at'] = $link->updated_at;
 		$resp['created_at'] = $link->created_at;
 		$resp['status'] = $link->status;

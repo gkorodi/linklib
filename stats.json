@@ -5,43 +5,27 @@
 	},
 	{
 		"label": "OK Status",
-		"sql": "SELECT count(*) AS counter FROM links WHERE status = 200 and tags IS NOT NULL;"
+		"sql": "SELECT count(*) AS counter FROM links WHERE status = 200 and tags IS NOT NULL AND (level > 0 AND level < 6);"
 	},
 	{
 		"label": "Level1",
-		"sql": "SELECT count(*) AS counter FROM links WHERE tags = 'level1'"
+		"sql": "SELECT count(*) AS counter FROM links WHERE level = 1"
 	},
 	{
 		"label": "Level2",
-		"sql": "SELECT count(*) AS counter FROM links WHERE tags = 'level2'"
+		"sql": "SELECT count(*) AS counter FROM links WHERE level = 2"
 	},
 	{
 		"label": "Level3",
-		"sql": "SELECT count(*) AS counter FROM links WHERE tags = 'level3'"
+		"sql": "SELECT count(*) AS counter FROM links WHERE level = 3"
 	},
 	{
 		"label": "Level4",
-		"sql": "SELECT count(*) AS counter FROM links WHERE tags  = 'level4'"
+		"sql": "SELECT count(*) AS counter FROM links WHERE level = 4"
 	},
 	{
-		"label": "level5",
-		"sql": "SELECT count(*) AS counter FROM links WHERE tags = 'level5'"
-	},
-	{
-		"label": "Later",
-		"sql": "SELECT count(*) AS counter FROM links WHERE tags  = 'later'"
-	},
-	{
-		"label": "Later2",
-		"sql": "SELECT count(*) AS counter FROM links WHERE tags = 'later2'"
-	},
-	{
-		"label": "Later3",
-		"sql": "SELECT count(*) AS counter FROM links WHERE tags = 'later3'"
-	},
-	{
-		"label": "Later4",
-		"sql": "SELECT count(*) AS counter FROM links WHERE tags = 'later4'"
+		"label": "Level5",
+		"sql": "SELECT count(*) AS counter FROM links WHERE level = 5"
 	},
 	{
 		"label": "Missing Tags",
@@ -60,12 +44,12 @@
 		"sql": "SELECT count(*) AS counter FROM links WHERE status = '';"
 	},
 	{
-		"label": "Missing Dates",
-		"sql": "SELECT count(*) AS counter FROM links WHERE updated_at IS NULL;"
+		"label": "No CreatedAt Value",
+		"sql": "SELECT count(*) AS counter FROM links WHERE created_at IS NULL;"
 	},
 	{
-		"label": "Empty Dates",
-		"sql": "SELECT count(*) AS counter FROM links WHERE updated_at = '';"
+		"label": "No UpdatedAt Value",
+		"sql": "SELECT count(*) AS counter FROM links WHERE updated_at IS NULL;"
 	},
 	{
 		"label": "Wrong Dates",

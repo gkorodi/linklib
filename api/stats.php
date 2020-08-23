@@ -1,16 +1,17 @@
 <?php
-require_once('../_includes.php');
+require_once(__DIR__.'/../_includes.php');
 
 $categories['empty'] = 0;
 $categories['NULL'] = 0;
-$r = query("SELECT tags FROM links WHERE tags != ''");
-foreach ($r['rows'] AS $row) {
-  if ($row[0]===null) { $categories['NULL']++; continue;}
-  if ($row[0]==='') { $categories['empty']++; continue;}
 
-  $cats = explode(',', $row[0]);
-  foreach($cats AS $category) {
+$rows = queryX("SELECT tags FROM links");
+foreach ($rows AS $row) {
+  if ($row['tags']===null) { $categories['NULL']++; continue;}
+  if (empty($row['tags'])) { $categories['empty']++; continue;}
+
+  foreach(explode(',', $row['tags']) AS $category) {
     $c = trim($category);
+	
     if (isset($categories[$c])) {
       $categories[$c]++;
     } else {
@@ -19,15 +20,18 @@ foreach ($r['rows'] AS $row) {
   }
 }
 
+var_dump($categories);
+exit;
+
 arsort($categories);
-if (isset($_REQUEST['format']) && $_REQUEST['format'] == 'json') {
-  header('Content-type: application/json');
-  echo print_r(json_encode($categories),true);
+if (isset($_REQUEST['format']) && $_REQUEST['format'] === 'json') {
+  
 } else {
+
   header('Content-type: text/plain');
   echo 'Category,Count'.PHP_EOL;
   foreach($categories AS $category => $count) {
     echo $category.','.$count.PHP_EOL;
   }
 }
-?>
+
