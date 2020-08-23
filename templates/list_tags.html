@@ -8,7 +8,7 @@
 <div id="alltags">
 	{% for tag in tags %}
 	<a class="btn btn-theme" href="search_bytag.php?tag={{ tag.name }}" 
-						role="button" target="_newTagWindow">{{ tag.name }}<sup>{{ tag.count }}</sup></a>
+		role="button" target="_newTagWindow">{{ tag.name }}<sup>{{ tag.count }}</sup></a>
 	{% endfor %}
 </div>
 {% endblock %}

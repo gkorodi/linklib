@@ -29,4 +29,4 @@ if (isset($_REQUEST['format']) && $_REQUEST['format'] == 'json') {
   exit;
 }
 
-echo $twig->render('search.html', [ 'profile' => $pageProfile, 'criteria' => $_REQUEST['q'], 'links' => $links, 'result_count' => count($links) ]);
+renderView('search.html', ['criteria' => $_REQUEST['q'], 'links' => $links, 'result_count' => count($links) ]);

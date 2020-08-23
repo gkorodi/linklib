@@ -1,13 +1,12 @@
 <?php
 require_once('_includes.php');
 require_once(__DIR__.'/vendor/autoload.php');
-
 $loader = new \Twig\Loader\FilesystemLoader(__DIR__.'/templates');
 $twig = new \Twig\Environment($loader, array('debug' => true));
 
 $sql="SELECT * FROM links WHERE ".
-	"tags = 'curate' OR tags = 'later' OR tags = 'later2' ".
-		"ORDER BY updated_at LIMIT 200";
+	"(tags = 'curate' OR tags = 'later' OR tags = 'later2' OR tags IS NULL) AND level IS NULL".
+	"ORDER BY updated_at LIMIT 200";
 $rs = queryX($sql);
 
 $links = Array();
@@ -22,4 +21,4 @@ if (isset($_REQUEST['format']) && $_REQUEST['format'] == 'json') {
 	exit;
 }
 
-echo $twig->render('curate.html', ['profile' => $pageProfile, 'rowcount' => count($rs), 'links' => $links]);
+renderView('curate.html', ['rowcount' => count($rs), 'links' => $links]);

@@ -17,7 +17,6 @@ class Link {
 	var $content = '';
 	var $description = '';
   	var $errorMessage = '';
-	var $row = Array();
 	
 	private $mysqli = null;
 	private $statementInsertTag = null;
@@ -69,18 +68,23 @@ class Link {
 				$this->id = $id;
 				$query = "SELECT * FROM links WHERE id = ${id}";
 				if ($result = $this->mysqli->query($query)) {
-				    /* fetch associative array */
-				    while ($row = $result->fetch_assoc()) {
-				        $this->link = $row['link'];
-						$this->title = $row['title'];
-						$this->status = isset($row['status'])?empty($row['status'])?-1:$row['status']:0;
-						$this->tags = $row['tags'];
-						$this->level = $row['level'];
-						$this->updated_at = isset($row['updated_at'])?$row['updated_at']:date('Y-m-d');
-						$this->created_at = isset($row['created_at'])?$row['created_at']:date('Y-m-d');
-						$this->description = empty($row['description'])?'{}':$row['description'];
-						$this->row = $row;
-				    }
+					
+					if ($result->num_rows === 0) {
+						$this->errors[] = "No data found for linkid ${id}";
+						$this->id = null;
+					} else {
+					    /* fetch associative array */
+					    while ($row = $result->fetch_assoc()) {
+					        $this->link = $row['link'];
+							$this->title = $row['title'];
+							$this->status = isset($row['status'])?empty($row['status'])?-1:$row['status']:0;
+							$this->tags = $row['tags'];
+							$this->level = $row['level'];
+							$this->updated_at = isset($row['updated_at'])?$row['updated_at']:date('Y-m-d');
+							$this->created_at = isset($row['created_at'])?$row['created_at']:date('Y-m-d');
+							$this->description = empty($row['description'])?'{}':$row['description'];
+					    }
+					}
 				    /* free result set */
 				    $result->free();
 				}
@@ -261,16 +265,17 @@ class Link {
 		$rs->data_seek(0);
 		$this->debugs[] = "refresh() got first record";
 		
-		$row = $rs->fetch_row();
+		$row = $rs->fetch_assoc();
 
-		$this->id = $row[0];
-		$this->link = $row[1];
-		$this->title = $row[2];
-		$this->status = $row[3];
-		$this->tags = $row[4];
-		$this->created_at = $row[5];
-		$this->updated_at = $row[6];
-		$this->description = $row[7];
+		$this->id = $row['id'];
+		$this->link = $row['link'];
+		$this->title = $row['title'];
+		$this->status = $row['status'];
+		$this->tags = $row['tags'];
+		$this->created_at = $row['created_at'];
+		$this->updated_at = $row['updated_at'];
+		$this->description = $row['description'];
+		$this->level = $row['level'];
 		
 		$rs->free();
 		$conn->close();

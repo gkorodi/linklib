@@ -29,4 +29,3 @@ renderView('curate_today.html', [
 	'totalcount'=> count($raw), 
 	'rowcount' => count($links)
 ]);
-

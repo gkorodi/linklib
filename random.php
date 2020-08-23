@@ -24,5 +24,5 @@ if (isset($_REQUEST['format']) && $_REQUEST['format'] == 'json') {
   exit;
 }
 
-echo $twig->render('random.html', [ 'profile' => $pageProfile, 'results' => $links, 'result_count' => count($links) ]);
+renderView('random.html', [ 'results' => $links, 'result_count' => count($links) ]);
 

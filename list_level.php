@@ -14,15 +14,17 @@ if (isset($_REQUEST['emptytags'])) {
 }
 if (isset($_REQUEST['oldestfirst'])) {
 	$extra_criteria .= " ORDER BY updated_at ASC ";
+} else {
+	$extra_criteria .= " ORDER BY updated_at DESC ";
 }
 
-$sql='SELECT * FROM links WHERE '.'status '.(isset($_REQUEST['status'])?' = '.$_REQUEST['status']:' !=200 ').' '.$extra_criteria.' LIMIT 100';
+$sql='SELECT * FROM links WHERE level '.(isset($_REQUEST['level'])?' = '.$_REQUEST['level']:' IS NULL ').' '.$extra_criteria.' LIMIT 100';
 $links = queryX($sql);
 
 if (isset($_REQUEST['format']) && $_REQUEST['format'] == 'json') {
   header('Content-type: application/json');
-  echo json_encode($links);
+  echo print_r($links, true);
   exit;
 }
 
-renderView('list_status.html', [ 'links' => $links, 'sql_query' => $sql]);
+renderView('list_level.html', [ 'links' => $links, 'criteria' => $_REQUEST['level'], 'sql_query' => $sql]);

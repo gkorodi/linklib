@@ -20,4 +20,5 @@ if (isset($_REQUEST['format']) && $_REQUEST['format'] == 'json') {
 	echo json_encode($links);
 	exit;
 }
+
 renderView('set_level.html', ['links' => $links]);

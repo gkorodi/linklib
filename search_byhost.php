@@ -12,8 +12,7 @@ if (isset($_REQUEST['host']) && !empty($_REQUEST['host'])) {
         (isset($_REQUEST['badstatus'])?" AND (status != 200)":'').
         ' ORDER BY updated_at '.(isset($_REQUEST['olderfirst'])?' ASC':' DESC').
                 ', link, title LIMIT 200';
-	$page['sql'] = $sql;
-	
+
     $rows = queryX($sql);
 	foreach($rows AS $r) {
 		$r['hostname'] = justHostName($r['link']);
@@ -21,13 +20,11 @@ if (isset($_REQUEST['host']) && !empty($_REQUEST['host'])) {
 		$links[] = $r;
 	}
 }
-$page['links'] = $links;
-$page['request'] = $_REQUEST;
 
 if (isset($_REQUEST['format']) && $_REQUEST['format'] == 'json') {
 	header('Content-type: application/json');
-	echo json_encode($page);
+	echo json_encode($links);
 	exit;
 }
 
-echo $twig->render('search_byhost.html', $page);
+renderView('search_byhost.html', ['links' => $links, 'request' => $_REQUEST ]);

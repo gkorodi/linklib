@@ -1,0 +1,47 @@
+{% extends('fullpage.html') %}
+
+{% block blue %}
+<h3>List by level `{{ criteria }}`</h3>
+{% endblock %}
+
+{% block content %}
+<table class="table">
+<tbody>
+	{% for link in links %}
+	<tr id="row{{ link.id }}">
+
+		<td>
+			<button class="btn btn-danger" id="btnDel"
+			onClick="deleteLink('{{ link.id }}');">
+			<span class="glyphicon glyphicon-trash"> </span>
+			</button>
+		</td>
+
+		<td id="rowDetails{{ link.id }}">
+			<a href="{{ link.link }}" target="_newWindow"><b>{{ link.title }}</b></a><br />
+			<small>
+			Tags: 	<b>{{ link.tags }}</b>
+			</small>
+		</td>
+
+		<td>
+			<a class="btn btn-info" href="linkedit.php?id={{ link.id }}" target="_newLinkWin">
+				<span class="glyphicon glyphicon-pencil"> </span>
+			</a>
+		</td>
+		<td>
+			<b>{{ link.status }}</b> 
+		</td>
+		<td>
+			<b>{{ link.level }}</b> 
+		</td>
+		<td>
+			<b>{{ link.created_at|date('Y-m-d') }}</b> 
+		</td>
+		<td>
+			<b>{{ link.updated_at|date('Y-m-d') }}</b> 
+		</td>
+	</tr>
+	{% endfor %}
+</table>
+{% endblock %}
