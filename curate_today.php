@@ -9,8 +9,9 @@ $sql="SELECT * FROM links WHERE "
 	."AND (DATE(updated_at) >= now() - INTERVAL 2 DAY) "
 	."AND level IS NULL "
 	."ORDER BY updated_at DESC";
+
 $raw = queryX($sql);
-$rs = queryX($sql.' LIMIT 200');
+$rs = array_slice($raw,0,200);
 
 $links = Array();
 foreach($rs AS $r) {

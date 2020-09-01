@@ -17,7 +17,7 @@
 		<tr id="row{{ link.id }}">
 			<td>
 				<h4><a href="{{ link.link }}" target="_newWindow">{{ link.title }}</a></h4>
-				<small>host: <strong>{{ link.hostname }}</strong> update at: <strong>{{ link.updated_at }}</strong></small><br />
+				<small>Host: <strong>{{ link.hostname }}</strong> UpdatedAt: <strong>{{ link.updated_at|date('Y-m-d') }}</strong></small><br />
 				<br />
 				{% include 'parts/buttons_levellinks.html' %}
 				<br /><br />

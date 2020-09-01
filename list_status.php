@@ -5,7 +5,7 @@ $loader = new \Twig\Loader\FilesystemLoader(__DIR__.'/templates');
 $twig = new \Twig\Environment($loader, array('debug' => true));
 
 $extra_criteria = '';
-
+$orderBy = [];
 if (isset($_REQUEST['notags'])) {
 	$extra_criteria .= ' AND tags IS NULL ';
 }
@@ -13,10 +13,16 @@ if (isset($_REQUEST['emptytags'])) {
 	$extra_criteria .= " AND tags = '' ";
 }
 if (isset($_REQUEST['oldestfirst'])) {
-	$extra_criteria .= " ORDER BY updated_at ASC ";
+	$orderBy[] .= "updated_at ASC ";
+}
+if (isset($_REQUEST['byLevel'])) {
+	$orderBy[] = " level ASC ";
 }
 
-$sql='SELECT * FROM links WHERE '.'status '.(isset($_REQUEST['status'])?' = '.$_REQUEST['status']:' !=200 ').' '.$extra_criteria.' LIMIT 100';
+$sql='SELECT * FROM links WHERE '.'status '.(isset($_REQUEST['status'])?' = '.$_REQUEST['status']:' !=200 ').' '
+	.$extra_criteria.' '
+	.(count($orderBy)>0?' ORDER BY '.implode(',', $orderBy):'')
+	.'LIMIT 100';
 $links = queryX($sql);
 
 if (isset($_REQUEST['format']) && $_REQUEST['format'] == 'json') {

@@ -5,26 +5,67 @@
 {% endblock %}
 
 {% block content %}
+<style>
+.btn-secondary {
+	color: #fff;
+	background-color: #a0a0a0;
+	border-color: #eea236;
+}
+</style>
 
 <table class="table">
+	{% set btnSize = "-lg" %}
+	
 	{% for link in links %}
 	<tr id="row{{ link.id }}" >
 		<td>
-			<h4><a href="{{ link.link }}" target="_newWindow">{{ link.title }}</a></h4><br />
+			<h4><a href="{{ link.link }}" target="_newWindow">{{ link.title }}</a></h4>
+			
 			<small>Host: <strong>{{ link.hostname }}</strong></small><br />
-		
+			
 			<div style="margin-top: 10px">
-					{% include 'parts/buttons_levellinks.html' %}
-			</div><br />
+				<div style="display:inline-block; margin-top: 10px">
+					<a class="btn{{ btnSize }} btn-primary" onClick="setLevel({{ link.id }}, 1);">
+						<span class="glyphicon glyphicon-cog"> </span>
+					</a>&nbsp;&nbsp;
+	
+					<a class="btn{{ btnSize }} btn-warning" onClick="setLevel({{ link.id }}, 2);">
+						<span class="glyphicon glyphicon-cog"> </span>
+					</a>&nbsp;&nbsp;
+
+					<a class="btn{{ btnSize }} btn-success" onClick="setLevel({{ link.id }}, 3);">
+						<span class="glyphicon glyphicon-cog"> </span>
+					</a>&nbsp;&nbsp;
+
+					<a class="btn{{ btnSize }} btn-info" onClick="setLevel({{ link.id }}, 4);">
+						<span class="glyphicon glyphicon-cog"> </span>
+					</a>&nbsp;&nbsp;
+
+					<a class="btn{{ btnSize }} btn-secondary" onClick="setLevel({{ link.id }}, 5);">
+						<span class="glyphicon glyphicon-cog"> </span>
+					</a>&nbsp;&nbsp;
+					
+					<br /><br />
+					<br /><br />
+					
+					<div style="text-align: center">
+						<button class="btn{{ btnSize }} btn-danger" onClick="deleteLink('{{ link.id }}');">
+							<span class="glyphicon glyphicon-remove"> </span>
+						</button>
+					
+						&nbsp;&nbsp; | &nbsp;&nbsp;
+					
+						<a class="btn{{ btnSize }} btn-success" href="linkedit.php?id={{ link.id }}" target="_newWin">
+								<span class="glyphicon glyphicon-ok"> </span>
+						</a>
+					</div>
+					<br /><br />
+				</div>
+			</div>
 		</td>
 		<td>
-			<button class="btn-lg btn-danger" onClick="deleteLink('{{ link.id }}');">
-				<span class="glyphicon glyphicon-remove"> </span>
-			</button><br />
-			<br /><br /><br />
-			<a class="btn-lg btn-success" href="linkedit.php?id={{ link.id }}" target="_newWin">
-					<span class="glyphicon glyphicon-ok"> </span>
-			</a>
+			
+			
 		</td>
 	</tr>
 	{% endfor %}

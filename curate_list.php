@@ -4,7 +4,7 @@ require_once(__DIR__.'/vendor/autoload.php');
 $loader = new \Twig\Loader\FilesystemLoader(__DIR__.'/templates');
 $twig = new \Twig\Environment($loader, array('debug' => true));
 
-$sql="SELECT * FROM links  WHERE (tags IS NULL OR tags = '') ORDER BY id ASC LIMIT 200";
+$sql="SELECT * FROM links  WHERE (tags IS NULL OR tags = '') AND level IS NULL ORDER BY id ASC LIMIT 200";
 $rs = queryX($sql);
 
 $links = Array();

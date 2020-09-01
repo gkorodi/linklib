@@ -26,7 +26,7 @@
 		<td id="rowDetails{{ link.id }}">
 			<a href="{{ link.link }}" target="_newWindow"><b>{{ link.title }}</b></a><br />
 			<small>
-			Tags: 	<b>{{ link.tags }}</b>
+			Tags: 	<b>{{ link.tags }}</b> CreatedAt: <b>{{ link.created_at|date('Y-m-d') }}</b> 
 			</small>
 		</td>
 		<td>
@@ -34,9 +34,6 @@
 		</td>
 		<td>
 			<b>{{ link.level }}</b> 
-		</td>
-		<td>
-			<b>{{ link.created_at|date('Y-m-d') }}</b> 
 		</td>
 		<td>
 			<b>{{ link.updated_at|date('Y-m-d') }}</b> 
