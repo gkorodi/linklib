@@ -1,9 +1,9 @@
 <?php
-define('DB_HOST','127.0.0.1');
-define('DB_PORT', 3306);
-define('DB_NAME','links');
+define('DB_HOST',		getenv('MARIA_HOST'));
+define('DB_PORT',		getenv('MARIA_PORT'));
+define('DB_NAME',		getenv('MARIA_DB'));
 define('DB_USER','root');
-define('DB_PASSWORD','Kaposvar-16');
+define('DB_PASSWORD',	getenv('MARIA_PASSWORD'));
 define('APP_ADMIN','gabor');
 define('APP_USERS','nicky,dawei');
 ?>

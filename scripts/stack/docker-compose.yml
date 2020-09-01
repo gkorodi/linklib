@@ -1,0 +1,33 @@
+version: '3'
+ 
+services:
+  app:
+      image: dinacode/symfony5-php74-fpm:latest
+      volumes:
+          - /Users/gabork/PhpstormProjects/linklib:/srv/www/api
+          - ${PWD}/app.conf:/etc/php/7.0/fpm/pool.d/www.conf
+      environment:
+          MARIA_HOST: db
+          MARIA_PORT: 3306
+          MARIA_DB: links
+          MARIA_PASSWORD: rootPassword
+      depends_on:
+          - db
+
+  web:
+      image: nginx:latest
+      ports:
+          - 99:80
+      volumes:
+          - /Users/gabork/PhpstormProjects/linklib:/srv/www/api
+          - ${PWD}/nginx.conf:/etc/nginx/conf.d/default.conf
+      depends_on:
+          - app
+
+  db:
+    image: mariadb
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootPassword
+      - MYSQL_DATABASE=links
+    volumes:
+      - /Users/gabork/PhpstormProjects/linklib/scripts/data/links_db.sql:/docker-entrypoint-initdb.d/links_links.sql
