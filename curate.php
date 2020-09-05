@@ -5,7 +5,7 @@ $loader = new \Twig\Loader\FilesystemLoader(__DIR__.'/templates');
 $twig = new \Twig\Environment($loader, array('debug' => true));
 
 $sql="SELECT * FROM links WHERE ".
-	"(tags IN ('curate','later','later2') OR tags IS NULL) AND level IS NULL ".
+	"tags IS NULL AND level IS NULL ".
 	"ORDER BY updated_at LIMIT 200";
 $rs = queryX($sql);
 
