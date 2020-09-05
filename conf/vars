@@ -1,9 +1,9 @@
 <?php
-define('DB_HOST',		getenv('MARIA_HOST'));
-define('DB_PORT',		getenv('MARIA_PORT'));
-define('DB_NAME',		getenv('MARIA_DB'));
+define('DB_HOST',               getEnvValue('MARIA_HOST'));
+define('DB_PORT',               getEnvValue('MARIA_PORT'));
+define('DB_NAME',               getEnvValue('MARIA_DB'));
 define('DB_USER','root');
-define('DB_PASSWORD',	getenv('MARIA_PASSWORD'));
+define('DB_PASSWORD',           getEnvValue('MARIA_PASSWORD'));
 define('APP_ADMIN','gabor');
 define('APP_USERS','nicky,dawei');
 ?>

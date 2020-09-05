@@ -16,6 +16,11 @@ if (function_exists('apache_request_headers')) {
     }
 }*/
 
+function getEnvValue($envvarName) {
+	$varValue = getenv($envvarName);
+	return (isset($varValue) && !empty($varValue))?$varValue:$_SERVER[$envvarName];
+}
+
 
 if (!isset($header['Authorization']) || $header['Authorization'] != 'testToken') {
 	if (isset($_SERVER['PHP_SELF'])) {
