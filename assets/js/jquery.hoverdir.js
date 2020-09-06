@@ -139,7 +139,7 @@
 					fromStyle = !this.options.inverse ? slideFromLeft : slideFromRight;
 					toStyle = slideLeft;
 					break;
-			};
+			}
 			
 			return { from : fromStyle, to : toStyle };
 					

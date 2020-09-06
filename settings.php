@@ -1,8 +1,12 @@
 <?php
+
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
+
 require_once('_includes.php');
 require_once(__DIR__.'/vendor/autoload.php');
-$loader = new \Twig\Loader\FilesystemLoader(__DIR__.'/templates');
-$twig = new \Twig\Environment($loader, array('debug' => true));
+$loader = new FilesystemLoader(__DIR__.'/templates');
+$twig = new Environment($loader, array('debug' => true));
 
 $settingsList = Array();
 foreach(Array('DB_HOST','DB_PORT','DB_USER','DB_PASSWORD', 'DB_NAME') AS $setting) {

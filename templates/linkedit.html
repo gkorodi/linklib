@@ -151,7 +151,7 @@
 	});
 	
 	function showDescription() {
-		var metatags = {{ link.description|raw }};
+		var metatags = {{ link.description|raw }}
 		if (metatags.description) {
 			$('#fldDescription').text(metatags.description);
 		} else {

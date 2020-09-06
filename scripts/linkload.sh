@@ -1,6 +1,6 @@
 #!/bin/sh
 
-cd $HOME/Desktop
+cd "$HOME"/Desktop
 for FN in *.webloc
 do
 	/usr/bin/plutil -convert json "${FN}"

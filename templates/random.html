@@ -10,7 +10,7 @@
 	{% for l in results %}
             <tr id="row{{ l.id }}">
             <td>
-              <button class="btn-sm btn-danger" onClick="deleteLink({{ l.id }});">
+              <button class="btn-sm btn-danger" onClick="deleteLink({{ l.id }})">
 		<span class="glyphicon glyphicon-remove"> </span>
 	      </button>
             </td>
@@ -18,19 +18,19 @@
           	<b><a href="{{ l.link }}" target="_newWindow">{{ l.title }}</a></b><br />
        		<small>{{ l.hostname }}</small><br />
 
-	        <button class="btn btn-primary" onClick="tagLink({{ l.id }}, 'level1') ;">
+	        <button class="btn btn-primary" onClick="tagLink({{ l.id }}, 'level1') ">
                   <span class="glyphicon glyphicon-bookmark"> </span>
                 </button>
 		<span style="width: 20px;display: inline-block"> </span>
-	        <button class="btn btn-secondary" onClick="tagLink({{ l.id }}, 'level2') ;">
+	        <button class="btn btn-secondary" onClick="tagLink({{ l.id }}, 'level2') ">
 	          <span class="glyphicon glyphicon-bookmark"> </span>
 	        </button>
 		<span style="width: 20px;display: inline-block"> </span>
-		<button class="btn btn-info" onClick="tagLink({{ l.id }}, 'level3') ;">
+		<button class="btn btn-info" onClick="tagLink({{ l.id }}, 'level3') ">
 	          <span class="glyphicon glyphicon-bookmark"> </span>
 	        </button>
 		<span style="width: 20px;display: inline-block"> </span>
-		<button class="btn btn-success" onClick="tagLink({{ l.id }}, 'level4') ;">
+		<button class="btn btn-success" onClick="tagLink({{ l.id }}, 'level4') ">
 	           <span class="glyphicon glyphicon-bookmark"> </span>
 	        </button>
               </td>

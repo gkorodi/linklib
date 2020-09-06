@@ -1,6 +1,11 @@
 <?php
 require_once('class_DBQueryService.php');
 
+class LinkTagTuple {
+	var $name = '';
+	var $value = '';
+}
+
 class Link {
 	var $errors = Array();
 	var $debugs = Array();
@@ -24,13 +29,28 @@ class Link {
 	function logger($msg) {
 		array_push($this->debugs, date('c')." ".$msg);
 	}
-	
-	function addTagForLink($tagValue) {
-		
-		return false;
+
+	private function fatal($msg) {
+		die(date('c').' '.$msg);
 	}
 
-	function setLevel($level) {
+	function setURL($newurl) {
+		$this->link = $newurl;
+		$this->update();
+		$this->fatal("Could not replace URL of this link, because it is not yet implemented.");
+	}
+
+	function addTagForLink(LinkTagTuple $tag) {
+		$sql = "INSERT INTO meta_tags VALUES (null, '".$tag->name."','".$tag->value."', ".$link->id.")";
+		if ($result = $this->mysqli->query($sql)) {
+			if ($result->num_rows === 0) {
+				$this->errors[] = "No data was updated. SQL:${sql}";
+			}
+			$result->free();
+		}
+	}
+
+	function setLevel(Integer $level) {
 		$this->level = $level;
 		return $this->update();
 	}
@@ -504,4 +524,4 @@ class Link {
 		file_put_contents('/var/tmp/linklib_log.txt', $msg.PHP_EOL , FILE_APPEND | LOCK_EX);
 	}
 }
-?>
+

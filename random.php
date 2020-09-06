@@ -1,10 +1,14 @@
 <?php
+
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
+
 require_once('_inc.php');
 require_once(__DIR__.'/vendor/autoload.php');
 
-$loader = new \Twig\Loader\FilesystemLoader(__DIR__.'/templates');
+$loader = new FilesystemLoader(__DIR__.'/templates');
 //$twig = new \Twig\Environment($loader); //, [ 'cache' => '/path/to/compilation_cache' ]);
-$twig = new \Twig\Environment($loader, array('debug' => true));
+$twig = new Environment($loader, array('debug' => true));
 
 $sql = 'SELECT * FROM links AS r1 JOIN (SELECT CEIL(RAND() '.
 	'* (SELECT MAX(id) FROM links WHERE tags IS NULL)) AS id) AS r2 '.

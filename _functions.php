@@ -519,30 +519,30 @@ CONTENT;
 		array_push($debugs, 'Processing new link request.');
 
 		if (!isset($_REQUEST['link'])) {
-			$debugs << 'Could not find _link_ attribute in request.';
+			array_push($debugs, 'Could not find _link_ attribute in request.');
 
 			$resp['status'] = 'error';
 			$resp['message'] = 'link attribute is minimally mandatory.';
 		} else {
 			$newlink = new Link();
-			$debugs << 'Created new Link object.';
+			array_push($debugs, 'Created new Link object.');
 
 			$newlink->link = $_REQUEST['link'];
 			$newlink->title = (isset($_REQUEST['title'])?$_REQUEST['title']:'');
 			$newlink->tags = (isset($_REQUEST['tags'])?$_REQUEST['tags']:'');
 			$newlink->status = (isset($_REQUEST['status'])?$_REQUEST['status']:-1);
 			$newlink->updated_at = (isset($_REQUEST['updated_at'])?$_REQUEST['updated_at']:-1);
-			$debugs << 'Updated fields of object.';
+			array_push($debugs, 'Updated fields of object.');
 
 			if ($newlink->save()) {
-				$debugs << implode(PHP_EOL, $newlink->debugs);
-				$debugs << 'Object have been saved to persistent store.';
+				array_push($debugs, implode(PHP_EOL.'newlink debug ', $newlink->debugs));
+				array_push($debugs, 'Object have been saved to persistent store.');
 
 				$resp['status'] = 'ok';
 				$resp['message'] = 'Saved link. id:'.$newlink->id;
 			} else {
-				$debugs << $newlink->debugs;
-				$debugs << 'Object could not be saved';
+				array_push($debugs, $newlink->debugs);
+				array_push($debugs, 'Object could not be saved');
 
 				$resp['status'] = 'error';
 				$resp['message'] = 'Could not save link.';
@@ -605,11 +605,8 @@ CONTENT;
 		$resp['message'] = 'Unknown method <b>'.$_REQUEST['method'].'</b>';
 	}
 
-} else {
-
 }
-
-$resp['debugs'] = $debugs; //implode("<br />", $debugs);
+$resp['debugs'] = $debugs;
 
 header("Content-type: application/json");
 echo json_encode($resp);

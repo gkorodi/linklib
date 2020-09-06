@@ -24,5 +24,5 @@ foreach(glob('*.webloc') AS $filepath) {
 
 	echo json_encode($resp).PHP_EOL;
 }
-?>
+
 

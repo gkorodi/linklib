@@ -14,7 +14,7 @@
 			{% for row in results %}
 			<tr id="row{{ row.id }}">
 			<td>
-				<button class="btn btn-sm btn-danger" onClick="deleteLink({{ row.id }});">
+				<button class="btn btn-sm btn-danger" onClick="deleteLink({{ row.id }})">
 					<span class="glyphicon glyphicon-trash"> </span>
 				</button>
 			</td>
@@ -30,7 +30,7 @@
 			</td>
 			<td>
 				<input type="text" id="tags-{{row.id}}"
-					onChange="tagLink({{row.id}}, $(this).val());"
+					onChange="tagLink({{row.id}}, $(this).val())"
 						value="{{row.tags}}" />
 			</td>
 			<td>
