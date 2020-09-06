@@ -2,5 +2,5 @@ vendor/
 .DS_Store
 .idea/
 .phpunit.result.cache
-scripts/data/links_db.sql
-scripts/stack/links_db.sql
+scripts/stack/*.sql
+scripts/data/*.sql
