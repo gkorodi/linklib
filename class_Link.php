@@ -86,23 +86,23 @@ class Link {
 			} else {
 				$this->logger("Initialize Link object with id ".$id);
 				$this->id = $id;
-				$query = "SELECT * FROM links WHERE id = ${id}";
+				$query = "SELECT * FROM links WHERE id = ".$id;
 				if ($result = $this->mysqli->query($query)) {
-					
 					if ($result->num_rows === 0) {
 						$this->errors[] = "No data found for linkid ${id}";
+						$this->errors[] = $this->mysqli->error;
 						$this->id = null;
 					} else {
 					    /* fetch associative array */
 					    while ($row = $result->fetch_assoc()) {
 					        $this->link = $row['link'];
-							$this->title = $row['title'];
-							$this->status = isset($row['status'])?empty($row['status'])?-1:$row['status']:0;
-							$this->tags = $row['tags'];
-							$this->level = $row['level'];
-							$this->updated_at = isset($row['updated_at'])?$row['updated_at']:date('Y-m-d');
-							$this->created_at = isset($row['created_at'])?$row['created_at']:date('Y-m-d');
-							$this->description = empty($row['description'])?'{}':$row['description'];
+						$this->title = $row['title'];
+						$this->status = isset($row['status'])?empty($row['status'])?-1:$row['status']:0;
+						$this->tags = $row['tags'];
+						$this->level = $row['level'];
+						$this->updated_at = isset($row['updated_at'])?$row['updated_at']:date('Y-m-d');
+						$this->created_at = isset($row['created_at'])?$row['created_at']:date('Y-m-d');
+						$this->description = empty($row['description'])?'{}':$row['description'];
 					    }
 					}
 				    /* free result set */

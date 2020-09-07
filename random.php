@@ -3,7 +3,7 @@
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
-require_once('_inc.php');
+require_once('_includes.php');
 require_once(__DIR__.'/vendor/autoload.php');
 
 $loader = new FilesystemLoader(__DIR__.'/templates');

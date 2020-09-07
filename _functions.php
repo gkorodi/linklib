@@ -180,6 +180,7 @@ CONTENT;
 		$resp['message'] = implode("\n",$logmessages);
 		
 	} else if ($_REQUEST['method']==='updateLevelById') {
+
 		$link = new Link($_REQUEST['id']);
 		if ($link->updateLevelById($_REQUEST['value'])) {
 			$resp['status'] = 'ok';
