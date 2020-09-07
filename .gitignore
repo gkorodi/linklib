@@ -4,3 +4,4 @@ vendor/
 .phpunit.result.cache
 scripts/stack/*.sql
 scripts/data/*.sql
+.env
