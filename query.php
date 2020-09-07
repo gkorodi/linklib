@@ -12,7 +12,7 @@ $searchresults = Array();
 if (isset($_REQUEST['q'])) {
 	$searchresults = queryX($_REQUEST['q']);
 	if (count($searchresults) > 300) {
-		$searchresults['rows'] = array_slice($searchresults['rows'],0,300);
+		$searchresults = array_slice($searchresults,0,300);
 	}
 }
 renderView('query.html', [ 'results' => $searchresults, 'query' => $_REQUEST['q'] ]);

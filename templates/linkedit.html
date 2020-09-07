@@ -1,7 +1,7 @@
 
 {% extends 'fullpage.html' %}
 
-{% block blue %}				
+{% block blue %}
 <div class="col-2">
 	<a class="btn-lg btn-info" href ="linkedit.php" id="btnNext" accesskey="n"><u>N</u>ext</a>
 </div>
@@ -9,17 +9,17 @@
 	<div class="col">
 		<h3><a href="{{ link.link }}"" target="_newLinkWin">{{link.title}}</a></h3>
 		<div id="errorMessages">
-		{% for errorMessage in link.errors %}
+			{% for errorMessage in link.errors %}
 			<div style="color: red">{{errorMessage}}</div>
-		{% endfor %}
+			{% endfor %}
 		</div>
 		<p class="lead" id="fldDescription"></p>
 	</div>
 </div>
 <div class="row">
 	<div class="col">
-	<a class="btn btn-lg btn-danger" id="btnDelete" accesskey="D"><u>D</u>elete</a>
-	<a class="btn btn-lg btn-warning" id="btnFix" accesskey="x">Fi<u>x</u></a>
+		<a class="btn btn-lg btn-danger" id="btnDelete" accesskey="D"><u>D</u>elete</a>
+		<a class="btn btn-lg btn-warning" id="btnFix" accesskey="x">Fi<u>x</u></a>
 	</div>
 </div>
 {% endblock %}
@@ -31,41 +31,41 @@
 
 		<div class="row">
 			<a style="margin-right: 10px" class="btn btn-warning"
-				href="https://duckduckgo.com/?q={{link.title}}&t=ffsb&ia=web" target="_srchWindow">Duck</a>
+			   href="https://duckduckgo.com/?q={{link.title}}&t=ffsb&ia=web" target="_srchWindow">Duck</a>
 			<a style="margin-right: 10px" class="btn btn-warning" href="{{link.link}}" target="_newWindow">Show</a>
-			<input type="submit" name="btnUpdate" id="btnUpdateId" class="btn btn-info" value="Update" /><br />
+			<input type="submit" class="btn btn-info" value="Update" /><br />
 		</div>
-					
+
 		<div class="row">
 			<div class="form-group col-lg-4">
 				<label for="tags">Tags:</label>
 				<input type="text" class="form-control" id="tags" name="tags" value="{{link.tags}}" />
 			</div>
 		</div>
-				
+
 		<div class="row">
 			<div class="form-group col-sm-4">
 				<label for="created_at">Created At:</label>
 				<input type="text" class="form-control" id="created_at" name="created_at" size="12" value="{{link.created_at|date('Y-m-d')}}" />
 			</div>
-			
+
 			<div class="form-group col-sm-2">
 				<label for="level">Level:</label>
 				<input type="text" class="form-control" id="level" name="level" size="12" value="{{link.level }}" />
 			</div>
 		</div>
-					
+
 		<div class="row left">
 			<div class="form-group col-lg-4">
 				<label for="link">Link:</label>
 				<input type="text" class="form-control" id="link" name="link" value="{{link.link}}" />
 			</div>
 		</div>
-	
+
 		<div class="row">
 			<textarea name="description" id="description" cols="100" rows="10">{{link.description}}</textarea>
 		</div>
-	
+
 		<div class="row">
 			<div class="form-group">
 				<label for="title">Title:</label>
@@ -81,15 +81,15 @@
 				<label for="fld_updated_at">Updated At:</label>
 				<input type="text" readonly class="form-control" id="fld_updated_at" value="{{link.updated_at|date('Y-m-d')}}" size="12">
 			</div>
-			
+
 		</div>
-    </div><!--/container -->
-		</form>
+	</div><!--/container -->
+</form>
 {% endblock %}
 
 {% block pagescripts %}
-	<script>
-		
+<script>
+
 	$('#btnNext').on('click', function() {
 		console.log('going to next records.')
 		$('#blue').css('background-color','gray');
@@ -108,24 +108,11 @@
 		});
 	});
 
-	$("form input[type=submit]").click(function() {
-		var baseColor = $('#blue').css('background-color');
-		
-		$('#blue').css('background-color','yellow');
-		$('#lblTitle').html("Loading ...");
-		
-		if($(this).val() == 'Update') {
-			$('#blue').css('background-color', baseColor);
-			
-		 return true;
-		}
-	});
-
 	$('#btnFix').on('click', function(event) {
 		var baseColor = $('#blue').css('background-color');
 		$('#blue').css('background-color','yellow');
 		console.log("Calling URL:"+'_functions.php?method=getheader&id={{link.id}}');
-		
+
 		$.get('_functions.php?method=getheader&id={{link.id}}', function(data) {
 			console.log(data);
 			$('#blue').css('background-color','lightGreen');
@@ -142,14 +129,14 @@
 			$('#created_at').val(data.created_at);
 			$('#updated_at').val(data.updated_at);
 			$('#status').val(data.status);
-			$('#description').html(JSON.stringify(data.meta));
+			$('#description').html(data.meta['description']);
 			showDescription();
 			checkLink(data.id, data.link);
 		});
-		
+
 		$('#blue').css('background-color',baseColor);
 	});
-	
+
 	function showDescription() {
 		var metatags = {{ link.description|raw }}
 		if (metatags.description) {
@@ -160,24 +147,24 @@
 			}
 		}
 	}
-	
+
 	function checkLink(linkId, linkURL) {
 		console.log("checkLink() Checking new URL:"+linkURL);
-		
-	    $.getJSON( 'api/checklink.php', {
-	      url: linkURL,
-	      linkid: linkId
-	    })
-		.done(function( data ) {
-	        if (data.status != 'ok') { 
-				$('#errorMessages').html("The new link might be a possible duplciate!");
-			}
-	      });
+
+		$.getJSON( 'api/checklink.php', {
+			url: linkURL,
+			linkid: linkId
+		})
+				.done(function( data ) {
+					if (data.status != 'ok') {
+						$('#errorMessages').html("The new link might be a possible duplciate!");
+					}
+				});
 	}
-	
+
 	$(document).ready(function() {
 		showDescription();
-	}); 
-	</script>
+	});
+</script>
 {% endblock %}
 

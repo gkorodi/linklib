@@ -1,5 +1,9 @@
 #!/bin/ksh
 
+LINKLIB_HOME=${PWD}
+MARIADB_PASSWORD=$1
+alias dcom='docker-compose -f ${LINKLIB_HOME}/scripts/stack/docker-compose.yml '
+
 logger() {
 	MSG=$1
 	TIMESTAMP=$(date +%Y-%m-%d)
@@ -12,10 +16,10 @@ FILENAME=links_links_$(date +%Y-%m-%d).sql
 logger "Filename ${FILENAME}"
 
 logger "RowCount"
-docker exec linksdb sh -c "mysql -u root --password=root links -e 'SELECT COUNT(*) FROM links;'"
+dcom exec db sh -c "mysql -u root --password="${MARIADB_PASSWORD}" links -e 'SELECT COUNT(*) FROM links;'"
 
 logger 'Dump `links` table'
-docker exec linksdb sh -c "mysqldump -u root --password=root links links" > $FILENAME
+dcom exec db sh -c "mysqldump --user=root --password="${MARIADB_PASSWORD}" links" > $FILENAME
 
 logger "Send dumpfile to remote server"
 scp ${FILENAME} gaborkorodi:/tmp/${FILENAME}

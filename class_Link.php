@@ -358,7 +358,7 @@ class Link {
 		$this->logger("update() status      :".(isset($this->status)?(empty($this->status)?-1:$this->status):0));
 		$this->logger("update() updated_at  :".(isset($this->updated_at)?$this->updated_at:date('Y-m-d')));
 		$this->logger("update() created_at  :".(isset($this->created_at)?$this->created_at:date('Y-m-d')));
-		$this->logger("update() description :".(empty($this->description)?'empty':$this->description));
+		$this->logger("update() description :".(empty($this->description)?'empty': $this->mysqli -> real_escape_string($this->description)));
 
 		// Default to error, just in case.
 		$status = false;
@@ -378,7 +378,7 @@ class Link {
 				$this->created_at = date('Y-m-d');
 			}
 			$sqlString .= ", created_at = '".$mysqli->real_escape_string(date('Y-m-d', strtotime($this->created_at)))."'";
-			$sqlString .= ", description = '".$mysqli->real_escape_string($this->description)."'";
+			$sqlString .= ", description = '".$mysqli->real_escape_string(str_replace("'",'', $this->description))."'";
 			$sqlString .= ' WHERE id = '.$this->id;
 
 			$return_status = $mysqli->query($sqlString);

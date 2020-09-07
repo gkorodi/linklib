@@ -3,7 +3,7 @@
 {% block blue %}
 <h3>Search Results by tag <b>`{{ searchTag }}`</b>.</h3>
 <form class="pull-right"><input type="hidden" name="tag" value="{{ searchTag }}"/>
-	<input type="checkbox" {% if profile.request.olderfirst %}checked{% endif %} name="olderfirst" onChange="this.form.submit()"> Older First?
+	<input type="checkbox" {% if context.request.olderfirst == 'on' %}checked{% endif %} name="olderfirst" onChange="this.form.submit()"> Older First?
 </form>
 {% endblock %}
 
@@ -31,7 +31,12 @@ tr.status302 {
 
 <table id="tableLinks" class="table">
 <thead>
-	
+	<tr>
+		<th> </th>
+		<th>Link</th>
+		<th>Level</th>
+		<th>Updated</th>
+	</tr>
 </thead>
 <tbody>
 	{% for link in links %}
@@ -47,12 +52,20 @@ tr.status302 {
 			</a><br />
 		</td>
 		<td>
-			<b><a href="{{ link.link }}" target="_newWindow">{{ link.title }}</a></b> <small>{{ link.tags }}</small><br />
-			<small>{{ link.hostname}}</small><br />
+			<b><a href="{{ link.link }}" target="_newWindow">{{ link.title }}</a></b>
+			<div><small>{{ link.hostname }}</small> - <small>{{ link.created_at|date('Y-m-d') }}</small></div><br />
+			<small>
+			{% for tag in link.tags|split(',') %}
+				{% if tag != searchTag %}
+				<a class="btn-sm btn-theme" href="search_bytag.php?tag={{ tag }}" role="button" target="_newTagWindow">{{ tag }}</a>
+				{% endif %}
+			{% endfor %}
+			</small><br /><br />
+			<br />
 			{% include 'parts/buttons_levellinks.html' %}
 		</td>
 		<td>
-			<small>{{ link.created_at|date('Y-m-d') }}</small>
+			<small>{{ link.level!=null?link.level:'N/A' }}</small>
 		</td>
 		<td>
 			<small>{{ link.updated_at|date('Y-m-d') }}</small>
