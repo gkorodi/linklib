@@ -1,7 +1,12 @@
 #!/bin/sh -x
 
-ssh gaborkorodi "rm -f /tmp/*_tbldump.sql"
-ssh gaborkorodi "mysqldump -u root --password=Kaposvar-16 links links > /tmp/links_tbldump.sql"
-scp gaborkorodi:/tmp/*_tbldump.sql ./
-mysql -u root --password=root links < links_tbldump.sql
-[ $? -eq 0 ] && rm -f *_tbldump.sql
+source $LINKLIB_HOME/.env
+alias dcom='$DCOM_HOME/docker-compose -f $LINKLIB_HOME/scripts/stack/docker-compose.yml'
+
+dcom stop db
+ssh gaborkorodi "mysqldump links" > $LINKLIB_HOME/scripts/data/links_db.sql
+dcom up -d db
+sleep 5
+dcom exec db sh -c "mysql --user=root --password=${MARIADB_PASSWORD} links < /docker-entrypoint-initdb.d/links_links.sql"
+
+$LINKLIB_HOME/scripts/compare.sh

@@ -1,8 +1,7 @@
 #!/bin/ksh
 
-LINKLIB_HOME=${PWD}
-MARIADB_PASSWORD=$1
-alias dcom='docker-compose -f ${LINKLIB_HOME}/scripts/stack/docker-compose.yml '
+source $LINKLIB_HOME/.env
+alias dcom='$DCOM_HOME/docker-compose -f $LINKLIB_HOME/scripts/stack/docker-compose.yml'
 
 logger() {
 	MSG=$1

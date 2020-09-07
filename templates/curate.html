@@ -1,7 +1,7 @@
 {% extends('fullpage.html') %}
 
 {% block blue %}
-<h3>Curate latest {{ rowcount }} rows</h3>
+<h3>Latest {{ rowCount }} rows out of {{ totalCount }}, with no tags and no levels</h3>
 {% endblock %}
 
 {% block content %}
@@ -17,7 +17,7 @@
 		<tr id="row{{ link.id }}">
 			<td>
 				<h4><a href="{{ link.link }}" target="_newWindow">{{ link.title }}</a></h4>
-				<small>Host: <strong>{{ link.hostname }}</strong> UpdatedAt: <strong>{{ link.updated_at|date('Y-m-d') }}</strong></small><br />
+				<small>Host: <strong>{{ link.hostname }}</strong> UpdatedAt: <strong>{{ link.updated_at|date('Y-m-d') }}</strong> CreatedAt: <strong>{{ link.created_at|date('Y-m-d') }}</strong></small><br />
 				<br />
 				{% include 'parts/buttons_levellinks.html' %}
 				<br /><br />

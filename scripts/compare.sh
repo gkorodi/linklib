@@ -1,12 +1,10 @@
 #!/bin/sh
 
-echo "select count(*) from links; select count(*) from tobecurated;" > /tmp/a.a
-echo "*** Local Counts ***"
-mysql -u root --password=root links < /tmp/a.a
+source $LINKLIB_HOME/.env
+alias dcom='$DCOM_HOME/docker-compose -f $LINKLIB_HOME/scripts/stack/docker-compose.yml'
 
-scp /tmp/a.a gaborkorodi:/tmp/
 echo "*** Remote Counts ****"
-ssh gaborkorodi "mysql -u root --password=Kaposvar-16 links < /tmp/a.a"
+ssh gaborkorodi "mysql links -e 'select count(*) from links'"
 
-rm -f /tmp/a.a
-ssh gaborkorodi "rm -f /tmp/a.a"
+echo "*** Local Docker Count ***"
+dcom exec db sh -c "mysql --user=root --password=${MARIADB_PASSWORD} links -e 'select count(*) from links'"

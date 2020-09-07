@@ -8,21 +8,18 @@ require_once(__DIR__.'/vendor/autoload.php');
 $loader = new FilesystemLoader(__DIR__.'/templates');
 $twig = new Environment($loader, array('debug' => true));
 
-$sql="SELECT * FROM links WHERE ".
-	"tags IS NULL AND level IS NULL ".
-	"ORDER BY updated_at LIMIT 200";
-$rs = queryX($sql);
+$sql="SELECT * FROM links WHERE tags IS NULL AND level IS NULL ORDER BY updated_at";
+$totalRS = queryX($sql);
+$displayRS = queryX($sql.' LIMIT 200');
 
-$links = Array();
-foreach($rs AS $r) {
-	$r['hostname'] = justHostName($r['link']);
-	$links[] = $r;
+foreach($displayRS AS $key=>$value) {
+    $displayRS[$key]['hostname'] = justHostName($value['link']);
 }
 
 if (isset($_REQUEST['format']) && $_REQUEST['format'] == 'json') {
 	header('Content-type: application/json');
-	echo json_encode($links);
+	echo json_encode($displayRS);
 	exit;
 }
 
-renderView('curate.html', ['rowcount' => count($rs), 'links' => $links]);
+renderView('curate.html', ['rowCount' => count($displayRS), 'totalCount' => count($totalRS), 'links' => $displayRS]);
