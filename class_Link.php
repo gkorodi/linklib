@@ -41,7 +41,7 @@ class Link {
 	}
 
 	function addTagForLink(LinkTagTuple $tag) {
-		$sql = "INSERT INTO meta_tags VALUES (null, '".$tag->name."','".$tag->value."', ".$link->id.")";
+		$sql = "INSERT INTO meta_tags VALUES (null, '".$tag->name."','".$tag->value."', ".$this->id.")";
 		if ($result = $this->mysqli->query($sql)) {
 			if ($result->num_rows === 0) {
 				$this->errors[] = "No data was updated. SQL:${sql}";
@@ -220,11 +220,6 @@ class Link {
 					$this->errors[] = 'Could not updated the whole record :(';
 				}
 			}
-			// TODOs
-			// parse metaTags for `created_at` and `tags` field
-			// Update fields if they are different from before ($this)
-			
-			return false;
 		}
 		
 		return false;
@@ -372,7 +367,7 @@ class Link {
 			$sqlString = "UPDATE links SET link = '".$mysqli->real_escape_string($this->link)."'";
 			$sqlString .= ", title = '".$mysqli->real_escape_string($this->title)."'";
 			$sqlString .= ", tags = '".$mysqli->real_escape_string($this->tags)."'";
-			$sqlString .= ", level = ".$this->level;
+			$sqlString .= ", level = ".isset($this->level)?$this->level:'NULL';
 			$sqlString .= ", status = ".$mysqli->real_escape_string($this->status);
 			if (empty($this->created_at)) {
 				$this->created_at = date('Y-m-d');

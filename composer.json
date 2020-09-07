@@ -14,7 +14,12 @@
     "ext-json": "*",
     "phpunit/phpunit": "^9.3",
     "twig/intl-extra": "^3.0",
-    "twig/twig": "^3.0"
+    "twig/twig": "^3.0",
+    "ext-dom": "*",
+    "ext-libxml": "*",
+    "ext-mysqli": "*",
+    "ext-apache": "*",
+    "ext-simplexml": "*"
   },
   "scripts": {
     "test": "vendor/bin/phpunit"

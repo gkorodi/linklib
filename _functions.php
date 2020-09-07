@@ -48,8 +48,12 @@ if (isset($_REQUEST['method'])) {
 	log_debug('_functions.php Method '.$_REQUEST['method'].' has been specified.');
 
 	if ($_REQUEST['method']==='deletelink') {
-		$link = new Link($_REQUEST['id']);
-		if ($link->delete()) {
+        try {
+            $link = new Link($_REQUEST['id']);
+        } catch (Exception $e) {
+            die("Could not create link object with id ".$_REQUEST['id']);
+        }
+        if ($link->delete()) {
 			$resp['status'] = 'ok';
 			$resp['message'] = 'Deleted link, with id <b>'.$_REQUEST['id'].'</b>';
 			log_debug(print_r($link->debugs, true));
@@ -60,9 +64,13 @@ if (isset($_REQUEST['method'])) {
 			log_debug(print_r($link->debugs, true));
 		}
 	} else if ($_REQUEST['method']==='warnlink') {
-		$link = $link = new Link($_REQUEST['id']);
-		
-		if (!$link->repair()) {
+        try {
+            $link = new Link($_REQUEST['id']);
+        } catch (Exception $e) {
+            die("Could not create link object with id:".$_REQUEST['id']);
+        }
+
+        if (!$link->repair()) {
 			$resp['status'] = 'error';
 			$resp['message'] = 'Could not repair link. '.implode('<br />', $link->errors).'<br />Debugs:'.implode('<br />', $link->debugs);
 		} else {
@@ -80,9 +88,13 @@ CONTENT;
 		}
 	} else if ($_REQUEST['method']==='tagCurate') {
 		log_debug("tagCurate() request id ".$_REQUEST['id']);
-		
-		$lnk = new Link($_REQUEST['id']);
-		$lnk->tags = 'curate';
+
+        try {
+            $lnk = new Link($_REQUEST['id']);
+        } catch (Exception $e) {
+            die("Could not create link object with id:".$_REQUEST['id']);
+        }
+        $lnk->tags = 'curate';
 		if ($lnk->update()) {
 			$resp['status'] = 'ok';
 			$resp['message'] = 'Link tagged';
@@ -610,4 +622,3 @@ $resp['debugs'] = $debugs;
 
 header("Content-type: application/json");
 echo json_encode($resp);
-?>

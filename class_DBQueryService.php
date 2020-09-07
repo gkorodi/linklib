@@ -147,5 +147,3 @@ class DBQueryService {
 		$this->conn->close();
 	}
 }
-
-?>

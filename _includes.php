@@ -4,17 +4,6 @@ if (function_exists('apache_request_headers')) {
 	$header = apache_request_headers(); 
 } 
 
-/*foreach (getallheaders() as $name => $value) {
-    switch($name) {
-    	case 'Authorization':
-		$a = explode(' ', $value);
-		if (validToken($a[1])) {
-			$_SESSION['uid'] = $a[1];
-		}
-		break;
-	default:
-    }
-}*/
 
 function getEnvValue($envvarName) {
 	$varValue = getenv($envvarName);

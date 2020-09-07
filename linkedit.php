@@ -9,7 +9,11 @@ $twig = new Environment($loader, array('debug' => true));
 
 $link = null;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $link = new Link($_POST['id']);
+    try {
+        $link = new Link($_POST['id']);
+    } catch (Exception $e) {
+        die("Could not create link object with id ".$_POST['id']);
+    }
     $link->title = $_POST['title'];
     $link->link = $_POST['link'];
 
@@ -43,10 +47,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (count($links) == 0) {
             die('There is no link available.');
         }
-        $link = new Link($links[rand(1,1000)]['id']);
+        $newLinkId = null;
+        try {
+            $newLinkId = $links[rand(1, 1000);
+            $link = new Link($newLinkId]['id']);
+        } catch (Exception $e) {
+            die("Could not create object with id :".$newLinkId);
+        }
 
     } else {
-        $link = new Link($_REQUEST['id']);
+        try {
+            $link = new Link($_REQUEST['id']);
+        } catch (Exception $e) {
+            die("Could not retrieve link object for id: ".$_REQUEST['id']);
+        }
     }
 }
 

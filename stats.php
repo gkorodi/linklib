@@ -8,15 +8,10 @@ require_once(__DIR__.'/vendor/autoload.php');
 $loader = new FilesystemLoader(__DIR__.'/templates');
 $twig = new Environment($loader, array('debug' => true));
 
-function runQueries(&$queryList) {
-	foreach($queryList AS $q) {
-		$qrs = queryX($q->sql);
-		$q->results = $qrs;
-	}
-}
-
 $querylist = json_decode(file_get_contents('stats.json'));
-runQueries($querylist);
+foreach($querylist AS $key=>$query) {
+    $queryList[$key]['result'] = queryX($query['sql']);
+}
 
 $statuses = queryX("SELECT COALESCE(status,'NULL') AS status, count(*) AS counter FROM "
 	."links WHERE status != 200 GROUP BY status");
