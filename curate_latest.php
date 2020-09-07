@@ -8,7 +8,7 @@ require_once(__DIR__.'/vendor/autoload.php');
 $loader = new FilesystemLoader(__DIR__.'/templates');
 $twig = new Environment($loader, array('debug' => true));
 
-$sql="SELECT * FROM links WHERE (tags IS NULL OR tags = '') AND level IS NULL ORDER BY id DESC";
+$sql="SELECT * FROM links WHERE tags IS NULL AND level IS NULL ORDER BY id DESC LIMIT 200";
 $rs = queryX($sql);
 
 $links = Array();

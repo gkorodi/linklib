@@ -1,5 +1,10 @@
 #!/bin/sh -x
 
+HOSTNAME=$(hostname)
+if [ "${HOSTNAME}" = "Gabe-MBP062" ];
+then
+  export LINKLIB_HOME=/Users/gabork/PhpstormProjects/linklib
+fi
 source $LINKLIB_HOME/.env
 alias dcom='$DCOM_HOME/docker-compose -f $LINKLIB_HOME/scripts/stack/docker-compose.yml'
 
