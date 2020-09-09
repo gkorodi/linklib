@@ -49,8 +49,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         $newLinkId = null;
         try {
-            $newLinkId = $links[rand(1, 1000);
-            $link = new Link($newLinkId]['id']);
+            $newLinkId = $links[rand(1, 1000)];
+            $link = new Link($newLinkId['id']);
         } catch (Exception $e) {
             die("Could not create object with id :".$newLinkId);
         }

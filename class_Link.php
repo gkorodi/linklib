@@ -234,10 +234,11 @@ class Link {
 	}
 	
 	function updateLevelById($level) {
+
 		$this->logger("Starting updateLevelById(${level})");
 		$this->level = $level;
 		if (!$this->update()) {
-			$this->errors[] = 'Could not update link to level ${level}';
+			$this->errors[] = "Could not update link to level ${level}";
 			return false;
 		}
 		$this->logger("Updated link to level ${level}");
@@ -343,8 +344,6 @@ class Link {
 
 	function update() {
 		$this->logger("update() starting...");
-		
-		
 		$this->logger("update() id:".$this->id);
 		$this->logger("update() link        :".$this->link);
 		$this->logger("update() title       :".$this->title);
@@ -367,7 +366,7 @@ class Link {
 			$sqlString = "UPDATE links SET link = '".$mysqli->real_escape_string($this->link)."'";
 			$sqlString .= ", title = '".$mysqli->real_escape_string($this->title)."'";
 			$sqlString .= ", tags = '".$mysqli->real_escape_string($this->tags)."'";
-			$sqlString .= ", level = ".isset($this->level)?$this->level:'NULL';
+			$sqlString .= ", level = ".$mysqli->real_escape_string($this->level);
 			$sqlString .= ", status = ".$mysqli->real_escape_string($this->status);
 			if (empty($this->created_at)) {
 				$this->created_at = date('Y-m-d');
@@ -378,7 +377,6 @@ class Link {
 
 			$return_status = $mysqli->query($sqlString);
 			$this->logger("update() statement: ".$sqlString);
-				
 			if ( $return_status === TRUE) {
 				$status = true;
 				$this->logger("update() Link ".$this->id." has been successfully updated. AffectedRows:".$mysqli->affected_rows);

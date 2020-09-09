@@ -1,7 +1,7 @@
 {% extends('fullpage.html') %}
 
 {% block blue %}
-	<h3>Random {{ result_count }} Rows.</h3>
+	<h3>Random {{ result_count }} Rows, without Level.</h3>
 {% endblock %}
 
 {% block content %}
@@ -15,7 +15,7 @@
 	      </button>
             </td>
             <td>
-          	<b><a href="{{ l.link }}" target="_newWindow">{{ link.title }}</a></b><br />
+          	<b><a href="{{ link.link }}" target="_newWindow">{{ link.title }}</a></b><br />
        		<small>{{ link.hostname }}</small><br />
 		<br />
 		{% include 'parts/buttons_levellinks.html' %}<br />

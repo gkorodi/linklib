@@ -60,7 +60,7 @@ if (isset($_REQUEST['method'])) {
 		} else {
 			$resp['status'] = 'error';
 			$resp['message'] = 'Could not delete link, with id <b>'.$_REQUEST['id'].'</b><br />'.
-				'<small>'.implode('<br />', $link->errors).'</small>';
+				'<small>'.implode("\n", $link->errors).'</small>';
 			log_debug(print_r($link->debugs, true));
 		}
 	} else if ($_REQUEST['method']==='warnlink') {
@@ -182,13 +182,8 @@ CONTENT;
 	} else if ($_REQUEST['method']==='updateLevelById') {
 
 		$link = new Link($_REQUEST['id']);
-		if ($link->updateLevelById($_REQUEST['value'])) {
-			$resp['status'] = 'ok';
-			$resp['message'] = implode('<br />', $link->debugs);
-		} else {
-			$resp['status'] = 'error';
-			$resp['message'] = implode('<br />', $link->errors);
-		}
+		$resp['status'] = $link->updateLevelById($_REQUEST['value'])?'ok':'error';
+		$resp['message'] = array_merge($link->errors, $link->debugs);
 
 	} else if ($_REQUEST['method']==='updateTagsById') {
 		

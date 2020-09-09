@@ -10,7 +10,8 @@ $twig = new Environment($loader, array('debug' => true));
 
 $querylist = json_decode(file_get_contents('stats.json'));
 foreach($querylist AS $key=>$query) {
-    $queryList[$key]['result'] = queryX($query['sql']);
+	$rs = queryX($query->sql);
+    $queryList[$key]->result = $rs;
 }
 
 $statuses = queryX("SELECT COALESCE(status,'NULL') AS status, count(*) AS counter FROM "
