@@ -47,12 +47,16 @@ function getURLDetails($url) {
     $tags = getMetaTags($content);
     curl_close($ch);
 
-    return array_merge($info, $tags);
+	$responses = Array();
+	foreach( array_merge($info, $tags) AS $k=>$v) {
+		$responses[] = [ 'tag'=> $k, 'value'=>$v];
+	}
+    return $responses;
 }
 require_once('../_includes.php');
 $entityBody = file_get_contents('php://input');
 $req = json_decode($entityBody);
 
 header("Content-Type: application/json");
-echo json_encode(getURLDetails($req->url));
+echo json_encode(getURLDetails($req->url)).PHP_EOL;
 exit;

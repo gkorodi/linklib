@@ -16,6 +16,11 @@
 		{% for link in links %}
 		<tr id="row{{ link.id }}">
 			<td>
+				<h4><a class="btn-sm btn-danger" style="padding: 5px" onClick="deleteLink('{{ link.id }}');">
+					<span class="glyphicon glyphicon-remove"> </span>
+				</a></h4>
+			</td>
+			<td>
 				<h4><a href="{{ link.link }}" target="_newWindow">{{ link.title }}</a></h4>
 				<small>Host: <strong>{{ link.hostname }}</strong> UpdatedAt: <strong>{{ link.updated_at|date('Y-m-d') }}</strong> CreatedAt: <strong>{{ link.created_at|date('Y-m-d') }}</strong></small><br />
 				<br />
@@ -23,13 +28,9 @@
 				<br /><br />
 			</td>
 			<td style="width:10%">
-				<a class="btn-lg btn-danger" onClick="deleteLink('{{ link.id }}');">
-					<span class="glyphicon glyphicon-remove"> </span>
-				</a><br />
-				<br /><br />
 				<a class="btn-lg btn-info" href="linkedit.php?id={{ link.id }}" target="_newWin">
 					<span class="glyphicon glyphicon-ok"> </span>
-				</a><br />
+				</a>
 				<br />
 			</td>
 		</tr>

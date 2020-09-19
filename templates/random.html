@@ -8,27 +8,55 @@
         <table class="table">
 	<tbody>
 	{% for link in results %}
-            <tr id="row{{ link.id }}">
-            <td>
-              <button class="btn-sm btn-danger" onClick="deleteLink({{ link.id }})">
-		<span class="glyphicon glyphicon-remove"> </span>
-	      </button>
-            </td>
-            <td>
-          	<b><a href="{{ link.link }}" target="_newWindow">{{ link.title }}</a></b><br />
-       		<small>{{ link.hostname }}</small><br />
-		<br />
-		{% include 'parts/buttons_levellinks.html' %}<br />
-		<br />
-              </td>
-              <td style="padding: 5px"> 
-	        <button class="btn-sm btn-success" onclick="window.location='linkedit.php?id={{ link.id }}';">
-	          <span class="glyphicon glyphicon-link"> </span>
-	        </button>
-              </td>
-              </tr>
+	<tr id="row{{ link.id }}">
+		<td>
+			<button class="btn-sm btn-danger" onClick="deleteLink({{ link.id }})">
+			<span class="glyphicon glyphicon-remove"> </span>
+			</button>
+		</td>
+		<td>
+			<b><a href="{{ link.link }}" target="_newWindow">{{ link.title }}</a></b><br />
+			<small>{{ link.hostname }}</small><br />
+		</td>
+		
+		<td style="padding: 5px"> 
+			<button class="btn-sm btn-waring" onclick="setLevel({{ link.id }}, 1);">1</button>
+			
+			<button class="btn-sm btn-waring" onclick="setLevel({{ link.id }}, 2);">2</button>
+			
+			<button class="btn-sm btn-waring" onclick="setLevel({{ link.id }}, 3);">3</button>
+			
+			<button class="btn-sm btn-waring" onclick="setLevel({{ link.id }}, 4);">4</button>
+			
+			<button class="btn-sm btn-waring" onclick="setLevel({{ link.id }}, 5);">5</button>
+		</td>
+		<td>
+			{{ link.status }}
+		</td>
+		<td>
+			{{ link.created_at|date("Y-m-d")}}
+		</td>
+		<td>
+			{{ link.updated_at|date("Y-m-d")}}
+		</td>
+		<td style="padding: 5px"> 
+			<button class="btn-sm btn-success" onclick="window.location='linkedit.php?id={{ link.id }}';">
+				<span class="glyphicon glyphicon-link"> </span>
+			</button>
+		</td>
+	</tr>
 	{% endfor %}
 	</tbody>
 	</table>
 	<a href="#" onClick="document.location.reload(true);" class="btn btn-info">Reload</a>
+	
+{% endblock %}
+
+{% block pagescripts %}
+	<script>
+		function hideRow(id) {
+			console.log('row'+id);
+			$('#row'+id).hide();
+		}
+	</script>
 {% endblock %}
