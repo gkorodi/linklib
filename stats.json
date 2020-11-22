@@ -28,7 +28,11 @@
 		"sql": "SELECT count(*) AS counter FROM links WHERE level = 5"
 	},
 	{
-		"label": "Missing Tags",
+		"label": "Missing Level",
+		"sql": "SELECT count(*) AS counter FROM links WHERE level IS NULL"
+	},
+	{
+		"label": "NULL Tags",
 		"sql": "SELECT count(*) AS counter FROM links WHERE tags IS NULL;"
 	},
 	{

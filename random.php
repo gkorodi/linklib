@@ -19,6 +19,8 @@ INNER JOIN
 WHERE
 	t.level IS NULL
 AND
+	t.status IS NULL
+AND
     t.id >= x.id
 LIMIT 50';
 

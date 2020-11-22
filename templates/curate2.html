@@ -1,0 +1,37 @@
+{% extends('fullpage.html') %}
+
+{% block blue %}
+<h3>Latest {{ rowCount }} rows out of {{ totalCount }}, with no tags and no levels</h3>
+{% endblock %}
+
+{% block content %}
+<form method="POST" action="api/process.php">
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Link</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+		{% for link in links %}
+		<tr id="row{{ link.id }}">
+			<td>
+				<a href="{{ link.link }}" target="_newWindow">{{ link.title }}</a><br />
+				del: <input type="checkbox" name="link-{{ link.id }}[]" value="del" /> &nbsp;
+				1:<input type="checkbox" name="link-{{ link.id }}[]" value="level1" /> &nbsp;
+				2:<input type="checkbox" name="link-{{ link.id }}[]" value="level2" /> &nbsp;
+				3:<input type="checkbox" name="link-{{ link.id }}[]" value="level3" /> &nbsp;
+				4:<input type="checkbox" name="link-{{ link.id }}[]" value="level4" /> &nbsp;
+				5:<input type="checkbox" name="link-{{ link.id }}[]" value="level5" /> &nbsp;
+			</td>
+			<td>
+				{{ link.hostname }}
+			</td>
+		</tr>
+		{% endfor %}
+		</tbody>
+	</table>
+	<input type="submit" value="Process" />
+</form>
+{% endblock %}

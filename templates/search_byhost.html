@@ -6,7 +6,7 @@
 		<input type="checkbox" class="adjusterfield" onchange="submit();" name="olderfirst" {% if profile.request.olderfirst %}checked{% endif %}/> OlderFirst<br />
 		<input type="checkbox" class="adjusterfield" onchange="submit();" name="untaggedonly" {% if profile.request.untaggedonly %}checked{% endif %}/> UntaggedOnly<br />
 		<input type="checkbox" class="adjusterfield" name="nostatus" {% if profile.request.nostatus %}checked{% endif %}/> No Status<br />
-		<input type="checkbox" class="adjusterfield" name="badstatus" {% if profile.request.badstatus %}checked{% endif %}/> Bad Status<br />
+		<input type="checkbox" class="adjusterfield"  onchange="submit();" name="haslevel" {% if request.haslevel %}checked{% endif %}/> Has Level<br />
 		<input type="hidden" id="fldHost" name="host" value="{{ request.host }}" />
 	</form>
 
@@ -25,7 +25,7 @@
 		background-color: purple; color: white;
 	}
 	tr.link-200 {
-		background-color: lightBlue; color: white;
+		background-color: rgb(194, 237, 237); color: black;
 	}
 	tr.link-0 {
 		background-color: #f0f0f0; color: white;
@@ -52,15 +52,16 @@
 				Tags: <b>{% if link.tags is empty %}n/a{% else %}{% for tag in link.tags %}{{ tag }} {% endfor %}{% endif %}</b>
 				</small><br />
 			{% endif %}
+
+			<small>
+				CreatedAt:{% if link.created_at is empty %}n/a{% else %}{{ link.created_at|date('Y-m-d') }}{% endif %}
+			</small>
 			<br />
 			&nbsp;&nbsp;&nbsp;
 			{% include('parts/buttons_levellinks.html') %}
 		</td>
 		<td>
-			{% if link.created_at is empty %}n/a{% else %}{{ link.created_at|date('Y-m-d') }}{% endif %}
-		</td>
-		<td>
-			{% if link.updated_at is empty %}n/a{% else %}{{ link.updated_at|date('Y-m-d') }}{% endif %}
+			{{ link.level }}
 		</td>
 	</tr>
 	{% endfor %}

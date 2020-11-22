@@ -35,35 +35,36 @@
 			<a style="margin-right: 10px" class="btn btn-warning" href="{{link.link}}" target="_newWindow">Show</a>
 			<input type="submit" class="btn btn-info" value="Update" /><br />
 		</div>
-
+		<br />
 		<div class="row">
-			<div class="form-group col-lg-4">
+			<div class="form-group">
 				<label for="tags">Tags:</label>
 				<input type="text" class="form-control" id="tags" name="tags" value="{{link.tags}}" />
 			</div>
 		</div>
 
 		<div class="row">
-			<div class="form-group col-sm-4">
+			<div class="form-group col-sm-3">
 				<label for="created_at">Created At:</label>
 				<input type="text" class="form-control" id="created_at" name="created_at" size="12" value="{{link.created_at|date('Y-m-d')}}" />
 			</div>
+			
+			<div class="form-group col-sm-3 ml-auto">
+				<label for="fld_updated_at">Updated At:</label>
+				<input type="text" readonly class="form-control" id="fld_updated_at" value="{{link.updated_at|date('Y-m-d')}}" size="12">
+			</div>
 
-			<div class="form-group col-sm-2">
+			<div class="form-group col-sm-1 ml-auto">
 				<label for="level">Level:</label>
 				<input type="text" class="form-control" id="level" name="level" size="12" value="{{link.level }}" />
 			</div>
 		</div>
 
-		<div class="row left">
-			<div class="form-group col-lg-4">
+		<div class="row">
+			<div class="form-group">
 				<label for="link">Link:</label>
 				<input type="text" class="form-control" id="link" name="link" value="{{link.link}}" />
 			</div>
-		</div>
-
-		<div class="row">
-			<textarea name="description" id="description" cols="100" rows="10">{{link.description}}</textarea>
 		</div>
 
 		<div class="row">
@@ -71,18 +72,15 @@
 				<label for="title">Title:</label>
 				<input type="text" class="form-control" id="title" name="title" value="{{link.title}}" />
 			</div>
+		</div>
 
+		<div class="row">
 			<div class="form-group">
 				<label for="status">Status:</label>
 				<input type="text" class="form-control" id="status" name="status" value="{{link.status}}" size="10" />
 			</div>
-
-			<div class="form-group">
-				<label for="fld_updated_at">Updated At:</label>
-				<input type="text" readonly class="form-control" id="fld_updated_at" value="{{link.updated_at|date('Y-m-d')}}" size="12">
-			</div>
-
 		</div>
+
 	</div><!--/container -->
 </form>
 {% endblock %}
@@ -129,7 +127,6 @@
 			$('#created_at').val(data.created_at);
 			$('#updated_at').val(data.updated_at);
 			$('#status').val(data.status);
-			$('#description').html(data.meta['description']);
 			showDescription();
 			checkLink(data.id, data.link);
 		});
@@ -150,16 +147,19 @@
 
 	function checkLink(linkId, linkURL) {
 		console.log("checkLink() Checking new URL:"+linkURL);
-
 		$.getJSON( 'api/checklink.php', {
 			url: linkURL,
 			linkid: linkId
 		})
-				.done(function( data ) {
-					if (data.status != 'ok') {
-						$('#errorMessages').html("The new link might be a possible duplciate!");
-					}
-				});
+		.done(function( data ) {
+			if (data.status != 'ok') {
+				$('#errorMessages').html("The new link might be a possible duplciate of "+
+					"<a href='"+data.rows[0].link+"' target='_newDuplicateWindow'>"+
+						data.rows[0].title+"</a>"+
+							" id: "+data.rows[0].id+"!");
+				console.log(data.rows);
+			}
+		});
 	}
 
 	$(document).ready(function() {

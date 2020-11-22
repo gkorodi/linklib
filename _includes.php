@@ -125,7 +125,6 @@ function queryX($sql) {
 	return $response;
 }
 
-
 function getLinkStatus($url) {
 
 	$ch = curl_init($url);

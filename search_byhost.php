@@ -1,4 +1,4 @@
-<?php
+=<?php
 
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
@@ -10,10 +10,16 @@ $twig = new Environment($loader, array('debug' => true));
 
 $links = Array();
 if (isset($_REQUEST['host']) && !empty($_REQUEST['host'])) {
+	
+	$extraLevel = ' AND level IS NULL ';
+	if (isset($_REQUEST['haslevel'])) {
+		$extraLevel = ' AND level IS NOT NULL ';
+	}
+	
     $sql = "SELECT * FROM links WHERE UPPER(link) LIKE '%".strtoupper($_REQUEST['host'])."%'".
         (isset($_REQUEST['untaggedonly'])?" AND (tags IS NULL OR tags = '')":'').
         (isset($_REQUEST['nostatus'])?" AND (status IS NULL OR status = '')":'').
-        (isset($_REQUEST['badstatus'])?" AND (status != 200)":'').
+        $extraLevel.
         ' ORDER BY updated_at '.(isset($_REQUEST['olderfirst'])?' ASC':' DESC').
                 ', link, title LIMIT 200';
 

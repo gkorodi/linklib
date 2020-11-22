@@ -14,16 +14,16 @@
 			</tr>
 		</thead>
 		<tbody>
-		{% for query in querylist %}
+		{% for query in queryList %}
 			<tr>
 				<th>
 					<a href="query.php?q={{ query.sql }}">{{ query.label }}</a>
 				</th>
 				<td>
-					{{ query.results[0]['counter'] }} 
+					{{ query.counts }} 
 				</td>
 				<td>
-					{{ (((query.results|length)/querylist[0].results.0.counter)*100)|number_format(2, '.', ',') }}%
+					{{ (query.counts/queryList[0].counts*100)|number_format(2) }}%
 				</td>
 			</tr>
 		{% endfor %}

@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $link->link = $_POST['link'];
 
     $tagArray = explode(',', str_replace(' ','', strtolower($_POST['tags'])));
-    $link->level = (isset($_POST['level'])?$_POST['level']:0);
+    $link->level = (isset($_POST['level']) && !empty($_REQUEST['level']))?$_POST['level']:0;
     if (in_array('level1', $tagArray)) { $link->level = 1; unset($tagArray[array_search('level1', $tagArray)]); }
     if (in_array('level2', $tagArray)) { $link->level = 2; unset($tagArray[array_search('level2', $tagArray)]); }
     if (in_array('level3', $tagArray)) { $link->level = 3; unset($tagArray[array_search('level3', $tagArray)]); }
@@ -29,10 +29,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $link->status = $_POST['status'];
     $link->created_at = empty($_POST['created_at'])?date('Y-m-d'):date('Y-m-d', strtotime($_POST['created_at']));
     $link->updated_at = date('Y-m-d');
-    $link->description = $_POST['description'];
 
     if (!$link->update()) {
-        die("Could not update records. ".implode("\n", array_merge($link->errors, $link->debugs)));
+        die("Could not update records. ".implode("<br />\n", array_merge($link->errors, $link->debugs)));
     }
 
 } else {

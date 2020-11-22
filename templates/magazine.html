@@ -1,20 +1,12 @@
 {% extends "fullpage.html" %}
 
 {% block blue %}
-	<h3>Article.</h3>
-	<strong><a href="{{ articles[0]['link'] }}" target="newWindow">{{ articles[0]['title'] }}</a></strong> 
 	<button class="btn btn-success" onClick="prevArticle();">Prev</button>
 	<button class="btn btn-success" onClick="nextArticle();">Next</button>
-	<script>
-		let linkList = [];
-		{% for article in articles %}
-		linkList.push('{{ article.link }}');
-		{% endfor %}
-	</script>
 {% endblock %}
 
 {% block content %}
- <iframe id='ifrm' src="" height="800" width="100%" title="">
+ <iframe id='ifrm' src="{{ articles[0]['link'] }}" height="800" width="100%" title="">
  	
  </iframe> 
 {% endblock %}
@@ -22,17 +14,28 @@
 {% block pagescripts %}
 <script>
 	var articleIdx = 0;
+	var linkList = JSON.parse('{{ articles|json_encode|e('js') }}');
+	
 	$(document).ready(function() {
-		window.frames['ifrm'].src = linkList[0];
+		window.frames['ifrm'].src = linkList[0]['link'];
 	});
 	
 	function nextArticle() {
 		articleIdx++;
-		window.frames['ifrm'].src = linkList[articleIdx];
+		if (articleIdx > linkList.length) {
+			alert("No more articles");
+		} else {
+			window.frames['ifrm'].src = linkList[articleIdx]['link'];
+		}
 	}
+	
 	function prevArticle() {
 		articleIdx--;
-		window.frames['ifrm'].src = linkList[articleIdx];
+		if (articleIdx<0) { 
+			alert("No previous link, already at the beginning.")
+		} else {
+		window.frames['ifrm'].src = linkList[articleIdx]['link'];
+		}
 	}
 </script>
 {% endblock %}

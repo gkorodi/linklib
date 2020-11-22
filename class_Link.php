@@ -343,8 +343,9 @@ class Link {
 	}
 
 	function update() {
+		
 		$this->logger("update() starting...");
-		$this->logger("update() id:".$this->id);
+		$this->logger("update() id          :".$this->id);
 		$this->logger("update() link        :".$this->link);
 		$this->logger("update() title       :".$this->title);
 		$this->logger("update() tags        :".$this->tags);
@@ -369,7 +370,7 @@ class Link {
 			$sqlString .= ", level = ".$mysqli->real_escape_string($this->level);
 			$sqlString .= ", status = ".$mysqli->real_escape_string($this->status);
 			if (empty($this->created_at)) {
-				$this->created_at = date('Y-m-d');
+				$this->created_at = empty($this->created_at)?date('Y-m-d'):$this->created_at;
 			}
 			$sqlString .= ", created_at = '".$mysqli->real_escape_string(date('Y-m-d', strtotime($this->created_at)))."'";
 			$sqlString .= ", description = '".$mysqli->real_escape_string(str_replace("'",'', $this->description))."'";
@@ -385,14 +386,32 @@ class Link {
 				if ($mysqli->errno==1062) {
 					$this->errors[] = 'Duplicate link detected';
 					$this->logger("update() (status:". $mysqli->errno . "/" .$mysqli->error.")");
+					
+					$rs = $this->findDuplicateLink($mysqli->real_escape_string($this->link));
+					$this->logger("update() otherLink: ".print_r($rs, true));
 				} else {
-					$this->logger("update() (status:".print_r($return_status, true)." errno:" . $mysqli->errno . ", errmsg:" .$mysqli->error.")");
+					$this->logger("update() (
+						status:".print_r($return_status, true)
+						." errno:" . $mysqli->errno 
+						.", errmsg:" .$mysqli->error.")");
 				}
 				
 			}
 			$mysqli->close();
 		}
 		return $status;
+	}
+	
+	private function findDuplicateLink($linkURL) {
+		$row = [];
+		$mysqli = new mysqli(DB_HOST.(defined('DB_PORT')?':'.DB_PORT:''), DB_USER, DB_PASSWORD, DB_NAME);
+		if (!$mysqli->connect_errno) {
+			$result = $mysqli->query("SELECT * FROM links WHERE link = '".$linkURL."' AND id != ".$this->id);
+			$row = $result->fetch_array(MYSQLI_ASSOC);
+			$result->close();
+			$mysqli->close();
+		}
+		return $row;
 	}
 
 	function addLink() {
@@ -445,6 +464,7 @@ class Link {
 		$raw_data['created_at'] = date('Y-m-d');
 		$raw_data['tags'] = (isset($_REQUEST['tags'])?$_REQUEST['tags']:'');
 		$raw_data['description'] = $this->description;
+		$raw_data['level'] = (!isset($_REQUEST['level']) || empty($_REQUEST['level']))?5:$_REQUEST['level'];
 
 		if ($dbservice->addRow($raw_data)) {
 			$linkid = $dbservice->getInsertId();
