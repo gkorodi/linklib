@@ -5,14 +5,18 @@
 {% endblock %}
 
 {% block content %}
-	<table class="table">
-	<tr>
-		<th>Host</th>
-		<th>Tagless</th>
-		<th>NotOK</th>
-		<th>Total</th>
-	</tr>
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.css">
 
+	<table id="tblHosts" class="table">
+		<thead>
+			<tr>
+				<th>Host</th>
+				<th>Tagless</th>
+				<th>NotOK</th>
+				<th>Total</th>
+			</tr>
+		</thead>
+	
 	{% for host in hostList %}
 		<tr>
 			<th>
@@ -20,16 +24,27 @@
 				&nbsp; <a href="magazine.php?host={{host.name}}" target="magazineTab">&#x1F517;</a>
 			</th>
 			<td>
-				
+				.
 			</td>
 			<td>
-				
+				.
 			</td>
 			<td>
 				{{ host.total }}
 			</td>
 		</tr>
-		
 	{% endfor %}
 	</table>
+	<br /><br />
+{% endblock %}
+
+{% block pagescripts %}
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
+
+<script>
+	$(document).ready( function () {
+		$('#tblHosts').DataTable();
+		console.log("Datatables should be loading now.");
+	});
+</script>
 {% endblock %}

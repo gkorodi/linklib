@@ -1,7 +1,10 @@
-{% extends "fullpage.html" %}
+{% extends('fullpage.html') %}
 
 {% block blue %}
-		
+	<h3>
+		Search Results by host <a href="http://{{ request.host }}" target="_newWindow">{{ request.host }}</a>
+	</h3>
+
 	<form method="GET" id="frmRefine" class="pull-right">
 		<input type="checkbox" class="adjusterfield" onchange="submit();" name="olderfirst" {% if profile.request.olderfirst %}checked{% endif %}/> OlderFirst<br />
 		<input type="checkbox" class="adjusterfield" onchange="submit();" name="untaggedonly" {% if profile.request.untaggedonly %}checked{% endif %}/> UntaggedOnly<br />
@@ -9,11 +12,6 @@
 		<input type="checkbox" class="adjusterfield"  onchange="submit();" name="haslevel" {% if request.haslevel %}checked{% endif %}/> Has Level<br />
 		<input type="hidden" id="fldHost" name="host" value="{{ request.host }}" />
 	</form>
-
-	<h3>
-		Search Results by host <a href="http://{{ request.host }}" target="_newWindow">{{ request.host }}</a>
-	</h3>
-	
 {% endblock %}
 
 {% block content %}
@@ -35,7 +33,7 @@
 <table class="table">
 	<tbody>
 	{% for link in links %}
-	<tr id="row{{ link.id }}" class="link-{{ link.status }}">
+	<tr id="row{{ link.id }}" class="link-{{ link.status }}XXX">
 		<td>
 			<button class="btn btn-danger" onClick="deleteLink({{ link.id }})">
 				<span class="glyphicon glyphicon-remove"> </span>
@@ -47,18 +45,14 @@
 		</td>
 		<td>
 			<b><a href="{{ link.link }}" target="_newWindow">{{ link.title }}</a></b><br />
-			{% if not profile.request.untaggedonly %}
-				<small>
-				Tags: <b>{% if link.tags is empty %}n/a{% else %}{% for tag in link.tags %}{{ tag }} {% endfor %}{% endif %}</b>
-				</small><br />
-			{% endif %}
-
-			<small>
-				CreatedAt:{% if link.created_at is empty %}n/a{% else %}{{ link.created_at|date('Y-m-d') }}{% endif %}
-			</small>
-			<br />
-			&nbsp;&nbsp;&nbsp;
+			
 			{% include('parts/buttons_levellinks.html') %}
+		</td>
+		<td>
+			{% if link.created_at is empty %}n/a{% else %}{{ link.created_at|date('Y-m-d') }}{% endif %}
+		</td>
+		<td>
+			{% if link.tags is empty %}n/a{% else %}{% for tag in link.tags %}{{ tag }} {% endfor %}{% endif %}
 		</td>
 		<td>
 			{{ link.level }}

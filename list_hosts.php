@@ -23,8 +23,14 @@ foreach($linkList AS $link) {
 $hosts = Array();
 foreach($hostList AS $hostName=>$hostTotal) {
 	$hosts[] = Array(
-	'name'=>substr($hostName, 0, 50), 
-	'fullname'=>$hostname,
-	'total'=>$hostTotal);
+		'name'=>substr($hostName, 0, 50), 
+		'fullname'=>$hostname,
+		'total'=>$hostTotal);
 }
-renderView('list_hosts.html', ['hostList' => $hosts]);
+
+uasort($hosts, function($e1, $e2) {
+	return $e2['total'] - $e1['total'];
+});
+
+//echo "There are ".count($hostList).' hosts in the list.';
+renderView('list_hosts.html', ['hostList' => array_slice($hosts,0,500)]);

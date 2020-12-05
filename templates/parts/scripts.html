@@ -19,7 +19,6 @@
 	<script src="assets/js/custom.js"></script>
 
 	<script>
-		
 	function repairLink(linkId, value) {
 		$.ajax({
 			type: 'GET',
@@ -142,6 +141,8 @@
 		$('#blue').css('background-color','orange');
 		
 		$('#row'+linkId).css('background-color','pink');
+
+		
 		$.ajax({
 			type: 'GET',
 			url: '_functions.php',
@@ -150,7 +151,7 @@
 				"method":"deletelink",
 				"id":linkId
 			},
-		  success: function(respObj) {
+		  	success: function(respObj) {
 				if (respObj.status == 'ok') {
 					console.log("Link "+linkId+" deleted.");
 					console.log($('#row'+linkId));
@@ -160,6 +161,9 @@
 					console.log(respObj);
 				}
 				$('#blue').css('background-color',originalBgColor);
+			},
+			error: function(e) {
+				console.log('Failed');
 			}
 		});
 	}
