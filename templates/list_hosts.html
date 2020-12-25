@@ -24,10 +24,10 @@
 				&nbsp; <a href="magazine.php?host={{host.name}}" target="magazineTab">&#x1F517;</a>
 			</th>
 			<td>
-				.
+				{{ host.tags_empty|json_encode }}
 			</td>
 			<td>
-				.
+				{{ host.status_bad|json_encode }}
 			</td>
 			<td>
 				{{ host.total }}

@@ -7,9 +7,9 @@
 
 	<form method="GET" id="frmRefine" class="pull-right">
 		<input type="checkbox" class="adjusterfield" onchange="submit();" name="olderfirst" {% if profile.request.olderfirst %}checked{% endif %}/> OlderFirst<br />
-		<input type="checkbox" class="adjusterfield" onchange="submit();" name="untaggedonly" {% if profile.request.untaggedonly %}checked{% endif %}/> UntaggedOnly<br />
-		<input type="checkbox" class="adjusterfield" name="nostatus" {% if profile.request.nostatus %}checked{% endif %}/> No Status<br />
-		<input type="checkbox" class="adjusterfield"  onchange="submit();" name="haslevel" {% if request.haslevel %}checked{% endif %}/> Has Level<br />
+		<input type="checkbox" class="adjusterfield" onchange="submit();" name="untaggedonly" {% if request.untaggedonly %}checked{% endif %}/> UntaggedOnly<br />
+		<input type="checkbox" class="adjusterfield" onchange="submit();" name="nostatus" {% if request.nostatus %}checked{% endif %}/> No Status<br />
+		<input type="checkbox" class="adjusterfield" onchange="submit();" name="haslevel" {% if request.haslevel %}checked{% endif %}/> Has Level<br />
 		<input type="hidden" id="fldHost" name="host" value="{{ request.host }}" />
 	</form>
 {% endblock %}
@@ -45,14 +45,24 @@
 		</td>
 		<td>
 			<b><a href="{{ link.link }}" target="_newWindow">{{ link.title }}</a></b><br />
-			
+			{% if link.level > 0 and link.level < 6 %}
+			...
+			{% else %}
 			{% include('parts/buttons_levellinks.html') %}
+			{% endif %}
+		</td>
+		<td>
+			{{ link.status }}
 		</td>
 		<td>
 			{% if link.created_at is empty %}n/a{% else %}{{ link.created_at|date('Y-m-d') }}{% endif %}
 		</td>
 		<td>
-			{% if link.tags is empty %}n/a{% else %}{% for tag in link.tags %}{{ tag }} {% endfor %}{% endif %}
+			{% if link.tags is empty %}<em>no tags</em>{% else %}{% for tag in link.tags %}
+			{% if tag is empty %}...{% else %}
+			<a class="btn btn-theme" href="#" role="button" target="_newTagWindow">{{ tag }}</a>
+			{% endif %}
+			{% endfor %}{% endif %}
 		</td>
 		<td>
 			{{ link.level }}
