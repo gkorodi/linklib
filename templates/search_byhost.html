@@ -4,7 +4,8 @@
 	<h3>
 		Search Results by host <a href="http://{{ request.host }}" target="_newWindow">{{ request.host }}</a>
 	</h3>
-
+	<small>This is the first couple of links from a total of {{ total_count }}</small>
+	
 	<form method="GET" id="frmRefine" class="pull-right">
 		<input type="checkbox" class="adjusterfield" onchange="submit();" name="olderfirst" {% if profile.request.olderfirst %}checked{% endif %}/> OlderFirst<br />
 		<input type="checkbox" class="adjusterfield" onchange="submit();" name="untaggedonly" {% if request.untaggedonly %}checked{% endif %}/> UntaggedOnly<br />

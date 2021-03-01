@@ -1,46 +1,19 @@
-<script
-			  src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-			  integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
-			  crossorigin="anonymous">
-
-			  </script>
-
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
-	
-	<script src="assets/js/retina-1.1.0.js"></script>
-	<script src="assets/js/modernizr.js"></script>
-	<script src="assets/js/jquery.hoverdir.js"></script>
-	<script src="assets/js/jquery.hoverex.min.js"></script>
-	<script src="assets/js/jquery.prettyPhoto.js"></script>
-	<script src="assets/js/jquery.isotope.min.js"></script>
-	<script src="assets/js/custom.js"></script>
 
-	<script>
+<script src="assets/js/retina-1.1.0.js"></script>
+<script src="assets/js/modernizr.js"></script>
+<script src="assets/js/jquery.hoverdir.js"></script>
+<script src="assets/js/jquery.hoverex.min.js"></script>
+<script src="assets/js/jquery.prettyPhoto.js"></script>
+<script src="assets/js/jquery.isotope.min.js"></script>
+
+<script src="assets/js/custom.js"></script>
+
+<script>
 		
-	function repairLink(linkId, value) {
-		$.ajax({
-			type: 'GET',
-			url: '_functions.php',
-			dataType: 'json',
-			success: function(respObj) {
-				if (respObj.status == 'ok') {
-					$('#row'+linkId).css('display','none');
-				} else {
-					alert(respObj.message);
-				}
-			},
-			data: {
-				"method":"updatelink",
-				"id":linkId,
-				"column":"tags",
-				"value":value
-			}
-		});
-	}
-
 	function repairLink(linkId, value) {
 		$.ajax({
 			type: 'GET',
@@ -87,6 +60,7 @@
 	
 	function setLevel(linkId, level) {
 		console.log('setLevel() starting');
+		
 		$('#row'+linkId).css('background-color','gray');
 		$.getJSON( '_functions.php', {
 			method: 'updateLevelById',

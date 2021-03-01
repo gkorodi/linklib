@@ -13,7 +13,6 @@
 			<div style="color: red">{{errorMessage}}</div>
 			{% endfor %}
 		</div>
-		<p class="lead" id="fldDescription"></p>
 	</div>
 </div>
 <div class="row">
@@ -83,6 +82,9 @@
 
 	</div><!--/container -->
 </form>
+
+<textarea id="fldDescription">{{ link.debugs|json_encode }}</textarea>
+	
 {% endblock %}
 
 {% block pagescripts %}
@@ -108,6 +110,7 @@
 
 	$('#btnFix').on('click', function(event) {
 		var baseColor = $('#blue').css('background-color');
+		
 		$('#blue').css('background-color','yellow');
 		console.log("Calling URL:"+'_functions.php?method=getheader&id={{link.id}}');
 
@@ -127,7 +130,7 @@
 			$('#created_at').val(data.created_at);
 			$('#updated_at').val(data.updated_at);
 			$('#status').val(data.status);
-			showDescription();
+			//showDescription();
 			checkLink(data.id, data.link);
 		});
 

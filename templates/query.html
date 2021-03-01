@@ -27,7 +27,10 @@
 				<small id="date-{{row.id}}">Updated: <b>{{row.updated_at|date('Y-m-d')}}</b></small>
 				<small id="status-{{row.id}}">Status: <b>{{row.status}}</b></small>
 				<small id="level-{{row.id}}">Level: <b>{{row.level}}</b></small>
-				<div id="description-{{row.id}}"></div>
+				<div id="description-{{row.id}}"></div><br />
+				<a class="btn btn-sm btn-info" href="linkedit.php?id={{row.id}}" target="_winEditLink">
+					<span class="glyphicon glyphicon-ok"> </span>
+				</a>
 			</td>
 			<td>
 				<input type="text" id="tags-{{row.id}}"

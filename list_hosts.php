@@ -8,7 +8,7 @@ require_once(__DIR__.'/vendor/autoload.php');
 $loader = new FilesystemLoader(__DIR__.'/templates');
 $twig = new Environment($loader, array('debug' => true));
 
-$linkList = queryX("SELECT link, status, tags FROM links");
+$linkList = queryX("SELECT SUBSTRING_INDEX(link,'/',3) AS host, count(*) AS counter FROM links GROUP BY SUBSTRING_INDEX(link,'/',3)");
 
 $hostList = Array();
 $tagsnull = [];
@@ -16,9 +16,9 @@ $tagsempty = [];
 $statnotgood = [];
 
 foreach($linkList AS $link) {
-	$hostname = justHostName($link['link']);
+	$hostname = $link['host']; //justHostName($link['link']);
 	
-	if (array_key_exists($hostname, $hostList)) {
+	/*if (array_key_exists($hostname, $hostList)) {
 		$hostList[$hostname]++;
 	} else {
 		$hostList[$hostname] = 1;
@@ -40,7 +40,8 @@ foreach($linkList AS $link) {
 		if (isset($statnotgood[$hostname])) {$statnotgood[$hostname]++;} else {
 			$statnotgood[$hostname] = 1;
 		}		
-	}
+	}*/
+		$hostList[$hostname] = $link['counter'];
 }
 
 $hosts = Array();
@@ -49,9 +50,9 @@ foreach($hostList AS $hostName=>$hostTotal) {
 		'name'=>substr($hostName, 0, 50), 
 		'fullname'=>$hostname,
 		'total'=>$hostTotal,
-		'tags_null' => $tagsnull[$hostname],
-		'tags_empty' => $tagsempty[$hostname],
-		'status_bad' => $statnotgood[$hostname],
+		'tags_null' => 0,//$tagsnull[$hostname],
+		'tags_empty' => 0,//$tagsempty[$hostname],
+		'status_bad' => 0,//$statnotgood[$hostname],
 	);
 }
 

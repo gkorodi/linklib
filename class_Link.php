@@ -66,6 +66,7 @@ class Link {
 		
 		if ($id == null) {
 			$this->logger("Create an empty object. No 'id' has been specified in constructor.");
+			
 		} else {
 			if (gettype($id) == 'array') {
 				list($linkid,$link,$title,$status,$tags,$created_at,$updated_at,$description) = $id;
@@ -458,7 +459,7 @@ class Link {
 		$dbservice = new DBQueryService();
 
 		$raw_data['title'] = (isset($_REQUEST['title'])?$_REQUEST['title']:'');
-		$raw_data['link'] = $_REQUEST['link'];
+		$raw_data['link'] = (isset($_REQUEST['link'])?$_REQUEST['link']:'');
 		$raw_data['status'] = ($this->status!=''?$this->status:-1);
 		$raw_data['updated_at'] = date('Y-m-d');
 		$raw_data['created_at'] = date('Y-m-d');

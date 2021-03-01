@@ -1,0 +1,51 @@
+{% extends('fullpage.html') %}
+
+{% block blue %}
+	<h3>Set tags for latest {{ rowcount }} links</h3>
+{% endblock %}
+
+{% block content %}
+	<table class="table">
+		<thead>
+			<tr>
+				<th> </th>
+				<th>Link</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+		{% for link in links %}
+		<tr id="row{{ link.id }}">
+			<td style="width:10%">
+				<p>
+					<a class="btn-lg btn-danger" onClick="deleteLink('{{ link.id }}');">
+						<span class="glyphicon glyphicon-remove"> </span>
+					</a>
+				</p>
+			</td>
+			<td>
+				<h4><a href="{{ link.link }}" target="_newWindow">{{ link.title }}</a></h4>
+				<small>host: <strong>{{ link.hostname }}</strong> 
+					Updated At: <strong>{{ link.updated_at|date('Y-m-d') }}</strong>
+					Created At: <strong>{{ link.created_at|date('Y-m-d') }}</strong>
+					Level: <strong>{{ link.level }}</strong>
+					Status: <strong>{{ link.status }}</strong>
+				</small><br />
+				
+				<input type="text" id="tags-{{ link.id }}"
+					onChange="tagLink({{ link.id }}, $(this).val())"
+						value="{{ link.tags }}" />
+						
+			</td>
+			<td style="width:10%">
+				<p>
+					<a class="btn-lg btn-info" href="linkedit.php?id={{ link.id }}" target="_newWin">
+						<span class="glyphicon glyphicon-ok"> </span>
+					</a>
+				</p>
+			</td>
+		</tr>
+		{% endfor %}
+		</tbody>
+	</table>
+{% endblock %}

@@ -15,7 +15,7 @@ if (isset($_REQUEST['host']) && !empty($_REQUEST['host'])) {
 	if (isset($_REQUEST['haslevel'])) {
 		$extraLevel = ' AND level IS NOT NULL ';
 	}
-	
+
     $sql = "SELECT * FROM links WHERE UPPER(link) LIKE '%".strtoupper($_REQUEST['host'])."%'".
         (isset($_REQUEST['untaggedonly'])?" AND (tags IS NULL OR tags = '')":'').
         (isset($_REQUEST['nostatus'])?" AND (status IS NULL OR status = '')":'').
@@ -23,8 +23,16 @@ if (isset($_REQUEST['host']) && !empty($_REQUEST['host'])) {
         ' ORDER BY updated_at '.(isset($_REQUEST['olderfirst'])?' ASC':' DESC').
                 ', link, title LIMIT 200';
 
+    $sql = "SELECT * FROM links WHERE UPPER(link) LIKE '%".strtoupper($_REQUEST['host'])."%'".
+        (isset($_REQUEST['untaggedonly'])?" AND (tags IS NULL OR tags = '')":'').
+        (isset($_REQUEST['nostatus'])?" AND (status IS NULL OR status = '')":'').
+        $extraLevel.
+        ' ORDER BY updated_at '.(isset($_REQUEST['olderfirst'])?' ASC':' DESC').
+                ', link, title';
+
     $rows = queryX($sql);
-	foreach($rows AS $r) {
+	$rowList = array_slice($rows,0,200);
+	foreach($rowList AS $r) {
 		$r['hostname'] = justHostName($r['link']);
 		$r['tags'] = explode(',', $r['tags']);
 		$links[] = $r;
@@ -37,4 +45,4 @@ if (isset($_REQUEST['format']) && $_REQUEST['format'] == 'json') {
 	exit;
 }
 
-renderView('search_byhost.html', ['links' => $links, 'request' => $_REQUEST ]);
+renderView('search_byhost.html', ['links' => $links, 'total_count' => count($rows), 'request' => $_REQUEST ]);

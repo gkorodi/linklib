@@ -2,6 +2,10 @@
 
 {% block blue %}
 <h3>Status with status `{{ profile.request.status }}`</h3>
+<form method="GET">
+	<input type="checkbox" name="byLevel" />
+	<input type="submit" value="Set" />
+</form>
 {% endblock %}
 
 {% block content %}

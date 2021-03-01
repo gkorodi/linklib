@@ -8,6 +8,7 @@
 	<table class="table">
 		<thead>
 			<tr>
+				<th> </th>
 				<th>Link</th>
 				<th></th>
 			</tr>
@@ -15,6 +16,13 @@
 		<tbody>
 		{% for link in links %}
 		<tr id="row{{ link.id }}">
+			<td style="width:10%">
+				<p>
+					<a class="btn-lg btn-danger" onClick="deleteLink('{{ link.id }}');">
+						<span class="glyphicon glyphicon-remove"> </span>
+					</a>
+				</p>
+			</td>
 			<td>
 				<h4><a href="{{ link.link }}" target="_newWindow">{{ link.title }}</a></h4>
 				<small>host: <strong>{{ link.hostname }}</strong> update at: <strong>{{ link.updated_at }}</strong></small><br />
@@ -23,10 +31,6 @@
 				<br /><br />
 			</td>
 			<td style="width:10%">
-				<a class="btn-lg btn-danger" onClick="deleteLink('{{ link.id }}');">
-					<span class="glyphicon glyphicon-remove"> </span>
-				</a><br />
-				<br /><br />
 				<a class="btn-lg btn-info" href="linkedit.php?id={{ link.id }}" target="_newWin">
 					<span class="glyphicon glyphicon-ok"> </span>
 				</a><br />

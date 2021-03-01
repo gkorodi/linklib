@@ -20,6 +20,7 @@ if (isset($_REQUEST['oldestfirst'])) {
 	$orderBy[] .= "updated_at ASC ";
 }
 if (isset($_REQUEST['byLevel'])) {
+	$extra_criteria .= " AND level IS NOT NULL ";
 	$orderBy[] = " level ASC ";
 }
 
